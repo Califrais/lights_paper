@@ -1,4 +1,4 @@
-\begin{thebibliography}{46}
+\begin{thebibliography}{54}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -26,11 +26,43 @@ Eleni-Rosalina Andrinopoulou, Dimitris Rizopoulos, Johanna~JM Takkenberg, and
 \newblock \emph{Statistical methods in medical research}, 26\penalty0
   (4):\penalty0 1787--1801, 2017.
 
+\bibitem[Austin(2012)]{austin2012generating}
+Peter~C Austin.
+\newblock Generating survival times to simulate cox proportional hazards models
+  with time-varying covariates.
+\newblock \emph{Statistics in medicine}, 31\penalty0 (29):\penalty0 3946--3958,
+  2012.
+
+\bibitem[Austin(2013)]{austin2013correction}
+Peter~C Austin.
+\newblock Correction:‘generating survival times to simulate cox proportional
+  hazards models with time-varying covariates’.
+\newblock \emph{Statistics in Medicine}, 32\penalty0 (6):\penalty0 1078--1078,
+  2013.
+
+\bibitem[Bacry et~al.(2017)Bacry, Bompaire, Deegan, Ga{\"\i}ffas, and
+  Poulsen]{bacry2017tick}
+Emmanuel Bacry, Martin Bompaire, Philip Deegan, St{\'e}phane Ga{\"\i}ffas, and
+  S{\o}ren~V Poulsen.
+\newblock Tick: a python library for statistical learning, with an emphasis on
+  hawkes processes and time-dependent models.
+\newblock \emph{The Journal of Machine Learning Research}, 18\penalty0
+  (1):\penalty0 7937--7941, 2017.
+
 \bibitem[Bergstra and Bengio(2012)]{bergstra2012random}
 James Bergstra and Yoshua Bengio.
 \newblock Random search for hyper-parameter optimization.
 \newblock \emph{Journal of Machine Learning Research}, 13\penalty0
   (2):\penalty0 281--305, 2012.
+
+\bibitem[Blanche et~al.(2015)Blanche, Proust-Lima, Loub{\`e}re, Berr,
+  Dartigues, and Jacqmin-Gadda]{blanche2015quantifying}
+Paul Blanche, C{\'e}cile Proust-Lima, Lucie Loub{\`e}re, Claudine Berr,
+  Jean-Fran{\c{c}}ois Dartigues, and H{\'e}l{\`e}ne Jacqmin-Gadda.
+\newblock Quantifying and comparing dynamic predictive accuracy of joint models
+  for longitudinal marker and time-to-event in presence of censoring and
+  competing risks.
+\newblock \emph{Biometrics}, 71\penalty0 (1):\penalty0 102--113, 2015.
 
 \bibitem[Booth and Hobert(1999)]{booth1999maximizing}
 James~G Booth and James~P Hobert.
@@ -50,14 +82,24 @@ Norman~E Breslow.
 \newblock \emph{JJournal of the Royal Statistical Society: Series B
   (Statistical Methodology)}, 34:\penalty0 216--217, 1972.
 
-\bibitem[Bussy et~al.(2019)Bussy, Guilloux, Ga{\"\i}ffas, and
+\bibitem[Bussy et~al.(2019{\natexlab{a}})Bussy, Guilloux, Ga{\"\i}ffas, and
   Jannot]{bussy2019c}
 Simon Bussy, Agathe Guilloux, St{\'e}phane Ga{\"\i}ffas, and Anne-Sophie
   Jannot.
 \newblock C-mix: A high-dimensional mixture model for censored durations, with
   applications to genetic data.
 \newblock \emph{Statistical methods in medical research}, 28\penalty0
-  (5):\penalty0 1523--1539, 2019.
+  (5):\penalty0 1523--1539, 2019{\natexlab{a}}.
+
+\bibitem[Bussy et~al.(2019{\natexlab{b}})Bussy, Veil, Looten, Burgun,
+  Ga{\"\i}ffas, Guilloux, Ranque, and Jannot]{bussy2019comparison}
+Simon Bussy, Rapha{\"e}l Veil, Vincent Looten, Anita Burgun, St{\'e}phane
+  Ga{\"\i}ffas, Agathe Guilloux, Brigitte Ranque, and Anne-Sophie Jannot.
+\newblock Comparison of methods for early-readmission prediction in a
+  high-dimensional heterogeneous covariates and time-to-event outcome
+  framework.
+\newblock \emph{BMC medical research methodology}, 19\penalty0 (1):\penalty0
+  50, 2019{\natexlab{b}}.
 
 \bibitem[Chi and Ibrahim(2006)]{chi2006joint}
 Yueh-Yun Chi and Joseph~G Ibrahim.
@@ -82,6 +124,14 @@ Thomas~R Fleming and David~P Harrington.
 \newblock \emph{Counting processes and survival analysis}, volume 169.
 \newblock John Wiley \& Sons, 2011.
 
+\bibitem[Gompertz(1825)]{gompertz1825xxiv}
+Benjamin Gompertz.
+\newblock Xxiv. on the nature of the function expressive of the law of human
+  mortality, and on a new mode of determining the value of life contingencies.
+  in a letter to francis baily, esq. frs \&c.
+\newblock \emph{Philosophical transactions of the Royal Society of London},
+  \penalty0 (115):\penalty0 513--583, 1825.
+
 \bibitem[Hammersley and Morton(1956)]{hammersley1956new}
 JM~Hammersley and KW~Morton.
 \newblock A new monte carlo technique: antithetic variates.
@@ -101,6 +151,12 @@ Laura~A Hatfield, Mark~E Boye, and Bradley~P Carlin.
   survival.
 \newblock \emph{Journal of Biopharmaceutical Statistics}, 21\penalty0
   (5):\penalty0 971--991, 2011.
+
+\bibitem[Hawkes and Oakes(1974)]{hawkes1974cluster}
+Alan~G Hawkes and David Oakes.
+\newblock A cluster process representation of a self-exciting process.
+\newblock \emph{Journal of Applied Probability}, 11\penalty0 (3):\penalty0
+  493--503, 1974.
 
 \bibitem[Heagerty and Zheng(2005)]{heagerty2005survival}
 Patrick~J Heagerty and Yingye Zheng.
@@ -145,6 +201,11 @@ John~P Klein.
   on the em algorithm.
 \newblock \emph{Biometrics}, pages 795--806, 1992.
 
+\bibitem[Klein and Moeschberger(2005)]{klein2005survival}
+John~P Klein and Melvin~L Moeschberger.
+\newblock \emph{Survival analysis: techniques for censored and truncated data}.
+\newblock Springer Science \& Business Media, 2005.
+
 \bibitem[Law et~al.(2002)Law, Taylor, and Sandler]{law2002joint}
 Ngayee~J Law, Jeremy~MG Taylor, and Howard Sandler.
 \newblock The joint modeling of a longitudinal disease progression marker and
@@ -173,6 +234,13 @@ Haiqun Lin, Bruce~W Turnbull, Charles~E McCulloch, and Elizabeth~H Slate.
   readings and prostate cancer.
 \newblock \emph{Journal of the American Statistical Association}, 97\penalty0
   (457):\penalty0 53--65, 2002{\natexlab{b}}.
+
+\bibitem[Mukherjee and Maiti(1988)]{mukherjee1988some}
+B.~N. Mukherjee and S.~S. Maiti.
+\newblock On some properties of positive definite toeplitz matrices and their
+  possible applications.
+\newblock \emph{Linear algebra and its applications}, 102:\penalty0 211--240,
+  1988.
 
 \bibitem[Murtaugh et~al.(1994)Murtaugh, Dickson, Van~Dam, Malinchoc, Grambsch,
   Langworthy, and Gips]{murtaugh1994primary}
@@ -243,13 +311,6 @@ Glenn~T Sueyoshi.
   models with time-varying covariates.
 \newblock \emph{Journal of econometrics}, 51\penalty0 (1-2):\penalty0 25--58,
   1992.
-
-\bibitem[Therneau et~al.(2017)Therneau, Crowson, and
-  Atkinson]{therneau2017using}
-Terry Therneau, Cindy Crowson, and Elizabeth Atkinson.
-\newblock Using time dependent covariates and time dependent coefficients in
-  the cox model.
-\newblock \emph{Survival Vignettes}, 2017.
 
 \bibitem[Tsiatis and Davidian(2004)]{tsiatis2004joint}
 Anastasios~A Tsiatis and Marie Davidian.

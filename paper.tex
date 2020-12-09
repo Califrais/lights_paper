@@ -13,13 +13,14 @@
 
 \usepackage{authblk}
 \title{\vspace{-.5cm} Lights: a generalized joint model for high-dimensional multivariate longitudinal data and censored durations \vspace{.5cm}}
-\author[1]{Simon Bussy\thanks{Corresponding author: \href{mailto:simon.bussy@gmail.com}{\texttt{simon.bussy@gmail.com}}}}
-\author[2]{Antoine Barbieri}
+\author[1,2]{Simon Bussy\thanks{Corresponding author: \href{mailto:simon.bussy@gmail.com}{\texttt{simon.bussy@gmail.com}}}}
+\author[3]{Antoine Barbieri}
 \author[1]{Sarah Zohar}
-\author[1,3]{Anne-Sophie Jannot}
+\author[1,4]{Anne-Sophie Jannot}
 \affil[1]{INSERM, UMRS 1138, Centre de Recherche des Cordeliers, Paris, France}
-\affil[2]{INSERM, UMR 1219, Bordeaux Population Health Research Center, Univ. Bordeaux, France}
-\affil[3]{Biomedical Informatics and Public Health Department, EGPH, APHP, Paris, France}
+\affil[2]{Califrais' Machine Learning Lab, Paris, France}
+\affil[3]{INSERM, UMR 1219, Bordeaux Population Health Research Center, Univ. Bordeaux, France}
+\affil[4]{Biomedical Informatics and Public Health Department, EGPH, APHP, Paris, France}
 \setcounter{Maxaffil}{0}
 \renewcommand\Affilfont{\itshape\small}
 
@@ -32,6 +33,7 @@
 \usepackage{dsfont}
 \usepackage{caption}
 \usepackage{booktabs}
+\usepackage{subfigure}
 
 \usepackage[linesnumbered,ruled,vlined]{algorithm2e}
 \newcommand\mycommfont[1]{\footnotesize\ttfamily\textcolor{orange}{#1}}
@@ -50,10 +52,15 @@
 \newcommand{\cM}{\mathcal M}
 \newcommand{\cD}{\mathcal D}
 \newcommand{\cC}{\mathcal C}
+\newcommand{\cG}{\mathcal G}
 \newcommand{\cN}{\mathcal N}
 \newcommand{\cA}{\mathcal A}
 \newcommand{\cQ}{\mathcal Q}
+\newcommand{\cU}{\mathcal U}
 \newcommand{\cR}{\mathcal R}
+\newcommand{\cH}{\mathcal H}
+\newcommand{\cB}{\mathcal B}
+\newcommand{\cS}{\mathcal S}
 \newcommand{\R}{\mathds R}
 \newcommand{\N}{\mathds N}
 \newcommand{\E}{\mathds E}
@@ -73,8 +80,7 @@
 This paper introduces a prognostic method called \textit{lights} to deal with the problem of joint modeling of longitudinal data and censored durations, where a large number of longitudinal features are available. Yet there is no standard model so far to learn from such high-dimensional multivariate longitudinal data in a survival analysis setting.
 Features are extracted from the longitudinal processes and included as potential risk factor in a group-specific Cox model with high-dimensional shared associations. Appropriate penalties are then used during inference to allow flexibility in modeling the dependency between the longitudinal features and the event time.
 The statistical performance of the method is examined on an extensive Monte Carlo simulation study, and finally illustrated on publicly available datasets.
-On these high-dimensional datasets, our proposed method significantly outperforms the state-of-the-art survival models regarding risk prediction in terms of C-index, with a computing time orders of magnitude faster. In addition, it provides powerful interpretability by automatically pinpointing significant features being relevant from a clinical perspective. Thus, we propose a powerfull tool for personalized medicine, with the ability of automatically determining significant prognostic longitudinal biomarkers, which is of increasing importance in many areas of medicine.
-\\
+On these high-dimensional datasets, our proposed method significantly outperforms the state-of-the-art survival models regarding risk prediction in terms of C-index, with a computing time orders of magnitude faster. In addition, it provides powerful interpretability by automatically pinpointing significant features being relevant from a practical perspective. Thus, we propose a powerfull tool with the ability of automatically determining significant prognostic longitudinal features, which is of increasing importance in many areas: for instance personalized medicine, or churn prediction in a customer profile and activity monitoring setting, to name but a few.\\
 
 \noindent
 \emph{Keywords.} High-dimensional estimation; Joint modeling; Multivariate longitudinal data; Survival analysis
@@ -82,10 +88,11 @@ On these high-dimensional datasets, our proposed method significantly outperform
 
 \section{Introduction}
 
-In many clinical studies, it has become increasingly common to record the values of longitudinal features (e.g., biomarkers) until the occurrence of an event of interest for a subject. The ``joint modeling'' approaches, namely modeling the longitudinal and survival outcomes through a joint likelihood model rather than separately, has received considerable attention during the past two decades~\citep{tsiatis2004joint}. Numerical studies suggest that these approaches are among the most satisfactory to combine information~\citep{yu2004joint}. They have the advantage of making more efficient use of the data since information about survival also goes into modeling the longitudinal features. In addition, they produce unbiased estimates and do not rely on approximations for incorporating conplex longitudinal trajectories. Most developments have either focused on shared random-effect models (SREMs)~\citep{wulfsohn1997joint}, in which characteristics of the longitudinal processes (for instance functions of the random effects) are included as features in the survival model ; or on joint latent class models (JLCMs)~\citep{vermunt2003latent}, in which the population is considered as heterogeneous, with the assumption that there exist homogeneous latent subgroups sharing the same marker trajectories and the same prognostic.
+With the increasing expectations to know their customers from account opening throughout the duration of the business relationship, web companies have the luxury of building elaborate systems to help them keep everything on track. The amount of recorded data per client is often tremendous and growing through time. There is no tool today to take into account simultaneously a huge number of longitudinal signals in a high-dimensional context to perform real-time churn (or satisfaction) risk prediction.
+Similarly, in many clinical studies, it has become increasingly common to record the values of longitudinal features (e.g., biomarkers) until the occurrence of an event of interest for a subject. The ``joint modeling'' approaches, namely modeling the longitudinal and survival outcomes through a joint likelihood model rather than separately, has received considerable attention during the past two decades~\citep{tsiatis2004joint}. Numerical studies suggest that these approaches are among the most satisfactory to combine information~\citep{yu2004joint}. They have the advantage of making more efficient use of the data since information about survival also goes into modeling the longitudinal features. In addition, they produce unbiased estimates and do not rely on approximations for incorporating conplex longitudinal trajectories. Most developments have either focused on shared random-effect models (SREMs)~\citep{wulfsohn1997joint}, in which characteristics of the longitudinal processes (for instance functions of the random effects) are included as features in the survival model ; or on joint latent class models (JLCMs)~\citep{vermunt2003latent}, in which the population is considered as heterogeneous, with the assumption that there exist homogeneous latent subgroups sharing the same marker trajectories and the same prognostic.
 
 \paragraph{The high-dimensional longitudinal data context.}
-With the development of electronic health records, high-dimensional settings are becoming increasingly frequent in various contexts where the number of available features to consider as potential risk factors is tremendous.
+With the exploding number of daily internet users, or with the development of electronic health records in a medical context, high-dimensional settings are becoming increasingly frequent in various contexts where the number of available features to consider as potential risk factors is tremendous.
 Moreover, with an increased focus on personalised medicine, the need to implement multivariate models that account for a large number of longitudinal outcomes is critical. Despite this, joint models have predominantly focused on univariate data, with attempts to fit multiple univariate joint models separately~\citep{wang2012joint}, which is inefficient~\citep{lin2002maximum}. 
 Despite many multivariate models being presented in full generality, questions arrising from the high-dimensional context -- e.g., computational power, limits in numerical estimation, or sample size -- are never considered in analyses (to the best of our knowledge), and the number of longitudinal outcomes considered in numerical studies are often very low (see~\citet{hickey2016joint} for a complete review). For instance,~\citet{jaffa2014joint} only considers 3 longitudinal outcomes in the simulation study while mentioning a ``high-dimensional multivariate longitudinal data'' context.
 
@@ -93,19 +100,19 @@ Despite many multivariate models being presented in full generality, questions a
 \paragraph{General framework.}
 
 The setting of this paper is such that we want to incorporate high-dimensional time-dependent (longitudinal) features measured with error in a survival model. Let us consider the usual survival analysis framework.
-Following~\citet{andersen2012statistical}, let non-negative random variables $T^\star$ and $C$ stand for the times of the event of interest and censoring times respectively. The event of interest could be for instance survival time, re-hospitalization, relapse or disease progression.
+Following~\citet{andersen2012statistical}, let non-negative random variables $T^\star$ and $C$ stand for the times of the event of interest and censoring times respectively. The event of interest could be for instance survival time, re-hospitalization, relapse or disease progression in a medical context; or the time when a client stops using a company's product or service in a churn prediction setting.
 We then denote $T$ the right-censored time and $\Delta$ the censoring indicator, defined as 
 \begin{equation*}
 T = T^\star \wedge C \quad \text{and} \quad \Delta = \ind{\{T^\star \leq C\}}
 \end{equation*}
 respectively, where $a \wedge b$ denotes the minimum between two numbers $a$ and $b$, and $\ind{\{\cdot\}}$ the indicator function taking the value $1$ if the condition in $\{\cdot\}$ is satisfied and $0$ otherwise.
 
-Let $X$ denotes the $p$-dimensional vector of time-independent features (e.g., patients characteristics, therapeutic strategy, or omics features recorded at the begining of a study), and let  $Y(t) = \big(Y^1(t), \ldots, Y^L(t) \big)^\top \in \R^L$ denote the value of the $L$-dimensional longitudinal outcome at time point $t \geq 0$, with $L \in \N_+$.
+Let $X$ denotes the $p$-dimensional vector of time-independent features (e.g., patients characteristics, therapeutic strategy, or omics features recorded at the begining of a medical study), and let  $Y(t) = \big(Y^1(t), \ldots, Y^L(t) \big)^\top \in \R^L$ denote the value of the $L$-dimensional longitudinal outcome at time point $t \geq 0$, with $L \in \N_+$.
 
 
 \paragraph{Heterogeneity of the population.}
 
-An assumption of heterogeneity within the patient population is frequently relevant in medical research where several differing profiles of subjects are expected~\citep{bussy2019c}. To take account of this, we introduce a latent variable $G \in \{0, \ldots, K-1\}$ modeling the $K \geq 1$ subgroups of different risk, which is a classical modeling assumption in JLCMs~\citep{lin2002latent, proust2014joint}. Let us denote
+An assumption of heterogeneity within the subject population is frequently relevant in medical research where several differing profiles of subjects are expected~\citep{bussy2019c}. To take account of this, we introduce a latent variable $G \in \{0, \ldots, K-1\}$ modeling the $K \geq 1$ subgroups of different risk, which is a classical modeling assumption in JLCMs~\citep{lin2002latent, proust2014joint}. Let us denote
 \begin{equation}
   \label{eq:pi}
   \pi_{\xi_k}(x) = \P[G=k|X=x]
@@ -121,9 +128,8 @@ In this paper, we propose a method called \textit{lights} (generaLized joInt hiG
 To allow flexibility in modeling the dependency between the longitudinal features and the event time, we use appropriate penalties : elastic net~\citep{zou2005regularization}
 for feature selection in the latent class membership, and sparse group lasso~\citep{simon2013sparse} in the survival model, as well as for the fixed effect (allowing flexible representations of time). Indeed, this penalty acts like the lasso at the trajectory level, namely an entire trajectory may drop out of the model on one side. On the other hand, it yields sparsity for a given trajectory, namely feature selection.
 Inference is achieved using an efficient and novel Quasi-Newton Monte Carlo Expectation Maximization algorithm.
-% NOOOOON
-% The posterior estimates of the latent class membership probabilities are then used as discriminative marker rule for risk prediction in the cross-validation procedure for selecting the best regularization hyper-parameters to adapt to the data complexity.
-Hence, the method provides interpretations of the high-dimensional longitudinal features, thus offering a powerful tool for clinical decision making in patient monitoring.
+Posterior estimates of the latent class membership probabilities given the longitudinal process and the fact that the subject is still alive at prediction time -- in a so called ``real-time prediction paradigm'' -- are then used as discriminative marker rule for risk prediction in the cross-validation procedure for selecting the best regularization hyper-parameters (to perform feature selection and adapt to the longitudinal data complexity).
+Hence, the method provides interpretations of the high-dimensional longitudinal features, thus offering a powerful tool for clinical decision making in patient monitoring for instance, or else for real-time decision support in a customer's satisfaction monitoring context.
 
 \paragraph{Organization of the paper.}
 
@@ -136,9 +142,8 @@ Section~\ref{sec:simulation study} presents the simulation procedure used to eva
 
 \paragraph{Notations.}
 
-Throughout the paper, for every $q > 0,$ we denote by $\norm{v}_q$ the usual $\ell_q$-quasi norm of a vector $v \in \R^m,$ namely
- $\norm{v}_q =(\sum_{k=1}^m|v_k|^q)^{1/q}$. We also denote $\norm{v}_0 = |\{k : v_k \neq 0\}|$, where $|A|$ stands for the cardinality of a finite set $A$.
- For $u, v \in \R^m$, we denote by $u \odot v$ the Hadamard product $u\odot v =(u_1v_1, \ldots, u_mv_m)^\top.$ 
+Throughout the paper, for every $q > 0,$ we denote by $\norm{v}_q$ the usual $\ell_q$-quasi norm of a vector $v \in \R^m,$ namely $\norm{v}_q =(\sum_{k=1}^m|v_k|^q)^{1/q}$. We also denote $\norm{v}_0 = |\{k : v_k \neq 0\}|$, where $|A|$ stands for the cardinality of a finite set $A$. $\lfloor a \rfloor$ denotes the largest integer less than or equal to $a \in \R$.
+For $u, v \in \R^m$, we denote by $u \odot v$ the Hadamard product $u\odot v =(u_1v_1, \ldots, u_mv_m)^\top.$ 
 For a squared matrix $M$, $\text{vech}(M)$ stacks columns of $M$ one under another in a single vector, starting each column at its diagonal element. We write $I_m$ for the identity matrix of $\R^{m \times m}$.
 Finally, we write, for short, $\mathbf{1}_m$  (resp. $\mathbf{0}_m$) for the vector of $\R^m$ having all coordinates equal to one (resp. zero).
 
@@ -163,7 +168,10 @@ where $u^l(t) \in \R^{q_l}$ is a row vector of (possibly) time-varying features 
 We suppose that the random effects are independent of the group membership, and that the latter remain independent conditional on the observed data (namely $T$, $\Delta$ and $Y$).
 \end{assumption}
 A suitable distributional assumption for the random effects component is a zero-mean multivariate normal distribution~\citep{hickey2016joint}, that is
-\[ b^l \sim \cN(0, D_{ll}) \]
+\begin{equation}
+   \label{eq:random-effect-law}
+   b^l \sim \cN(0, D_{ll})
+ \end{equation} 
 with $D_{ll} \in \R^{r_l \times r_l}$ the unstructured variance-covariance matrix. 
 To account for dependence between the different longitudinal outcome types, we let $\text{Cov}[b^l,b^{l'}] = D_{ll'}$ for $l \ne l'$ and we denote
 \[ D = 
@@ -185,7 +193,7 @@ To quantify the effect of the longitudinal outcomes on the risk for an event, we
 \end{equation}
 where $\lambda_0(\cdot)$ is an unspecified baseline hazard function and given that $G = k$, we denote 
 \[\cM_k(t) = \{m_k^l(u), 0 \leq u < t\}\] 
-the history of the true unobserved longitudinal process up to time $t$. We choose to incorporate $x$, also used in~\eqref{eq:pi}, with no \textit{a priori} on the choice of time-independant features involved in the definition of $\pi_{\xi_k}$ nor $\lambda$, since independant regularizations are used during inference, see~\eqref{eq:pen-log-lik}. Corresponding fixed effects are denoted $\gamma_{k,0} \in \R^p$, and for each $l$-th longitudinal outcome, we consider $\cA \in \N_+$ known functionals $\varphi_a$ defining a shared association with $\gamma_{k,a}^l \in \R^{\rho_a}$ the corresponding joint association parameters, and $\rho_a \in \N_+$ the dimension of the corresponding $\text{Im}(\varphi_a)$. 
+the history of the true unobserved longitudinal process up to time $t$. We choose to incorporate $x$, also used in~\eqref{eq:pi}, with no \textit{a priori} on the choice of time-independant features involved in the definition of $\pi_{\xi_k}$ nor $\lambda$, since independant regularizations are used during inference, see~\eqref{eq:pen-log-lik}. Corresponding fixed effects are denoted $\gamma_{k,0} \in \R^p$, and for each $l$-th longitudinal outcome, we consider $\cA \in \N_+$ known functionals $\varphi_a$ defining a shared association with $\gamma_{k,a}^l \in \R^{\imath_a}$ the corresponding joint association parameters, and $\imath_a \in \N_+$ the dimension of the corresponding $\text{Im}(\varphi_a)$. 
 This can be viewed as a generalization of SREMs~\citep{rizopoulos2010jm}. Let us finally denote
 \[\gamma_k= (\gamma_{k,0}^\top, \gamma_{k,1}^1, \ldots, \gamma_{k,\cA}^1, \ldots, \gamma_{k,1}^L, \ldots, \gamma_{k,\cA}^L )^\top \in \R^{p+L\cA}. \]
 
@@ -196,7 +204,7 @@ The association structure between the longitudinal and the time-to-event submode
 \centering
 \begin{tabular}{ccccc}
 \toprule
-Description & $\varphi_a(t, \beta_k^l, b^l)$ & $\frac{\partial \varphi_a(t, \beta_k^l, b^l)}{\partial \beta_k^l}$ & $\rho_a$ & Reference \\
+Description & $\varphi_a(t, \beta_k^l, b^l)$ & $\frac{\partial \varphi_a(t, \beta_k^l, b^l)}{\partial \beta_k^l}$ & $\imath_a$ & Reference \\
 \midrule
 Linear predictor & $m_k^l(t)$ & $u^l(t)$ & 1 & \citet{chi2006joint} \\ [.15cm]
 Random effects & $b^l$ & $\mathbf{0}_{q_l}$ & $r_l$ & \citet{hatfield2011joint} \\ 
@@ -253,15 +261,15 @@ with $q = \sum_{l=1}^L q_l$ and where for all $l=1, \ldots, L$, one writes
 From now on, all computations are done conditionally on the design matrices $(U_i)_{i=1, \dots, n}$ and $(V_i)_{i=1, \dots, n}$.
 \begin{assumption}
 \label{indep-hyp-2}
-Suppose that conditional on the random effects, each $Y_i^l$ is independent, and that the censoring times $T_i$ are independent of $b_i$.
+Suppose that for a given subject $i$ and conditional on the random effects and the group membership, all $Y_i^l$ are independent for $l=1, \dots, L$.
 \end{assumption}
-Assumption~\ref{indep-hyp-2} is a standard modeling assumption, see for instance~\citet{tsiatis2004joint}.
+Assumption~\ref{indep-hyp-2} is similar to standard modeling hypothesis, see for instance~\citet{tsiatis2004joint}.
 For all $k = 0, \ldots, K-1$, we denote 
 \[ \beta_k = ({\beta_k^1}^\top \cdots {\beta_k^L}^\top)^\top \in \R^q \] 
 and 
 \[M_{ik} = U_i\beta_k + V_ib_i \in \R^{n_i}. \]
 
-Given~\eqref{eq:link-function}, each $y_i^l$ is assumed to be from a one-parameter exponential family with respect to a reference measure which is either the Lebesgue measure (e.g., in the Gaussian case) or the counting measure (e.g., in the logistic cases).
+Given~\eqref{eq:link-function} and Assumption~\ref{indep-hyp-2}, each $y_i^l$ is assumed to be from a one-parameter exponential family with respect to a reference measure which is either the Lebesgue measure (e.g., in the Gaussian case) or the counting measure (e.g., in the logistic cases).
 The conditional distribution of $y_i|b_i, G_i=k$ is then assumed to be from a distribution with a density of the form
 \begin{equation}
 	\label{eq:exp-family-density}
@@ -340,7 +348,7 @@ In order to avoid overfitting and improve the prediction power of our method, we
 where for all $k=0, \ldots, K-1$, we add an elastic net regularization~\citep{zou2005regularization} of the vector $\xi_k$ and a sparse group lasso regularization~\citep{simon2013sparse} of the vectors $\gamma_k$ and $\beta_k$, for tuning hyper-parameters $(\zeta_{1,k}, \zeta_{2,k}, \zeta_{3,k})^\top \in \R_+^3$. Here, $(\eta, \tilde{\eta}) \in [0, 1]^2$ are fixed and we denote
 \[ \norm{z}_{\text{en}, \eta} = (1-\eta)\norm{z}_1 + \dfrac\eta2 \norm{z}_2^2 \]
 for any vector $z$, that is a linear combination of the lasso ($\ell_1$) and ridge (squared $\ell_2$) penalties, and
-\[ \norm{z}_{\text{sg} l_1, \tilde{\eta}} = (1-\tilde{\eta})\sum_{l=1}^L\norm{z^l}_2 + \tilde{\eta} \norm{z}_1 \] for the sparse group lasso penalty, for which we do not have to account for group sizes since they all have the same one.
+\[ \norm{z}_{\text{sg} l_1, \tilde{\eta}} = (1-\tilde{\eta})\norm{z}_1 + \tilde{\eta} \sum_{l=1}^L\norm{z^l}_2 \] for the sparse group lasso penalty, for which we do not have to account for group sizes since they all have the same one.
 Note that in the $\gamma_k$ penalty, $l$ actually starts at 0 (and not 1), but for simplicity we do not change the notation. 
 Hence, the resulting optimization problem is written
 \begin{equation}
@@ -440,7 +448,7 @@ Now in the case $g = g_k$, one has $\E_{\theta^{(w)}}[g_k(Gi) | t_i, \delta_i, y
 
 \paragraph*{Quasi-Newton M-step.}
 Here, we need to compute \[\theta^{(w+1)} \in \argmin_{\theta \in \R^\vartheta} \cQ_n(\theta, \theta^{(w)}) + \sum_{k=0}^{K-1} \zeta_{1,k} \norm{\xi_k}_{\text{en}, \eta} + \zeta_{2,k} \norm{\gamma_k}_{\text{sg} l_1, \tilde{\eta}} + \zeta_{3,k} \norm{\beta_k}_{\text{sg} l_1, \tilde{\eta}}.\]
-Let us introduce the following useful functions
+Let us introduce the following useful notations
 \begin{equation}
   \label{eq:g-tilde-1-2}
   \left\{
@@ -556,13 +564,9 @@ Finally, for the update of $\phi^{(w)}$ and regarding Table~\ref{table:glm}, we 
   & + \Tr\big(V_{il}^\top V_{il}\hat \E_{\theta^{(w)}}[ b_i^l {b_i^l}^\top | t_i, \delta_i, y_i]\big) \Big].
 \end{align}
 
-
-
-
 \paragraph*{Initialization.}
-Because our algorithm gives a local minimum, it is clever to choose an initial value $\theta^{(0)}$ relatively close to the final solution $\hat \theta$. Then, let us give some details about the starting point of Algorithm~\ref{alg:QNMCEM}. 
-For all $k = 0, \ldots, K-1$, we first use $\xi_k^{(0)}$ as the zero vector.
-
+Our algorithm gives a local minimum, and it is clever to choose an initial value $\theta^{(0)}$ close to the final solution $\hat \theta$, so that the number of iterations required to reach convergence is reduced. We then give some details about the starting point $\theta^{(0)}$ of Algorithm~\ref{alg:QNMCEM}. 
+For all $k = 0, \ldots, K-1$, we first choose $\xi_k^{(0)} = \mathbf{0}_d$ and ${\gamma_{k,a}^l}^{(0)} = 0$ for all $l=1, \ldots, L$ and $a=1, \ldots, \cA$. Then, we initialize $\lambda_0^{(0)}$ and $\gamma_{k,0}^{(0)}$ like if there is no subgroup ($\gamma_{0,0}^{(0)} = \cdots = \gamma_{K-1,0}^{(0)}$) with a standard Cox proportional hazards regression with time-independent features using \texttt{R} package \texttt{survival}. Finally, the longitudinal submodels parameters $\beta_k^{(0)}$, $D^{(0)}$ and $\phi^{(0)}$ are initialized -- again like if there is no subgroup ($\beta_0^{(0)} = \cdots = \beta_{K-1}^{(0)}$) -- using a multivariate linear mixed model with an explicit EM algorithm, being itself initialized with univariates fits using \texttt{R} package \texttt{nlme}.
 
 \paragraph*{The QNMCEM algorithm.}
 Algorithm~\ref{alg:QNMCEM} describes the main steps of the resulting QNMCEM algorithm to solve the optimization problem~\eqref{eq:optim-pb}.
@@ -591,8 +595,8 @@ Compute the starting parameters $\theta^{(0)} \in \R^\vartheta$ \\
   Update $D^{(w+1)}$ using~\eqref{eq:update_D}\\
   Update $(\xi_k^{(w+1)})_{k=0,\ldots,K-1}$ by solving~\eqref{eq:sub-problem-xi_k} \\
   Update $(\beta_k^{(w+1)})_{k=0,\ldots,K-1}$ by solving~\eqref{eq:sub-problem-beta_k} \\
-  Update $\lambda_0^{(w+1)}$ using~\eqref{eq:update_lambda_0}\\
   Update $(\gamma_k^{(w+1)})_{k=0,\ldots,K-1}$ by solving~\eqref{eq:sub-problem-gamma_k} \\
+  Update $\lambda_0^{(w+1)}$ using~\eqref{eq:update_lambda_0}\\
   Update $\phi^{(w+1)}$ using~\eqref{eq:update_phi} \\
 }
 \textbf{Return:} {$\hat \theta$}
@@ -602,13 +606,13 @@ Compute the starting parameters $\theta^{(0)} \in \R^\vartheta$ \\
 \label{sec:K=2}
 
 In many practical applications -- including those addressed in Section~\ref{sec:application} -- we are interested in identifying one subgroup of the population with a high risk of adverse event compared to the others. Then, in the following, we consider $G \in \{ 0, 1\}$ where $G=1$ means high-risk of early adverse event and $G=0$ means low risk.
-To simplify notations, let us set $\xi = \xi_1$, $\pi_\xi(x)$ the conditional probability that a patient belongs to the group with high risk of adverse event given its time-independent features $x$, and $\zeta_1 = \zeta_{1,1}$.
+To simplify notations, let us set $\xi = \xi_1$, $\pi_\xi(x)$ the conditional probability that a subject belongs to the group with high risk of adverse event given its time-independent features $x$, and $\zeta_1 = \zeta_{1,1}$.
 In this context, which is the one we consider in practice in Sections~\ref{sec:simulation study} and~\ref{sec:application}, we suppose that the ``right'' penalty strength for $\xi_k$ and $\gamma_k$ does not depend on $k$, so that we denote $\zeta_2 = \zeta_{2,0} = \zeta_{2,1}$ and $\zeta_3 = \zeta_{3,0} = \zeta_{3,1}$. 
 
 \paragraph{Cross-validation procedure.}
 
 The hyper-parameters $(\zeta_1, \zeta_2, \zeta_3)^\top \in \R_+^3$ are then tuned during a 10-fold randomized search cross-validation procedure~\citep{bergstra2012random} using predictive marker defined in Section~\ref{sec:evaluation strategy} and the C-index score defined in Section~\ref{sec:Metrics}.
-Random search is indeed more efficient in terms of computing times than classical grid search for hyper-parameters optimization and finds better models by effectively searching in a larger configuration space, which is appropriate to our high-dimensional problem. Moreover, the search interval for hyper-parameter $\zeta_1$ is automatically computed in a data driven way described in Appendix~\ref{sec:numerical-details}, while the search intervals for $\zeta_2$ and $\zeta_3$ are determined empirically.
+Random search is indeed more efficient in terms of computing times than classical grid search for hyper-parameters optimization and finds better models by effectively searching in a larger configuration space, which is appropriate to our high-dimensional problem. Moreover, the search interval for hyper-parameter $\zeta_1$ is automatically computed in a data driven way described in Appendix~\ref{sec:auto-grid-cv}, while the search intervals for $\zeta_2$ and $\zeta_3$ are determined empirically.
 % TODO: Figure de visualisation de la CV de (\zeta_1, \zeta_2, \zeta_3) en 3D
 
 
@@ -629,17 +633,22 @@ The question now is to choose a discriminative marker rule for risk prediction t
 The lights model has the ability to produce prognostic predictions that can be dynamically updated according to the observed trajectory of the features. 
 Once the model is trained (so that one obtains $\hat\theta$ from~\eqref{eq:optim-pb} using our QNMCEM algorithm introduced in Section~\ref{sec:QNMCEM}), posterior risk classification for subject $i$ and group $k$ can be made through $\hat \pi_{ik}^{\hat\theta}$ (see~\eqref{eq:hat_pi_ik-def}). Similar posterior probabilities have been considered for goodness-of-fit evaluation in other JLCMs models, see~\citet{proust2014joint} for instance.
 
-But in the real-time prediction paradigm, it makes no sense from a practical point of view to use this marker rule for risk prediction, since the latter requires to know the survival labels $(t_i, \delta_i)$, being intrinsically unknow in a context where we want to perform real-time risk prediction. Denoting $t^{max}_i$ the time for subject $i$ when one wants to perform the risk prediction -- so in practice, the time up to which one has data measurements for $Y_i$, say the ``present'' time for prediction -- we define
+But in the real-time prediction paradigm, it makes no sense from a practical point of view to use this marker rule as is for risk prediction, since the latter requires to know the survival labels $(t_i, \delta_i)$, being intrinsically unknow in a context where we want to perform real-time risk prediction. 
+Denoting $t^{max}_i$ the time for subject $i$ when one wants to perform the risk prediction -- so in practice, the time up to which one has data measurements for $Y_i$, say the ``present'' time for prediction -- a natural and appropriate marker rule of the lights model for subject $i$ being in subgroup $k$ would rather be 
 \begin{equation}
   \label{eq:marker-def}
-  \cR_i = \sum_{k=0}^{K-1} \pi_{\hat \xi_k}(x_i) \exp \big\{ \tilde g_{t^{max}_i, \hat \gamma_k, \hat \beta_k}^1(b_i) \big\}
+  \hat \cR_{ik} = \dfrac{\pi_{\hat \xi_k}(x_i) \hat f(t^{max}_i, y_i | b_i, G_i=k ; \hat \theta)}{\sum_{k=0}^{K-1} \pi_{\hat \xi_k}(x_i) \hat f(t^{max}_i, y_i | b_i, G_i=k ; \hat \theta)},
 \end{equation}
-as predictive marker rule of the lights model for subject $i$.
+with 
+\[ \hat f(t^{max}_i, y_i | b_i, G_i=k ; \hat \theta) = \dfrac{1}{2N} \sum_{\breve{b} \in \hat S} f(t^{max}_i, 0, y_i | \breve{b}, G_i = k ; \hat \theta), \]
+where $\hat S$ is obtained with Algorithm~\ref{alg:construct-set-S} using $\hat D$ (that is $S^{(w_{max})}$ for the last iteration $w_{max}$), and the density $f$ in the rigth hand side of the previous equation being defined in~\eqref{eq:ind-hyp}.
+Note that marker~\eqref{eq:marker-def} is in fact obtained from the definition of $\hat \pi_{ik}^{\hat\theta}$ in~\eqref{eq:hat_pi_ik-def} taking $(t_i, \delta_i) = (t^{max}_i, 0)$, and turns out to be an estimate of the following posterior probability 
+\[\P_\theta[G_i=k | T^\star_i > t^{max}_i, y_i].\]
 
 \subsection{The C-index metric}
 \label{sec:Metrics}
 
-We detail in this section the metric considered to evaluate risk prediction performances. Let us denote by $M$ the marker under study (e.g., the posterior group membership probabilities $\hat \pi_{ik}^{\hat\theta}$ (see~\eqref{eq:hat_pi_ik-def}) for the lights model), and assume that it is measured once at $t = 0$.
+We detail in this section the metric considered to evaluate risk prediction performances. Let us denote by $M$ the marker under study (e.g., the marker~\eqref{eq:marker-def} for the lights model), and assume that it is measured once at $t = t^{max}$.
 A common concordance measure that does not depend on time is the C-index~\citep{harrell1996tutorial} defined by
 \begin{equation*}
   \cC =\P[M_i > M_j | T^\star_i < T^\star_j],
@@ -651,6 +660,9 @@ In our case,  $T^\star$ is subject to right censoring, so one would typically co
 \end{equation*}
 with $\tau$ corresponding to the fixed and prespecified follow-up period duration \citep{heagerty2005survival}. A Kaplan-Meier estimator for the censoring distribution leads to a nonparametric and consistent estimator of $\cC_\tau$ \citep{uno2011c}, already implemented in the \texttt{Python} package \texttt{lifelines}.
 Hence in the following, we consider the C-index metric to assess performances.
+
+Note that other metrics have been proposed to compare individual risk predictions. In~\citet{blanche2015quantifying} for instance, authors use dynamic prediction accuracy curves (of AUC or Brier score) with the idea of moving what is called the ``landmark time'', that is the time at which predictions are made and on which the amount of available information depends, corresponding to our $t^{max}$. But comparing curves in an automatic way (in a cross-validation process for instance) is never easy, plus the comparisons proposed in the aforementioned paper require \textit{a priori} choices of time window thresholds (in particular to get back to binary predictions, being always questionable in survival analysis~\citep{bussy2019comparison}), which is not the case of the C-index metric.
+Nevertheless, the idea of chosing $t^{max}$ when it comes to simulate data for models performances comparisons will be discussed in Section~\ref{sec:simulation study}, and it is an interesting notion to consider since it can be sensed that the closer $t^{max}$ gets to $T^\star$, the easier it will be for a model to make good predictions.
 
 \subsection{Competing models}
 \label{sec:competing models}
@@ -698,9 +710,116 @@ In this section, we provide details regarding data generation, followed by the r
 \subsection{Simulation design}
 \label{simulation design}
 
-In order to assess the proposed method, we perform an extensive Monte Carlo simulation study. \\
-\\
-simulation of time-varying features in a Cox model: see \citet{therneau2017using}
+In order to assess the proposed method, we run an extensive Monte Carlo simulation study in the case $K=2$ (see Section~\ref{sec:K=2}). We first generate $G_i \sim \cB\big(\pi_1\big)$, with $\pi_1 \in [0,1]$ a desired high-risk subjects proportion and where $\cB(\alpha)$ denotes the Bernoulli distribution with parameter $\alpha \in [0,1]$.
+We then choose a coefficient vector 
+\begin{equation}
+  \label{eq:xi-sparse}
+  \xi = (\underbrace{\varsigma_1,\ldots,\varsigma_1}_s,0,\ldots,0) \in \R^p,
+\end{equation} 
+with $\varsigma_1\in\R$ being the value of the active coefficients and $s\in \{1,\dots,p\}$ a sparsity parameter chosen such that a proportion $r_s$ of time-independent features are actually active, that is $s = \lfloor p \times r_s \rfloor$. 
+For the generation of the time-independent features matrix, we take 
+\[ [x_{ij}] \in \R^{n \times p} \sim \cN \big(0, \bSigma_1(\rho_1)\big),\] 
+with $\bSigma_1(\rho_1)$ a $(p \times p)$ Toeplitz covariance matrix \citep{mukherjee1988some} with correlation $\rho_1 \in (0, 1)$. 
+We then add a $gap \in \R^+$ value for high-risk subjects and subtract it for low-risk subjects, only on active features, that is
+\begin{center}
+$x_{ij} \leftarrow x_{ij} + (-1)^{\ind{\{G_i=0\}}} gap\ \text{for } j = 1, \dots, s$.
+\end{center}
+Note that this is equivalent to generate the time-independent features according to a gaussian mixture.
+
+Now, concerning the simulation of the longitudinal data, the idea is to sample from multivariate normal distributions. 
+We use linear time-varying features such that
+\[ Y_i^l(t) = \sum_{k=0}^{K-1} \ind{\{G_i=k\}} \big( (1, t)^\top \beta_k^l + (1, t)^\top b_i^l + \epsilon_i^l(t) \big) \]
+where $t \geq 0$, the error term $\epsilon_i^l(t) \sim \cN(0, \sigma_l^2)$, the global variance-covariance matrix for the random effects components~\eqref{eq:random-effect-law} is such that $D = \bSigma_2(\rho_2)$, a $(r \times r)$ Toeplitz covariance matrix with correlation $\rho_2 \in (0, 1)$, and the fixed effect parameters are generated according to 
+\[ \beta_k^l \sim \cN\Big( 
+\mu_k, 
+\begin{bmatrix}
+  \rho_3 & 0\\
+  0 & \rho_3
+\end{bmatrix} 
+\Big) \]
+for $k \in \{0, 1\}$ and with correlation $\rho_3 \in (0, 1)$, so that $\beta_k^l$ coefficients are both positive for high-risk subjects ($G_i=1$), which favours increasing trajectories with positive values, and negative otherwise ($G_i=0$), which favours decreasing trajectories with negative values. This choice makes sens regarding that for simplicity, we take joint association parameters being all positive, see~\eqref{eq:gamma-sparse}.
+
+Most joint modeling simulation studies use fixed time points~\citep{hickey2018joinerml}, that is $n_i^l = n_i^{l'}$ and $t_{ij}^l = t_{ij}^{l'}$ for all $(l, l') \in \{1, \ldots, L\}^2$ and $j = 1, \ldots, n_i^l$ for a given subject $i$, but it does not reflect actual behavior in practice, since data measurements of the different longitudinal processes are barely done simultaneously. For this reason, the simulation of realistic longitudinal features is not trivial and we use Hawkes processes~\citep{hawkes1974cluster} with exponential kernels to generate measurement times, which is a family of counting process with an autoregressive intensity. 
+Hawkes processes model self-exciting behavior, that is in our case, when the measurement of one longitudinal process makes future measurements of the process -- as well as those of others processes, in a multivariate way -- more likely to happen.
+Namely, for a subject $i$, times $\{t_{ij}^l\}_{j \geq 1}$ for processes $l=1, \ldots, L$ are simulated using a multivariate Hawkes process $N_{it} = [N_{it}^1 \cdots N_{it}^L]$ with $t \geq 0$ and $N_{it}^l = \sum_{j \geq 1} \ind{\{t_{ij}^l \leq t\}}$. The process $N_{it}$ is a multivariate counting process, whose components $N_{it}^l$ have intensities
+\[ \lambda_i^l(t) = \Upsilon_{l} + \sum_{l'=1}^L \sum_{j \geq 1} A_{ll'} \upsilon \exp\big(-\upsilon(t - t_{ij}^{l'}) \big) \]
+for $l=1, \ldots, L$. $\Upsilon_{l} \geq 0$ is called baseline intensity, and corresponds to the exogenous probability of having a measurement for process $l$. We sample $\Upsilon_{l} \sim \cU\big([0.1,0.5]\big)$ ] which produces unbalanced baselines, where $\cU\big([a,b]\big)$ stands for the uniform distribution on a segment $[a,b]$.
+The matrix $A = [A_{ll'}]_{1 \leq l,l' \leq L}$ is the adjacency matrix such that $A_{ll'} \geq 0$ quantifies the impact of past measurement time of process $l'$ on the measurement time of process $l$, and $\upsilon \geq 0$ is a memory parameter. We sample $A_{ll'} \sim \cU\big([0.05,0.1]\big)$, but then enforce $A$ to be sparse (with a chosen density of $0.3$) by randomly zeroing non-diagonal coefficients. Simulation of the Hawkes processes
+is achieved using the \texttt{tick} library~\citep{bacry2017tick}. An example of simulated longitudinal features for an individual is displayed in Figure~\ref{fig:example-data} below. 
+
+To generate survival times, we choose a risk model of the form
+\begin{align*}
+\lambda_i(t|G_i = k) = \lambda_0(t) \exp \Big\{ x_i^\top \xi + \sum_{l=1}^L &\gamma_{k,1}^l (\beta_{k,1}^l + \beta_{k,2}^l t + b_{i,1}^l + b_{i,2}^l t) \\
+&+ (\gamma_{k,2,1}^l b_{i,1}^l + \gamma_{k,2,2}^l b_{i,2}^l) + \gamma_{k,3}^l (\beta_{k,2}^l + b_{i,2}^l) \Big\},
+\end{align*}
+which corresponds to~\eqref{eq:intensity-model} taking $\gamma_{k,0} = \xi$ and the first three functionals described in Table~\ref{table:shared_associations} as shared associations. 
+Now, for the choice of the association parameters, we want to induce sparsity (similarly to~\eqref{eq:xi-sparse}), so we set 
+\[\cS_k=\Big\{ k \big\lfloor \dfrac{L r_s}{K} \big\rfloor + 1, \ldots,  (k + 1) \big\lfloor \dfrac{L r_s}{K} \big\rfloor \Big\}\] and
+\begin{equation}
+  \label{eq:gamma-sparse}
+  \gamma_{k,a}^l = \varsigma_2 \big(\ind{\{l \leq (k + 1) \lfloor L r_s/K \rfloor \}} + \ind{\{l \in \cS_k \}} \big) \mathbf{1}_{\imath_a},
+\end{equation}
+so that there is a proportion $r_s$ of active longitudinal features among the $L$, and the longitudinal effects are distinct for each subgroup $k=0, \ldots, K-1$.
+Note that one can write
+\[ \lambda_i(t|G_i = k) = \lambda_0(t) \exp \big\{ \iota_{i,k,1} + \iota_{i,k,2} t \big\},\]
+being a Cox model with a linear time-varying feature.
+We choose a Gompertz distribution~\citep{gompertz1825xxiv} for the baseline, that is
+\begin{equation}
+  \label{eq:baseline}
+  \lambda_0(t) = \kappa_1 \kappa_2 \exp(\kappa_2t)
+\end{equation}
+with $\kappa_1 > 0$ and $\kappa_2 \in \R$ the scale and shape parameters respectively, which is a common distribution choice in survival analysis~\citep{klein2005survival} with a rich history in describing mortality curves. One can now generate survival times explicitly as
+\begin{equation}
+  \label{eq:time-generation}
+  T_i^\star | G_i=k \sim \dfrac{1}{\iota_{i,k,2} + \kappa_2} \log \Big(1 - \dfrac{(\iota_{i,k,2} + \kappa_2) \log U_i}{\kappa_1 \kappa_2 \exp\iota_{i,k,1}} \Big)
+\end{equation}
+where $U_i \sim \cU\big([0,1]\big)$ (see Appendix~\ref{sec:event-time-simu} for the derivation of this expression).
+The distribution of the censoring variable $C_i$ is the geometric distribution $\cG(\alpha_c)$, where $\alpha_c \in (0, 1)$ is empirically tuned to maintain a desired censoring rate $r_c \in [0,1]$. 
+Finally, the prediction time for subject $i$ is draw according to 
+\begin{equation}
+  \label{eq:law-t_i^max}
+  t_i^{max} \sim T_i \times \big(1 - \text{Beta}(\nu_1, \nu_2)\big) 
+\end{equation}
+with $(\nu_1, \nu_2) \in \R_+^2$ two shape parameters. Figure~\ref{fig:timax-pdf} shows the corresponding probability density function for $t_i^{max}$ with some explanations.
+We then truncate all $Y_i$ measurements being after $t_i^{max}$, since it represents the ``present'' time, so the time up to which one has longitudinal data.
+The choice of all hyper-parameters is driven by the applications on real data presented in Section~\ref{sec:application}, and summarized in Table~\ref{table:parameters choice}. Figure~\ref{fig:example-data} gives an example of data generated according to the design we have just described.
+\begin{table}[htb]
+\caption{Hyper-parameter choices for simulation. Let us also precise that we take $n \in [200, 4000]$ and $(p, L) \in [3, 300]^2$.
+\label{table:parameters choice}}
+\centering
+\resizebox{\textwidth}{!}{
+\begin{tabular}{ccccccccccccc}
+\toprule
+$\pi_1$ & $(\rho_1, \rho_2, \rho_3)$ & $\mu_0$ & $\mu_1$ & $gap$ & $\sigma_l^2$ & $\upsilon$ & $(\nu_1, \nu_2)$ & $(\kappa_1, \kappa_2)$ & $(\varsigma_1, \varsigma_2)$ & $r_c$ & $r_s$ & $\eta = \tilde{\eta}$ \\
+\midrule
+0.4 & $(, 10^{-3},)$ & 
+$\begin{pmatrix}
+  1 \\ 0.3
+\end{pmatrix}$ & 
+$\begin{pmatrix}
+  1 \\ 0.5
+\end{pmatrix}$ 
+& 0.5 & 0.5 & 3 & (2, 5) & $(10^{-3}, 0.1)$ & (1, 0.1) & 0.3 & 0.4 & 0.1 \\
+\bottomrule
+\end{tabular}}
+\end{table}
+\begin{figure}[!htb]
+\centering
+\subfigure[Density of the law used to simulate $t_i^{max}$ according to~\eqref{eq:law-t_i^max} with $(\nu_1, \nu_2) = (2,5)$, to mimic the fact that in practice, one has access to a reasonable amount of longitudinal data before making a prediction.]{
+\includegraphics[width=.3\textwidth]{./figures/beta_law.pdf}
+\label{fig:timax-pdf}}
+\hspace{.02\textwidth}
+\subfigure[exemple simu]{
+% \includegraphics[width=.38\textwidth]{./figures/time2.pdf}
+\label{fig:example-data}}
+\caption{Illustrations of simulated data.}
+\end{figure}
+
+Following the real-time prediction paradigm presented in Section~\ref{sec:evaluation strategy}, we compare the predictive performances of the lights model with the competing ones introduced in Section~\ref{sec:competing models} in terms of C-index (see Section~\ref{sec:Metrics}).
+We also want to assess the stability of the lights model in terms of feature selection, but we do not compare this aspect with state-of-the-art since other models are not designed to perform feature selection, and comparisons would be unfair. 
+To this end, we follow the same simulation procedure explained in the previous lines and for each simulation case, we use the following approach to evaluate the variable selection power of the model. Denoting 
+\[\tilde{\xi}_j = \dfrac{|\hat{\xi}_j|}{\max_{j=1,\ldots,p}{|\hat{\xi}_j|}} \qquad \text{and} \qquad \tilde{\gamma}_{k,a}^l = \dfrac{|\hat{\gamma}_{k,a}^l|}{\max_{a=1, \ldots, \cA}{|\hat{\gamma}_{k,a}^l|}}\] 
+for $k=0,\ldots,K-1$ and $l=1, \ldots, L$, and considering that $\tilde{\xi}_j$ and $\tilde{\gamma}_{k,a}^l$ are the predicted probability that the true $\xi_j$ equals $\varsigma_1$ and the predicted probability that the true $\gamma_{k,a}^l$ equals $\varsigma_2$ respectively, then we are in a binary prediction setting and we use the two resulting AUC scores of this problem to evaluate the selection power of the time-independent and the time-dependent features respectively.
 
 \subsection{Results of simulation}
 \label{sec:simulation results}
@@ -734,13 +853,13 @@ The MIMIC III (Medical Information Mart for Intensive Care III) database is a la
 \label{sec:conclusion}
 
 In this paper, a generalized joint model for high-dimensional multivariate longitudinal data and censored durations (lights) has been introduced, and a new efficient estimation
-algorithm (QNMCEM) has been derived, that considers a penalization of the likelihood in order to perform covariate
+algorithm (QNMCEM) has been derived, that considers a penalization of the likelihood in order to perform feature
 selection and to prevent overfitting.
 
 
 \section*{Software}
-All the methodology discussed in this paper is implemented in \texttt{Python}. The code is available from \href{https://github.com/SimonBussy/lights}%
-{https://github.com/SimonBussy/lights} in the form of annotated programs, together with a notebook tutorial.
+All the methodology discussed in this paper is implemented in \texttt{Python}. The code is available from \href{https://github.com/Califrais/lights}%
+{https://github.com/Califrais/lights} in the form of annotated programs, together with a notebook tutorial.
 
 \section*{Acknowledgements}
 \textit{Conflict of Interest}: None declared.
@@ -751,8 +870,8 @@ All the methodology discussed in this paper is implemented in \texttt{Python}. T
 \LARGE \textbf{Appendices}
 \end{center}
 
-\section{Numerical details}
-\label{sec:numerical-details}
+\section{Automatic cross-validation grid for $\xi$}
+\label{sec:auto-grid-cv}
 
 Concerning the cross-validation procedure for tuning 
 \[(\zeta_{1,0}, \zeta_{2,0}, \zeta_{3,0}, \ldots, \zeta_{1,K-1}, \zeta_{2,K-1}, \zeta_{3,K-1})^\top \in \R_+^{3K}, \]
@@ -781,6 +900,22 @@ Hence, we choose the following upper bound for the randomly chosen candidate int
 \zeta_{1,k}^{\text{max}} = \frac{1}{n(1-\eta)} \underset{j = 1, \dots, p}{\text{max}} \sum_{i=1}^n |x_{ij}|.
 \end{equation*}
 Similar strategy to automatically compute $\zeta_{2,k}^{\text{max}}$ or $\zeta_{3,k}^{\text{max}}$ is not easy since without additionnal hypothesis, the gradients~\ref{eq:grad-beta_k},~\ref{eq:grad-Q-1} and~\ref{eq:grad-Q-2} are not upper bounded by a quantity that depends only on the data and not on the current iteration parameters estimates. We then choose those interval upper bounds empirically.
+
+\section{Event time simulation}
+\label{sec:event-time-simu}
+
+Let us derive here the expression~\eqref{eq:time-generation} used to generate event times. Indeed, we can not refer to~\citet{austin2012generating} since the intensity~\eqref{eq:baseline} of the baseline is not correct in this paper.
+Note that other errors had already been pointed in~\citep{austin2013correction}, for instance the fact that there is no closed-form expression with a Weibull baseline.
+Suppose that
+\[\lambda(t) = \lambda_0(t) \exp (a + b t)\]
+with $(a, b) \in \R^2$ and $\lambda_0$ defined in~\eqref{eq:baseline}, then the cumulative hazard function writes
+\[H(t) = \kappa_1 \kappa_2 e^a \int_0^t \exp\{(\kappa_2 + b)s \} \dd s = \dfrac{\kappa_1 \kappa_2 e^a}{\kappa_2 + b} \big( \exp\{(\kappa_2 + b) t\} - 1 \big).\]
+Then, on has
+\[t = \dfrac{1}{\kappa_2 + b} \log \Big( 1 + \dfrac{H(t)(\kappa_2 + b)}{\kappa_1 \kappa_2 e^a} \Big),\]
+and one can generate event times according to
+\[ T \sim \dfrac{1}{\kappa_2 + b} \log \Big( 1 - \dfrac{(\kappa_2 + b)\log U}{\kappa_1 \kappa_2 e^a} \Big) \]
+with $U \sim \cU\big([0,1]\big)$.
+$\hfill\square$
 
 \bibliography{biblio}
 \bibliographystyle{plainnat}{}
