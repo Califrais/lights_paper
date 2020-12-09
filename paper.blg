@@ -3,167 +3,244 @@ Capacity: max_strings=100000, hash_size=100000, hash_prime=85009
 The top-level auxiliary file: paper.aux
 The style file: plainnat.bst
 Database file #1: biblio.bib
-Repeated entry---line 1940 of file biblio.bib
+Repeated entry---line 155 of file biblio.bib
+ : @article{booth1999maximizing
+ :                             ,
+I'm skipping whatever remains of this entry
+Repeated entry---line 1370 of file biblio.bib
+ : @article{breslow1972contribution
+ :                                 ,
+I'm skipping whatever remains of this entry
+Repeated entry---line 1462 of file biblio.bib
+ : @article{dempster1977maximum
+ :                             ,
+I'm skipping whatever remains of this entry
+Repeated entry---line 1612 of file biblio.bib
+ : @book{fleming2011counting
+ :                          ,
+I'm skipping whatever remains of this entry
+Repeated entry---line 1641 of file biblio.bib
+ : @article{zhu1997algorithm
+ :                          ,
+I'm skipping whatever remains of this entry
+Repeated entry---line 2085 of file biblio.bib
+ : @article{Cox1972JRSS
+ :                     ,
+I'm skipping whatever remains of this entry
+Repeated entry---line 2109 of file biblio.bib
  : @article{uno2011c
  :                  ,
 I'm skipping whatever remains of this entry
-Repeated entry---line 1951 of file biblio.bib
+Repeated entry---line 2120 of file biblio.bib
  : @article{heagerty2005survival
  :                              ,
 I'm skipping whatever remains of this entry
-Repeated entry---line 1962 of file biblio.bib
+Repeated entry---line 2131 of file biblio.bib
  : @article{harrell1996tutorial
  :                             ,
 I'm skipping whatever remains of this entry
-You're missing a field name---line 2252 of file biblio.bib
+Repeated entry---line 2171 of file biblio.bib
+ : @article{simon2011regularization
+ :                                 ,
+I'm skipping whatever remains of this entry
+You're missing a field name---line 2421 of file biblio.bib
  :   
  :   %FJOURNAL = {Electronic Journal of Statistics},
 (Error may have been on previous line)
 I'm skipping whatever remains of this entry
-You're missing a field name---line 2323 of file biblio.bib
+You're missing a field name---line 2492 of file biblio.bib
  :   
  :   %FJOURNAL = {Electronic Journal of Statistics},
 (Error may have been on previous line)
 I'm skipping whatever remains of this entry
-You're missing a field name---line 2403 of file biblio.bib
+You're missing a field name---line 2572 of file biblio.bib
  :   
  :   %FJOURNAL = {Electronic Journal of Statistics},
 (Error may have been on previous line)
 I'm skipping whatever remains of this entry
-You're missing a field name---line 2418 of file biblio.bib
+You're missing a field name---line 2587 of file biblio.bib
  :   
  :   %FJOURNAL = {Electronic Journal of Statistics},
 (Error may have been on previous line)
 I'm skipping whatever remains of this entry
-You're missing a field name---line 2815 of file biblio.bib
+You're missing a field name---line 2984 of file biblio.bib
  :   
  :   %MONTH = Jun,
 (Error may have been on previous line)
 I'm skipping whatever remains of this entry
-You're missing a field name---line 3679 of file biblio.bib
+You're missing a field name---line 3848 of file biblio.bib
  :     
  :     %SERIES = {Springer Series in Statistics},
 (Error may have been on previous line)
 I'm skipping whatever remains of this entry
-You're missing a field name---line 3698 of file biblio.bib
+You're missing a field name---line 3867 of file biblio.bib
  :   
  :   %note          = {new edition \cite{cart93}?},
 (Error may have been on previous line)
 I'm skipping whatever remains of this entry
-Repeated entry---line 4511 of file biblio.bib
+Repeated entry---line 4680 of file biblio.bib
  : @article{bergstra2012random
  :                            ,
 I'm skipping whatever remains of this entry
-Repeated entry---line 4528 of file biblio.bib
+Repeated entry---line 4697 of file biblio.bib
  : @article{zou2005regularization
  :                               ,
 I'm skipping whatever remains of this entry
-Repeated entry---line 4561 of file biblio.bib
+Repeated entry---line 4730 of file biblio.bib
  : @article{zou2005regularization
  :                               ,
 I'm skipping whatever remains of this entry
-Repeated entry---line 4767 of file biblio.bib
+Repeated entry---line 4796 of file biblio.bib
+ : @article{Cox1972JRSS
+ :                     ,
+I'm skipping whatever remains of this entry
+Repeated entry---line 4871 of file biblio.bib
+ : @article{simon2011regularization
+ :                                 ,
+I'm skipping whatever remains of this entry
+Repeated entry---line 4915 of file biblio.bib
+ : @article{breslow1972contribution
+ :                                 ,
+I'm skipping whatever remains of this entry
+Repeated entry---line 4936 of file biblio.bib
  : @article{heagerty2005survival
  :                              ,
 I'm skipping whatever remains of this entry
-Repeated entry---line 7309 of file biblio.bib
+Repeated entry---line 7478 of file biblio.bib
  : @book {AndBorGilKei-93
  :                       ,
 I'm skipping whatever remains of this entry
-Repeated entry---line 7874 of file biblio.bib
+Repeated entry---line 7934 of file biblio.bib
+ : @article{Cox1972JRSS
+ :                     ,
+I'm skipping whatever remains of this entry
+Repeated entry---line 8043 of file biblio.bib
  : @article{uno2011c
  :                  ,
 I'm skipping whatever remains of this entry
-Repeated entry---line 7885 of file biblio.bib
+Repeated entry---line 8054 of file biblio.bib
  : @article{heagerty2005survival
  :                              ,
 I'm skipping whatever remains of this entry
-Repeated entry---line 7896 of file biblio.bib
+Repeated entry---line 8065 of file biblio.bib
  : @article{harrell1996tutorial
  :                             ,
 I'm skipping whatever remains of this entry
-You're missing a field name---line 8186 of file biblio.bib
+Repeated entry---line 8105 of file biblio.bib
+ : @article{simon2011regularization
+ :                                 ,
+I'm skipping whatever remains of this entry
+You're missing a field name---line 8355 of file biblio.bib
  :   
  :   %FJOURNAL = {Electronic Journal of Statistics},
 (Error may have been on previous line)
 I'm skipping whatever remains of this entry
-You're missing a field name---line 8257 of file biblio.bib
+You're missing a field name---line 8426 of file biblio.bib
  :   
  :   %FJOURNAL = {Electronic Journal of Statistics},
 (Error may have been on previous line)
 I'm skipping whatever remains of this entry
-You're missing a field name---line 8337 of file biblio.bib
+You're missing a field name---line 8506 of file biblio.bib
  :   
  :   %FJOURNAL = {Electronic Journal of Statistics},
 (Error may have been on previous line)
 I'm skipping whatever remains of this entry
-You're missing a field name---line 8352 of file biblio.bib
+You're missing a field name---line 8521 of file biblio.bib
  :   
  :   %FJOURNAL = {Electronic Journal of Statistics},
 (Error may have been on previous line)
 I'm skipping whatever remains of this entry
-You're missing a field name---line 9563 of file biblio.bib
+You're missing a field name---line 9732 of file biblio.bib
  :     
  :     %SERIES = {Springer Series in Statistics},
 (Error may have been on previous line)
 I'm skipping whatever remains of this entry
-You're missing a field name---line 9582 of file biblio.bib
+You're missing a field name---line 9751 of file biblio.bib
  :   
  :   %note          = {new edition \cite{cart93}?},
 (Error may have been on previous line)
 I'm skipping whatever remains of this entry
-Repeated entry---line 10062 of file biblio.bib
+Repeated entry---line 9843 of file biblio.bib
+ : @article{simon2013sparse
+ :                         ,
+I'm skipping whatever remains of this entry
+Repeated entry---line 10042 of file biblio.bib
+ : @article{breslow1972contribution
+ :                                 ,
+I'm skipping whatever remains of this entry
+Repeated entry---line 10101 of file biblio.bib
+ : @article{Cox1972JRSS
+ :                     ,
+I'm skipping whatever remains of this entry
+Repeated entry---line 10123 of file biblio.bib
+ : @article{dempster1977maximum
+ :                             ,
+I'm skipping whatever remains of this entry
+Repeated entry---line 10231 of file biblio.bib
  : @article{harrell1996tutorial
  :                             ,
 I'm skipping whatever remains of this entry
-Repeated entry---line 10083 of file biblio.bib
+Repeated entry---line 10252 of file biblio.bib
  : @article{heagerty2005survival
  :                              ,
 I'm skipping whatever remains of this entry
-Repeated entry---line 10152 of file biblio.bib
+Repeated entry---line 10313 of file biblio.bib
+ : @article{proust2014joint
+ :                         ,
+I'm skipping whatever remains of this entry
+Repeated entry---line 10356 of file biblio.bib
  : @article{uno2011c
  :                  ,
 I'm skipping whatever remains of this entry
+Repeated entry---line 10377 of file biblio.bib
+ : @article{zhu1997algorithm
+ :                          ,
+I'm skipping whatever remains of this entry
+Repeated entry---line 10388 of file biblio.bib
+ : @article{simon2011regularization
+ :                                 ,
+I'm skipping whatever remains of this entry
+Warning--can't use both volume and number fields in hammersley1956new
 Warning--empty journal in philipson2018package
-You've used 24 entries,
+You've used 44 entries,
             2773 wiz_defined-function locations,
-            748 strings with 9499 characters,
-and the built_in function-call counts, 11625 in all, are:
-= -- 1047
-> -- 687
-< -- 13
-+ -- 231
-- -- 207
-* -- 982
-:= -- 1784
-add.period$ -- 73
-call.type$ -- 24
-change.case$ -- 140
-chr.to.int$ -- 24
-cite$ -- 49
-duplicate$ -- 516
-empty$ -- 925
-format.name$ -- 245
-if$ -- 2419
-int.to.chr$ -- 1
+            876 strings with 13543 characters,
+and the built_in function-call counts, 21984 in all, are:
+= -- 1981
+> -- 1325
+< -- 27
++ -- 447
+- -- 402
+* -- 1895
+:= -- 3364
+add.period$ -- 134
+call.type$ -- 44
+change.case$ -- 263
+chr.to.int$ -- 43
+cite$ -- 90
+duplicate$ -- 947
+empty$ -- 1735
+format.name$ -- 474
+if$ -- 4570
+int.to.chr$ -- 2
 int.to.str$ -- 1
-missing$ -- 25
-newline$ -- 128
-num.names$ -- 96
-pop$ -- 253
+missing$ -- 46
+newline$ -- 228
+num.names$ -- 176
+pop$ -- 473
 preamble$ -- 1
-purify$ -- 117
+purify$ -- 221
 quote$ -- 0
-skip$ -- 409
+skip$ -- 749
 stack$ -- 0
-substring$ -- 490
-swap$ -- 50
-text.length$ -- 3
+substring$ -- 984
+swap$ -- 94
+text.length$ -- 7
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 259
-warning$ -- 1
-while$ -- 109
+type$ -- 474
+warning$ -- 2
+while$ -- 207
 width$ -- 0
-write$ -- 316
-(There were 27 error messages)
+write$ -- 578
+(There were 46 error messages)
