@@ -1,15 +1,21 @@
-\begin{thebibliography}{44}
+\begin{thebibliography}{46}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
   \providecommand{\doi}[1]{doi: #1}\else
   \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
 
-\bibitem[Andersen et~al.(1993)Andersen, Borgan, Gill, and
-  Keiding]{AndBorGilKei-93}
-P.~K. Andersen, {\O}.~Borgan, R.~D. Gill, and N.~Keiding.
+\bibitem[Andersen et~al.(2012)Andersen, Borgan, Gill, and
+  Keiding]{andersen2012statistical}
+Per~K Andersen, Ornulf Borgan, Richard~D Gill, and Niels Keiding.
 \newblock \emph{Statistical models based on counting processes}.
-\newblock Springer Series in Statistics. Springer-Verlag, New York, 1993.
+\newblock Springer Science \& Business Media, 2012.
+
+\bibitem[Andrew and Gao(2007)]{andrew2007scalable}
+Galen Andrew and Jianfeng Gao.
+\newblock Scalable training of l1-regularized log-linear models.
+\newblock In \emph{International Conference on Machine Learning}, pages 33--40.
+  ACM, 2007.
 
 \bibitem[Andrinopoulou et~al.(2017)Andrinopoulou, Rizopoulos, Takkenberg, and
   Lesaffre]{andrinopoulou2017combined}
@@ -24,7 +30,7 @@ Eleni-Rosalina Andrinopoulou, Dimitris Rizopoulos, Johanna~JM Takkenberg, and
 James Bergstra and Yoshua Bengio.
 \newblock Random search for hyper-parameter optimization.
 \newblock \emph{Journal of Machine Learning Research}, 13\penalty0
-  (Feb):\penalty0 281--305, 2012.
+  (2):\penalty0 281--305, 2012.
 
 \bibitem[Booth and Hobert(1999)]{booth1999maximizing}
 James~G Booth and James~P Hobert.
@@ -33,10 +39,16 @@ James~G Booth and James~P Hobert.
 \newblock \emph{Journal of the Royal Statistical Society: Series B (Statistical
   Methodology)}, 61\penalty0 (1):\penalty0 265--285, 1999.
 
+\bibitem[Boyd and Vandenberghe(2004)]{boyd2004convex}
+Stephen Boyd and Lieven Vandenberghe.
+\newblock \emph{Convex optimization}.
+\newblock Cambridge university press, 2004.
+
 \bibitem[Breslow(1972)]{breslow1972contribution}
 Norman~E Breslow.
 \newblock Contribution to discussion of paper by dr cox.
-\newblock \emph{J. Roy. Statist. Soc., Ser. B}, 34:\penalty0 216--217, 1972.
+\newblock \emph{JJournal of the Royal Statistical Society: Series B
+  (Statistical Methodology)}, 34:\penalty0 216--217, 1972.
 
 \bibitem[Bussy et~al.(2019)Bussy, Guilloux, Ga{\"\i}ffas, and
   Jannot]{bussy2019c}

@@ -68,179 +68,183 @@ You're missing a field name---line 2984 of file biblio.bib
  :   %MONTH = Jun,
 (Error may have been on previous line)
 I'm skipping whatever remains of this entry
-You're missing a field name---line 3848 of file biblio.bib
+You're missing a field name---line 3834 of file biblio.bib
  :     
  :     %SERIES = {Springer Series in Statistics},
 (Error may have been on previous line)
 I'm skipping whatever remains of this entry
-You're missing a field name---line 3867 of file biblio.bib
+You're missing a field name---line 3853 of file biblio.bib
  :   
  :   %note          = {new edition \cite{cart93}?},
 (Error may have been on previous line)
 I'm skipping whatever remains of this entry
-Repeated entry---line 4680 of file biblio.bib
+Repeated entry---line 4666 of file biblio.bib
  : @article{bergstra2012random
  :                            ,
 I'm skipping whatever remains of this entry
-Repeated entry---line 4697 of file biblio.bib
+Repeated entry---line 4683 of file biblio.bib
  : @article{zou2005regularization
  :                               ,
 I'm skipping whatever remains of this entry
-Repeated entry---line 4730 of file biblio.bib
+Repeated entry---line 4716 of file biblio.bib
  : @article{zou2005regularization
  :                               ,
 I'm skipping whatever remains of this entry
-Repeated entry---line 4796 of file biblio.bib
+Repeated entry---line 4782 of file biblio.bib
  : @article{Cox1972JRSS
  :                     ,
 I'm skipping whatever remains of this entry
-Repeated entry---line 4871 of file biblio.bib
+Repeated entry---line 4857 of file biblio.bib
  : @article{simon2011regularization
  :                                 ,
 I'm skipping whatever remains of this entry
-Repeated entry---line 4915 of file biblio.bib
+Repeated entry---line 4901 of file biblio.bib
  : @article{breslow1972contribution
  :                                 ,
 I'm skipping whatever remains of this entry
-Repeated entry---line 4936 of file biblio.bib
+Repeated entry---line 4922 of file biblio.bib
  : @article{heagerty2005survival
  :                              ,
 I'm skipping whatever remains of this entry
-Repeated entry---line 7478 of file biblio.bib
- : @book {AndBorGilKei-93
- :                       ,
-I'm skipping whatever remains of this entry
-Repeated entry---line 7934 of file biblio.bib
+Repeated entry---line 7912 of file biblio.bib
  : @article{Cox1972JRSS
  :                     ,
 I'm skipping whatever remains of this entry
-Repeated entry---line 8043 of file biblio.bib
+Repeated entry---line 8021 of file biblio.bib
  : @article{uno2011c
  :                  ,
 I'm skipping whatever remains of this entry
-Repeated entry---line 8054 of file biblio.bib
+Repeated entry---line 8032 of file biblio.bib
  : @article{heagerty2005survival
  :                              ,
 I'm skipping whatever remains of this entry
-Repeated entry---line 8065 of file biblio.bib
+Repeated entry---line 8043 of file biblio.bib
  : @article{harrell1996tutorial
  :                             ,
 I'm skipping whatever remains of this entry
-Repeated entry---line 8105 of file biblio.bib
+Repeated entry---line 8083 of file biblio.bib
  : @article{simon2011regularization
  :                                 ,
 I'm skipping whatever remains of this entry
-You're missing a field name---line 8355 of file biblio.bib
+You're missing a field name---line 8333 of file biblio.bib
  :   
  :   %FJOURNAL = {Electronic Journal of Statistics},
 (Error may have been on previous line)
 I'm skipping whatever remains of this entry
-You're missing a field name---line 8426 of file biblio.bib
+You're missing a field name---line 8404 of file biblio.bib
  :   
  :   %FJOURNAL = {Electronic Journal of Statistics},
 (Error may have been on previous line)
 I'm skipping whatever remains of this entry
-You're missing a field name---line 8506 of file biblio.bib
+You're missing a field name---line 8484 of file biblio.bib
  :   
  :   %FJOURNAL = {Electronic Journal of Statistics},
 (Error may have been on previous line)
 I'm skipping whatever remains of this entry
-You're missing a field name---line 8521 of file biblio.bib
+You're missing a field name---line 8499 of file biblio.bib
  :   
  :   %FJOURNAL = {Electronic Journal of Statistics},
 (Error may have been on previous line)
 I'm skipping whatever remains of this entry
-You're missing a field name---line 9732 of file biblio.bib
+You're missing a field name---line 9710 of file biblio.bib
  :     
  :     %SERIES = {Springer Series in Statistics},
 (Error may have been on previous line)
 I'm skipping whatever remains of this entry
-You're missing a field name---line 9751 of file biblio.bib
+You're missing a field name---line 9729 of file biblio.bib
  :   
  :   %note          = {new edition \cite{cart93}?},
 (Error may have been on previous line)
 I'm skipping whatever remains of this entry
-Repeated entry---line 9843 of file biblio.bib
+Repeated entry---line 9821 of file biblio.bib
  : @article{simon2013sparse
  :                         ,
 I'm skipping whatever remains of this entry
-Repeated entry---line 10042 of file biblio.bib
+Repeated entry---line 9861 of file biblio.bib
+ : @book{boyd2004convex
+ :                     ,
+I'm skipping whatever remains of this entry
+Repeated entry---line 10020 of file biblio.bib
  : @article{breslow1972contribution
  :                                 ,
 I'm skipping whatever remains of this entry
-Repeated entry---line 10101 of file biblio.bib
+Repeated entry---line 10050 of file biblio.bib
+ : @inproceedings{andrew2007scalable
+ :                                  ,
+I'm skipping whatever remains of this entry
+Repeated entry---line 10079 of file biblio.bib
  : @article{Cox1972JRSS
  :                     ,
 I'm skipping whatever remains of this entry
-Repeated entry---line 10123 of file biblio.bib
+Repeated entry---line 10101 of file biblio.bib
  : @article{dempster1977maximum
  :                             ,
 I'm skipping whatever remains of this entry
-Repeated entry---line 10231 of file biblio.bib
+Repeated entry---line 10209 of file biblio.bib
  : @article{harrell1996tutorial
  :                             ,
 I'm skipping whatever remains of this entry
-Repeated entry---line 10252 of file biblio.bib
+Repeated entry---line 10230 of file biblio.bib
  : @article{heagerty2005survival
  :                              ,
 I'm skipping whatever remains of this entry
-Repeated entry---line 10313 of file biblio.bib
+Repeated entry---line 10291 of file biblio.bib
  : @article{proust2014joint
  :                         ,
 I'm skipping whatever remains of this entry
-Repeated entry---line 10356 of file biblio.bib
+Repeated entry---line 10334 of file biblio.bib
  : @article{uno2011c
  :                  ,
 I'm skipping whatever remains of this entry
-Repeated entry---line 10377 of file biblio.bib
+Repeated entry---line 10355 of file biblio.bib
  : @article{zhu1997algorithm
  :                          ,
 I'm skipping whatever remains of this entry
-Repeated entry---line 10388 of file biblio.bib
+Repeated entry---line 10366 of file biblio.bib
  : @article{simon2011regularization
  :                                 ,
 I'm skipping whatever remains of this entry
 Warning--can't use both volume and number fields in hammersley1956new
 Warning--empty journal in philipson2018package
-You've used 44 entries,
+You've used 46 entries,
             2773 wiz_defined-function locations,
-            876 strings with 13543 characters,
-and the built_in function-call counts, 21984 in all, are:
-= -- 1981
-> -- 1325
-< -- 27
-+ -- 447
-- -- 402
-* -- 1895
-:= -- 3364
-add.period$ -- 134
-call.type$ -- 44
-change.case$ -- 263
-chr.to.int$ -- 43
-cite$ -- 90
-duplicate$ -- 947
-empty$ -- 1735
-format.name$ -- 474
-if$ -- 4570
+            881 strings with 13816 characters,
+and the built_in function-call counts, 22873 in all, are:
+= -- 2060
+> -- 1367
+< -- 30
++ -- 461
+- -- 414
+* -- 1950
+:= -- 3491
+add.period$ -- 140
+call.type$ -- 46
+change.case$ -- 272
+chr.to.int$ -- 45
+cite$ -- 94
+duplicate$ -- 997
+empty$ -- 1817
+format.name$ -- 492
+if$ -- 4768
 int.to.chr$ -- 2
 int.to.str$ -- 1
-missing$ -- 46
-newline$ -- 228
-num.names$ -- 176
-pop$ -- 473
+missing$ -- 49
+newline$ -- 238
+num.names$ -- 184
+pop$ -- 502
 preamble$ -- 1
-purify$ -- 221
+purify$ -- 229
 quote$ -- 0
-skip$ -- 749
+skip$ -- 788
 stack$ -- 0
-substring$ -- 984
-swap$ -- 94
-text.length$ -- 7
+substring$ -- 1012
+swap$ -- 104
+text.length$ -- 8
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 474
+type$ -- 491
 warning$ -- 2
-while$ -- 207
+while$ -- 216
 width$ -- 0
-write$ -- 578
-(There were 46 error messages)
+write$ -- 602
+(There were 47 error messages)

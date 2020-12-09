@@ -1,12 +1,12 @@
 # Fdb version 3
-["bibtex paper"] 1583963769 "paper.aux" "paper.bbl" "paper" 1584605738
+["bibtex paper"] 1584895062 "paper.aux" "paper.bbl" "paper" 1584895647
   "/usr/local/texlive/2019/texmf-dist/bibtex/bst/natbib/plainnat.bst" 1233624470 26816 ffe5423d2019860bad9f54bc402fac15 ""
-  "biblio.bib" 1583781498 384192 6ca593b9b62cb13b9aebc65077f66c72 ""
-  "paper.aux" 1584290134 12433 e211382486db0134b8afc677e1b80047 "pdflatex"
+  "biblio.bib" 1584478540 383571 7c448da691f4181091fd78e2b52ef439 ""
+  "paper.aux" 1584895647 13717 f0a5795c7048b9488834c146c6d04684 "pdflatex"
   (generated)
-  "paper.blg"
   "paper.bbl"
-["pdflatex"] 1584290133 "paper.tex" "paper.pdf" "paper" 1584605738
+  "paper.blg"
+["pdflatex"] 1584895646 "paper.tex" "paper.pdf" "paper" 1584895647
   "/usr/local/texlive/2019/texmf-dist/fonts/map/fontname/texfonts.map" 1511824771 3332 103109f5612ad95229751940c61aada0 ""
   "/usr/local/texlive/2019/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex7.tfm" 1246382020 1004 54797486969f23fa377b128694d548df ""
   "/usr/local/texlive/2019/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex8.tfm" 1246382020 988 bdf658c3bfc2d96d3c8b02cfc1c94c20 ""
@@ -137,12 +137,12 @@
   "/usr/local/texlive/2019/texmf-var/fonts/map/pdftex/updmap/pdftex.map" 1557342064 3277517 23507ed665b4dd9046f0f2a94bbef2be ""
   "/usr/local/texlive/2019/texmf-var/web2c/pdftex/pdflatex.fmt" 1566055158 4259636 ffa9dc7544261bc5971125f402d51369 ""
   "/usr/local/texlive/2019/texmf.cnf" 1557341546 577 d150fef99ac436ad1156e86b0892f6ef ""
-  "paper.aux" 1584290134 12433 e211382486db0134b8afc677e1b80047 "pdflatex"
-  "paper.bbl" 1583963769 13872 9c7fc71d602ea34c5732f4b336022d8e "bibtex paper"
-  "paper.out" 1584290134 1264 2acf30019df89768bfcf0c16b8aa7468 "pdflatex"
-  "paper.tex" 1584290132 45434 bf5e866b302e9abcd0b30333675284f4 ""
+  "paper.aux" 1584895647 13717 f0a5795c7048b9488834c146c6d04684 "pdflatex"
+  "paper.bbl" 1584895062 14330 0fbeb875bf48dd64ed16d7fe4cf5d6f6 "bibtex paper"
+  "paper.out" 1584895647 1318 75e0dde8cb4c469fd293edbdd2e3156c "pdflatex"
+  "paper.tex" 1584895646 56186 e24286f714af677e53a412a3fc74a543 ""
   (generated)
   "paper.aux"
-  "paper.log"
   "paper.out"
   "paper.pdf"
+  "paper.log"

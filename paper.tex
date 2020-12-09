@@ -42,6 +42,7 @@
 \newtheorem{assumption}{Assumption}{\bf}{\rm} 
 
 \DeclareMathOperator{\argmin}{argmin}
+\DeclareMathOperator{\Tr}{Tr}
 
 \newcommand{\dd}{\mathrm{d}}
 \newcommand{\ind}[1]{\mathds{1}_{#1}}
@@ -91,7 +92,7 @@ Despite many multivariate models being presented in full generality, questions a
 \paragraph{General framework.}
 
 The setting of this paper is such that we want to incorporate high-dimensional time-dependent (longitudinal) features measured with error in a survival model. Let us consider the usual survival analysis framework.
-Following~\citet{AndBorGilKei-93}, let non-negative random variables $T^\star$ and $C$ stand for the times of the event of interest and censoring times respectively. The event of interest could be for instance survival time, re-hospitalization, relapse or disease progression.
+Following~\citet{andersen2012statistical}, let non-negative random variables $T^\star$ and $C$ stand for the times of the event of interest and censoring times respectively. The event of interest could be for instance survival time, re-hospitalization, relapse or disease progression.
 We then denote $T$ the right-censored time and $\Delta$ the censoring indicator, defined as 
 \begin{equation*}
 T = T^\star \wedge C \quad \text{and} \quad \Delta = \ind{\{T^\star \leq C\}}
@@ -117,9 +118,10 @@ From now on, all computations are done conditionally on features $x$.
 
 In this paper, we propose a method called \textit{lights} (generaLized joInt hiGH-dimensional longiTudinal Survival) which is from both JLCMs and SREMs, since we also include features extracted from the longitudinal processes as potential risk factor in the survival model, which is a group-specific Cox model~\citep{Cox1972JRSS} with high-dimensional shared associations.
 To allow flexibility in modeling the dependency between the longitudinal features and the event time, we use appropriate penalties : elastic net~\citep{zou2005regularization}
-for feature selection in the latent class membership as well as within the survival model, and sparse group lasso~\citep{simon2013sparse} for the fixed effect of each marker trajectories, allowing flexible representations of time.
-Inference is achieved using an efficient Quasi-Newton Expectation Maximization algorithm.
-The posterior estimates of the latent class membership probabilities are then used as discriminative marker rule for risk prediction in the cross-validation procedure for selecting the best regularization hyper-parameters to adapt to the data complexity.
+for feature selection in the latent class membership, and sparse group lasso~\citep{simon2013sparse} in the survival model, as well as for the fixed effect (allowing flexible representations of time). Indeed, this penalty acts like the lasso at the trajectory level, namely an entire trajectory may drop out of the model on one side. On the other hand, it yields sparsity for a given trajectory, namely feature selection.
+Inference is achieved using an efficient and novel Quasi-Newton Monte Carlo Expectation Maximization algorithm.
+% NOOOOON
+% The posterior estimates of the latent class membership probabilities are then used as discriminative marker rule for risk prediction in the cross-validation procedure for selecting the best regularization hyper-parameters to adapt to the data complexity.
 Hence, the method provides interpretations of the high-dimensional longitudinal features, thus offering a powerful tool for clinical decision making in patient monitoring.
 
 \paragraph{Organization of the paper.}
@@ -249,9 +251,10 @@ with $q = \sum_{l=1}^L q_l$ and where for all $l=1, \ldots, L$, one writes
 \]
 From now on, all computations are done conditionally on the design matrices $(U_i)_{i=1, \dots, n}$ and $(V_i)_{i=1, \dots, n}$.
 \begin{assumption}
+\label{indep-hyp-2}
 Suppose that conditional on the random effects, each $Y_i^l$ is independent, and that the censoring times $T_i$ are independent of $b_i$.
 \end{assumption}
-This is a standard modeling assumption~\citep{tsiatis2004joint}.
+Assumption~\ref{indep-hyp-2} is a standard modeling assumption, see for instance~\citet{tsiatis2004joint}.
 For all $k = 0, \ldots, K-1$, we denote 
 \[ \beta_k = ({\beta_k^1}^\top \cdots {\beta_k^L}^\top)^\top \in \R^q \] 
 and 
@@ -261,7 +264,7 @@ Given~\eqref{eq:link-function}, each $y_i^l$ is assumed to be from a one-paramet
 The conditional distribution of $y_i|b_i, G_i=k$ is then assumed to be from a distribution with a density of the form
 \begin{equation}
 	\label{eq:exp-family-density}
-	f(y_i|b_i, G_i=k) = \exp \big\{(y_i \odot \Phi_i)^\top M_{ik} - \sum_{j=1}^{n_i} c_\phi(M_{ik, j}) + d_\phi(y_i) \big\},
+	f(y_i|b_i, G_i=k) = \exp \big\{(y_i \odot \Phi_i)^\top M_{ik} - c_\phi(M_{ik}) + d_\phi(y_i) \big\},
 \end{equation}
 with 
 \[ \Phi_i = (\phi_1^{-1} {\textbf{1}_{n_i^1}}^\top \cdots \phi_L^{-1} {\textbf{1}_{n_i^L}}^\top)^\top \in \R^{n_i} \] 
@@ -272,26 +275,31 @@ The density described in~\eqref{eq:exp-family-density} encompasses several distr
 \resizebox{\textwidth}{!}{%
 \begin{tabular}{cccccc}
 \toprule
- Model & Support & Use cases & $\phi_l$ & $h_l(\cdot)$ in~\eqref{eq:link-function} & $c_{\phi_l}(\cdot)$ \\
+ Model & Support & Use cases & $\phi_l$ & $h_l(\cdot)$ in~\eqref{eq:link-function} & $c_\phi(\cdot)$ \\
  \midrule
- Gaussian & $\R$ & Continuous response data & $\sigma_l^2$ & $z \mapsto z$ & $z \mapsto z^2 / 2\sigma_l^2$ \\ 
+ Gaussian & $\R$ & Continuous response data & $\sigma_l^2$ & $z \mapsto z$ & $z \mapsto z^2 / 2 \sigma_l^2$ \\ 
  Categorical & $\{0, 1\}^C$ & Outcome with $C$ modalities & 1 & $z \mapsto \log\Big(\dfrac{z}{1 - z} \Big)$ & $z \mapsto \log(1 + e^z)$ \\
  Poisson & $\N$ & Count of occurrences & 1 &  $z \mapsto \log(z)$ & $z \mapsto e^z$ \\
  \bottomrule
 \end{tabular}}
-\caption[]{Examples of standard distributions that fit in the considered setting.}
+\caption[]{Examples of standard distributions that fit in the considered setting, given in the univariate case for simplicity of the notations.}
 \label{table:glm}
 \end{table}
 
 Let us denote 
 \[ \theta = \big(\xi_0^\top \cdots \xi_{K-1}^\top, \beta_0^\top \cdots \beta_{K-1}^\top, \phi^\top, \text{vech}(D), \lambda_0(t), \gamma_0^\top \cdots \gamma_{K-1}^\top\big)^\top \in \R^\vartheta \]
 the collection of the $\vartheta \in \N_+$ unknown parameters to estimate.
-To write the log-likelihood $\ell_n(\theta)$ (rescaled by $n^{-1}$)  for samples in $\cD_n$, corresponding to the joint distribution of the time-to-event and longitudinal outcomes, let us assume that both the random effects vector $b_i$ and the group membership account for the association between the longitudinal and event outcomes, that is
+To write the log-likelihood $\ell_n(\theta)$ (rescaled by $n^{-1}$)  for samples in $\cD_n$, corresponding to the joint distribution of the time-to-event and longitudinal outcomes, let us make the following hypothesis.
+\begin{assumption}
+\label{indep-hyp-3}
+Assume that both the random effects vector $b_i$ and the group membership account for the association between the longitudinal and event outcomes, that is
 \begin{equation}
-	\label{eq:ind-hyp}
-	f(t_i, \delta_i, y_i | b_i, G_i = k ; \theta) = f(t_i, \delta_i| b_i, G_i = k ; \theta) f(y_i | b_i, G_i = k ; \theta)
+  \label{eq:ind-hyp}
+  f(t_i, \delta_i, y_i | b_i, G_i = k ; \theta) = f(t_i, \delta_i| b_i, G_i = k ; \theta) f(y_i | b_i, G_i = k ; \theta)
 \end{equation}
-for all $i=1, \ldots, n$. Hypothesis~\eqref{eq:ind-hyp} is a generalization of classical hypothesis used in SREMs and JLCMs~\citep{hickey2016joint}.
+for all $i=1, \ldots, n$.
+\end{assumption}
+Assumption~\ref{indep-hyp-3} is a generalization of classical hypothesis used in SREMs and JLCMs~\citep{hickey2016joint}.
 Then, one has
 \begin{align}
 	\label{eq:log-lik}
@@ -325,21 +333,23 @@ In this section, we describe the procedure for estimating the parameters of the 
 In order to avoid overfitting and improve the prediction power of our method, we propose to minimize the penalized objective
 \begin{equation}
   \label{eq:pen-log-lik}
-	\ell_n^\text{pen}(\theta) = - \ell_n(\theta) + \sum_{k=0}^{K-1} \zeta_{1,k} \norm{\xi_k}_{\text{en}, \eta} + \zeta_{2,k} \norm{\gamma_k}_{\text{en}, \eta} + \zeta_{3,k} \norm{\beta_k}_{\text{sg} l_1, \tilde{\eta}}
+	\ell_n^\text{pen}(\theta) = - \ell_n(\theta) + \sum_{k=0}^{K-1} \zeta_{1,k} \norm{\xi_k}_{\text{en}, \eta} + \zeta_{2,k} \norm{\gamma_k}_{\text{sg} l_1, \tilde{\eta}} + \zeta_{3,k} \norm{\beta_k}_{\text{sg} l_1, \tilde{\eta}}
 \end{equation}
-where for all $k=0, \ldots, K-1$, we add an elastic net regularization~\citep{zou2005regularization} of the vectors $\xi_k$ and $\gamma_k$ and a sparse group lasso regularization~\citep{simon2013sparse} of the vector $\beta_k$, for tuning hyper-parameters $(\zeta_{1,k}, \zeta_{2,k}, \zeta_{3,k})^\top \in \R_+^3$. Here, $(\eta, \tilde{\eta}) \in [0, 1]^2$ are fixed and we denote
+where for all $k=0, \ldots, K-1$, we add an elastic net regularization~\citep{zou2005regularization} of the vector $\xi_k$ and a sparse group lasso regularization~\citep{simon2013sparse} of the vectors $\gamma_k$ and $\beta_k$, for tuning hyper-parameters $(\zeta_{1,k}, \zeta_{2,k}, \zeta_{3,k})^\top \in \R_+^3$. Here, $(\eta, \tilde{\eta}) \in [0, 1]^2$ are fixed and we denote
 \[ \norm{v}_{\text{en}, \eta} = (1-\eta)\norm{v}_1 + \dfrac\eta2 \norm{v}_2^2 \]
 for any vector $v$, that is a linear combination of the lasso ($\ell_1$) and ridge (squared $\ell_2$) penalties, and
-\[ \norm{\beta_k}_{\text{sg} l_1, \tilde{\eta}} = (1-\tilde{\eta})\sum_{l=1}^L\norm{\beta_k^l}_2 + \tilde{\eta} \norm{\beta_k}_1 \] for the sparse group lasso penalty, for which we do not have to account for group sizes since they all have the same one. Hence, the resulting optimization problem is written
+\[ \norm{v}_{\text{sg} l_1, \tilde{\eta}} = (1-\tilde{\eta})\sum_{l=1}^L\norm{v^l}_2 + \tilde{\eta} \norm{v}_1 \] for the sparse group lasso penalty, for which we do not have to account for group sizes since they all have the same one.
+Note that in the $\gamma_k$ penalty, $l$ actually starts at 0 (and not 1), but for simplicity we do not change the notation. 
+Hence, the resulting optimization problem is written
 \begin{equation}
   \label{eq:optim-pb}
    \hat \theta \in \argmin_{\theta \in \R^\vartheta} \ell_n^\text{pen}(\theta).
  \end{equation}
 
-One advantage of the considered regularization method is its ability to perform feature selection (the lasso part) and pinpoint the most important features relatively to the prediction objective : the support of $\xi_k$ (respectively $\gamma_k$) thus informs on the features involved in the $k$-th group membership (in the $k$-th group risk of event respectively).
-The ridge part allows to handle potential correlation between time-independent features or between longitudinal outcomes.
+One advantage of the considered regularization method is its ability to perform feature selection (the lasso part) and pinpoint the most important features relatively to the prediction objective : the support of $\xi_k$ thus informs on the time-independant features involved in the $k$-th group membership. The ridge part allows to handle potential correlation between features.
+On the other hand, the sparse group lasso allows to perform feature selection for each trajectory : the support of $\gamma_k^l$ informs on the features involved in the $k$-th group risk of event for the $l$-th longitudinal outcome.
+Finally, the sparse group lasso of $\beta_k$ allows to consider a flexible representation of time for the design matrices $(U_i)_{i=1, \dots, n}$ and lets the model automatically fit each trajectory $l$ with the right complexity.
 Note that in practice, the intercept is not regularized.
-On the other hand, the sparse group lasso of $\beta_k$ allows to consider a flexible representation of time for the design matrices $(U_i)_{i=1, \dots, n}$ and lets the model automatically fit each trajectory with the right complexity.
 
 \subsection{A Quasi-Newton Monte Carlo EM}
 \label{sec:QNMCEM}
@@ -354,7 +364,7 @@ It can be written
   &= - n^{-1} \sum_{i=1}^n -\dfrac12 (r \log 2\pi + \log|D| + b_i^\top D^{-1}b_i) + \sum_{k=0}^{K-1} \ind{\{G_i=k\}} \Big[ \log \pi_{\xi_k}(x_i) \\ 
   & \quad + \delta_i \Big(\log \lambda_0(t_i) + x_i^\top \gamma_{k,0} + \sum_{l=1}^L \sum_{a=1}^\cA {\gamma_{k,a}^l}^\top \varphi_a(t_i, \beta_k^l, b_i^l) \Big) \\
   & \quad -\int_0^{t_i} \lambda_0(s) \exp \Big\{ x_i^\top \gamma_{k,0} + \sum_{l=1}^L \sum_{a=1}^\cA {\gamma_{k,a}^l}^\top \varphi_a(s, \beta_k^l, b_i^l) \Big\} \dd s \\
-  & \quad + (y_i \odot \Phi_i)^\top M_{ik} - \sum_{j=1}^{n_i} c_\phi(M_{ik, j}) + d_\phi(y_i) \Big].
+  & \quad + (y_i \odot \Phi_i)^\top M_{ik} - c_\phi(M_{ik}) + d_\phi(y_i) \Big].
 \end{align*}
 Suppose that we are at step $w + 1$ of the algorithm, with current iterate denoted $\theta^{(w)}$. 
 
@@ -372,19 +382,20 @@ for different functions $g$, where we denote
   \pi_{ik}^{\theta^{(w)}} = \P_{\theta^{(w)}}[G_i = k | t_i, \delta_i, y_i] 
 \end{equation}
 the posterior probability of the latent class membership using parameters $\theta^{(w)}$. 
-Then, either $g(b_i, G_i) = \tilde g(bi)$ (for instance $\tilde g: b_i \mapsto b_i^\top D^{-1}b_i$), or $g(b_i, G_i) = g_k(Gi)$ with $g_k : G_i \mapsto \ind{\{G_i=k\}}$.
+Then, either $g(b_i, G_i) = \tilde g(bi)$ (for instance $\tilde g: b_i \mapsto b_i^\top D^{-1}b_i$), or $g(b_i, G_i) = g_k(G_i)$ with $g_k~:~G_i \mapsto \ind{\{G_i=k\}}$.
 
-In the case $g(b_i, G_i) = \tilde g(bi)$, one has
-\begin{equation*}
-  \E_{\theta^{(w)}}[ \tilde g(b_i) | t_i, \delta_i, y_i] = \int_{\R^r} \tilde g(b_i) f(b_i | t_i, \delta_i, y_i ; \theta^{(w)}) \dd b_i = \dfrac{ \sum_{k=0}^{K-1}  \Lambda_{ik,\tilde g}^{\theta^{(w)}}}{\sum_{k=0}^{K-1} \Lambda_{ik,1}^{\theta^{(w)}}}
-\end{equation*}
+In the case $g(b_i, G_i) = \tilde g(b_i)$, one has
+\begin{equation}
+  \label{eq:def-E-g-tilde}
+  \E_{\theta^{(w)}}[ \tilde g(b_i) | t_i, \delta_i, y_i] = \int_{\R^r} \tilde g(b_i) f(b_i | t_i, \delta_i, y_i ; \theta^{(w)}) \dd b_i = \dfrac{ \sum_{k=0}^{K-1} \pi_{\xi_k^{(w)}}(x_i) \Lambda_{ik,\tilde g}^{\theta^{(w)}}}{\sum_{k=0}^{K-1} \pi_{\xi_k^{(w)}}(x_i) \Lambda_{ik,1}^{\theta^{(w)}}}
+\end{equation}
 with
 \begin{equation}
   \label{eq:Lambda_ik-def}
-  \Lambda_{ik,\tilde g}^{\theta^{(w)}} = \pi_{\xi_k^{(w)}}(x_i) \int_{\R^r} \tilde g(b_i) f(t_i, \delta_i, y_i | b_i, G_i = k ; \theta^{(w)}) f(b_i ; \theta^{(w)}) \dd b_i,
+  \Lambda_{ik,\tilde g}^{\theta^{(w)}} = \int_{\R^r} \tilde g(b_i) f(t_i, \delta_i, y_i | b_i, G_i = k ; \theta^{(w)}) f(b_i ; \theta^{(w)}) \dd b_i,
 \end{equation}
 and $\Lambda_{ik,1}^{\theta^{(w)}}$ obtained from $\Lambda_{ik,\tilde g}^{\theta^{(w)}}$ taking $\tilde g: b_i \mapsto 1$.
-The integral in~\eqref{eq:Lambda_ik-def} is intractable analytically, and some form of approximation must be used in practice. Standard numerical integration techniques (such as Gaussian quadrature) are not well suited in our high-dimensional context. We then propose to use Monte Carlo approximation, which has already been applied for generalized linear mixed models~\citep{booth1999maximizing}, with antithetic normal variates method~\citep{hammersley1956new} to reduce variance of the simulation result. Algorithm~\ref{alg:construct-set-S} describes how to construct the set $S^{(w)}$ used for the approximation.
+The integral in~\eqref{eq:Lambda_ik-def} is not tractable analytically, and some form of approximation must be used in practice. Standard numerical integration techniques (such as Gaussian quadrature) are not well suited in our high-dimensional context. We then propose to use Monte Carlo approximation, which has already been applied for generalized linear mixed models~\citep{booth1999maximizing}, with antithetic normal variates method~\citep{hammersley1956new} to reduce variance of the simulation result. Algorithm~\ref{alg:construct-set-S} describes how to construct the set $S^{(w)}$ used for the approximation.
 
 \vspace{.5cm}
 
@@ -406,10 +417,15 @@ Compute $C^{(w)} \in \R^{r \times r}$ such that $C^{(w)}{C^{(w)}}^\top = D^{(w)}
 
 \vspace{.5cm}
 
-\noindent The approximation of~\eqref{eq:Lambda_ik-def} is finally obtained by
+\noindent The approximation of~\eqref{eq:def-E-g-tilde} is finally obtained by
+\begin{equation}
+  \label{eq:def-hat-E-g-tilde}
+  \hat \E_{\theta^{(w)}}[ \tilde g(b_i) | t_i, \delta_i, y_i] = \dfrac{ \sum_{k=0}^{K-1} \pi_{\xi_k^{(w)}}(x_i) \hat \Lambda_{ik,\tilde g}^{\theta^{(w)}}}{\sum_{k=0}^{K-1} \pi_{\xi_k^{(w)}}(x_i) \hat \Lambda_{ik,1}^{\theta^{(w)}}}
+\end{equation}
+with
 \begin{equation}
   \label{eq:hat_Lambda_ik}
-  \hat \Lambda_{ik,\tilde g}^{\theta^{(w)}} = \pi_{\xi_k^{(w)}}(x_i) \dfrac{1}{2N} \sum_{\breve{b} \in S^{(w)}} \tilde g(\breve{b}) f(t_i, \delta_i, y_i | \breve{b}, G_i = k ; \theta^{(w)}).
+  \hat \Lambda_{ik,\tilde g}^{\theta^{(w)}} = \dfrac{1}{2N} \sum_{\breve{b} \in S^{(w)}} \tilde g(\breve{b}) f(t_i, \delta_i, y_i | \breve{b}, G_i = k ; \theta^{(w)}).
 \end{equation}
 
 It is common in Monte Carlo EM to increase $N$ with the iterations $w$~\citep{wei1990monte} since it is computationally inefficient to use a large $N$ in the early steps of the algorithm, when $\theta^{(w)}$ is far from $\hat \theta$. Multiple techniques have been proposed (see for instance~\citet{law2002joint} where a subjectively rule is followed, or~\citet{booth1999maximizing} that uses a rule based on confidence intervals for $\theta^{(w)}$ which requires additional variance estimation). We opt for a simple automated approach using relative differences of the objective function defined in~\eqref{eq:pen-log-lik} (see Algorithm~\ref{alg:QNMCEM}).
@@ -417,27 +433,108 @@ It is common in Monte Carlo EM to increase $N$ with the iterations $w$~\citep{we
 Now in the case $g = g_k$, one has $\E_{\theta^{(w)}}[g_k(Gi) | t_i, \delta_i, y_i] = \pi_{ik}^{\theta^{(w)}}$ and we compute its approximation given
 \begin{equation}
 \label{eq:hat_pi_ik-def}
-  \hat \pi_{ik}^{\theta^{(w)}} = \dfrac{\hat \Lambda_{ik,1}^{\theta^{(w)}}}{\sum_{k=0}^{K-1} \hat \Lambda_{ik,1}^{\theta^{(w)}}}.
+  \hat \pi_{ik}^{\theta^{(w)}} = \dfrac{\pi_{\xi_k^{(w)}}(x_i) \hat \Lambda_{ik,1}^{\theta^{(w)}}}{\sum_{k=0}^{K-1} \pi_{\xi_k^{(w)}}(x_i) \hat \Lambda_{ik,1}^{\theta^{(w)}}}.
 \end{equation}
 
 \paragraph*{Quasi-Newton M-step.}
-Here, we need to compute \[\theta^{(w+1)} \in \argmin_{\theta \in \R^\vartheta} \cQ_n(\theta, \theta^{(w)}) .\]
+Here, we need to compute \[\theta^{(w+1)} \in \argmin_{\theta \in \R^\vartheta} \cQ_n(\theta, \theta^{(w)}) + \sum_{k=0}^{K-1} \zeta_{1,k} \norm{\xi_k}_{\text{en}, \eta} + \zeta_{2,k} \norm{\gamma_k}_{\text{sg} l_1, \tilde{\eta}} + \zeta_{3,k} \norm{\beta_k}_{\text{sg} l_1, \tilde{\eta}}.\]
 First, for the update of $\lambda_0^{(w)}$, we treat the jump size at the observed event times as parameters to be estimated~\citep{klein1992semiparametric}. The closed-form update is then given by
 \begin{equation}
   \label{eq:update_lambda_0}
-  \lambda_0^{(w+1)}(t)= \dfrac{\sum_{i=1}^n \delta_i \ind{\{t=t_i\}}}{\sum_{i=1}^n \sum_{k=0}^{K-1} \hat \Lambda_{ik,\tilde g}^{\theta^{(w)}} \ind{\{t_i \geq t\}} } ,
+  \lambda_0^{(w+1)}(t)= \dfrac{\sum_{i=1}^n \delta_i \ind{\{t=t_i\}}}{\sum_{i=1}^n \sum_{k=0}^{K-1} \hat \pi_{ik}^{\theta^{(w)}} \hat \Lambda_{ik,\tilde g_{t_i, \gamma_k^{(w+1)}, \beta_k^{(w+1)}}^1}^{\theta^{(w)}} \ind{\{t_i \geq t\}} },
 \end{equation}
-with $\tilde g: b_i \mapsto \exp \Big\{ x_i^\top \gamma_{k,0} + \sum_{l=1}^L \sum_{a=1}^\cA {\gamma_{k,a}^l}^\top \varphi_a(t_i, \beta_k^l, b_i^l) \Big\}$, which is a Breslow like estimator~\citep{breslow1972contribution} adapted to our model.
+which is a Breslow like estimator~\citep{breslow1972contribution} adapted to our model, and where 
+\begin{equation}
+  \label{eq:g-tilde-1-2}
+  \left\{
+    \begin{array}{ll}
+        \tilde g_{s, \gamma_k, \beta_k}^1&: b_i \mapsto \exp \big\{ x_i^\top \gamma_{k,0} + \tilde g_{s, \gamma_k, \beta_k}^2(b_i) \big\},\\
+        \tilde g_{s, \gamma_k, \beta_k}^2&: b_i \mapsto \sum_{l=1}^L \sum_{a=1}^\cA {\gamma_{k,a}^l}^\top \varphi_a(s, \beta_k^l, b_i^l).
+    \end{array}
+  \right.
+\end{equation}
 Then, the update of $D^{(w)}$ is naturally given in closed-form by
 \begin{equation}
   \label{eq:update_D}
-  D^{(w+1)}= n^{-1} \dfrac{1}{2N} \sum_{\breve{b} \in S^{(w)}} \breve{b} \breve{b}^\top f(t_i, \delta_i, y_i | \breve{b}, G_i = k ; \theta^{(w)}).
+  D^{(w+1)} = n^{-1} \sum_{i=1}^n \hat \E_{\theta^{(w)}}[ b_i b_i^\top | t_i, \delta_i, y_i].
 \end{equation}
-Concerning the update of $\phi^{(w)}$ now, and regarding Table~\ref{table:glm}, let us focus on the Gaussian case being particularly useful in practice.
+Concerning the update of $\phi^{(w)}$ now, and regarding Table~\ref{table:glm}, let us focus on the Gaussian case being particularly useful in practice. It is also obtained in closed-form by
+\begin{align}
+  \label{eq:update_phi}
+  \phi_l^{(w+1)} = \big(\sum_{i=1}^n n_i^l \big)^{-1} \sum_{i=1}^n \sum_{k=0}^{K-1} \hat \pi_{ik}^{\theta^{(w)}} \Big[ &\big(y_i^l - U_{il} {\beta_k^l}^{(w+1)}\big)^\top \Big(y_i^l - U_{il} {\beta_k^l}^{(w+1)} \nonumber \\
+  & - 2V_{il} \hat \E_{\theta^{(w)}}[ b_i^l | t_i, \delta_i, y_i]\Big) \nonumber \\
+  & + \Tr\big(V_{il}^\top V_{il}\hat \E_{\theta^{(w)}}[ b_i^l {b_i^l}^\top | t_i, \delta_i, y_i]\big) \Big].
+\end{align}
+Let us focus now on the update of $\xi_k^{(w)}$ for $k=0, \ldots, K-1$. By denoting
+\[ P^{(w)}_{n,k}(\xi_k) = -n^{-1} \sum_{i=1}^n \hat \pi_{ik}^{\theta^{(w)}} \log \pi_{\xi_k}(x_i) \]
+based on the quantities involved in $\cQ_n(\theta, \theta^{(w)})$ that depend on $\xi_k$. The update for $\xi_k^{(w)}$ therefore requires to solve the following convex minimization problem
+\begin{equation}
+  \label{eq:minimization-xi_k}
+  \xi_k^{(w+1)} \in \argmin_{\xi_k \in \R^p} P^{(w)}_{n,k}(\xi_k) + \zeta_{1,k} \norm{\xi_k}_{\text{en}, \eta}.
+\end{equation}
+It looks like the logistic regression objective, where labels are not fixed but softly encoded by the expectation step (computation of $\hat \pi_{ik}^{\theta^{(w)}}$ in~\eqref{eq:hat_pi_ik-def}). We then choose to solve~\eqref{eq:minimization-xi_k} using the L-BFGS-B algorithm~\citep{zhu1997algorithm} which belongs to the class of quasi-Newton optimization routines and solves the given minimization problem by computing approximations
+of the inverse Hessian matrix of the objective function. It can deal with differentiable convex objectives with box constraints.
+In order to use it with $\ell_1$ penalization, which is not differentiable, we use the trick borrowed from \citet{andrew2007scalable}: for $a \in \R$, write $|a| = a^+ + a^-$, where $a^+$ and $a^-$ are respectively the positive and negative part of $a$, and add the constraints $a^+ \geq 0$ and $a^- \geq 0$.
+Namely, we rewrite the minimization problem~\eqref{eq:minimization-xi_k} as the following differentiable problem with box constraints
+\begin{equation}
+  \label{eq:sub-problem-xi_k}
+  \begin{split}
+    \text{minimize}& \quad \quad P_{n, k}^{(w)}(\xi_k^+ - \xi_k^-) + \zeta_{1,k} \big((1 - \eta) \sum_{j=1}^p (\xi_{k,j}^+ + \xi_{k,j}^-) + \dfrac \eta 2 \norm{{\xi_k}^+ - {\xi_k}^-}_2^2 \big) \\
+    \text{subject to}& \quad \quad \xi_{k,j}^+ \geq 0 \text{ and } \xi_{k,j}^- \geq 0 \text{ for } j = 1, \ldots, p
+  \end{split} 
+\end{equation}
+where $\xi_k^\pm = (\xi_{k,1}^\pm, \ldots, \xi_{k,p}^\pm)^\top$. The L-BFGS-B solver requires the exact value of the gradient, which is easily given by
+\begin{equation}
+  \label{eq:grad-xi_k}
+  \frac{\partial P_{n,k}^{(w)}(\xi_k)}{\partial \xi_k} = -n^{-1} \sum_{i=1}^n \hat \pi_{ik}^{\theta^{(w)}} \big( 1 - \pi_{\xi_k}(x_i) \big) x_i.
+\end{equation}
+Similarly to the strategy of increasing $N$ with the iterations $w$ for computational reasons, it is not clever to use a too small solver tolerance in the early steps of the algorithm, where we call tolerance the value for which iterations stop when the stopping criterion is below it. We then decrease the L-BFGS-B tolerance (which we denote $tol$) with every increase of $N$ (see Algorithm~\ref{alg:QNMCEM}).
+
+Concerning the update of $\gamma_k^{(w)}$ for $k=0, \ldots, K-1$, let us follow the same strategy by denoting
+\begin{align*}
+  Q^{(w)}_{n,k}(\gamma_k) = -n^{-1} \sum_{i=1}^n \hat \pi_{ik}^{\theta^{(w)}} \Big[ &\delta_i \hat \E_{\theta^{(w)}}[ \log \circ \tilde g_{t_i, \gamma_k, \beta_k^{(w+1)}}^1(b_i) | t_i, \delta_i, y_i] \\
+  & - \sum_{j=1}^J \lambda_0^{(w+1)}(t_j) \hat \E_{\theta^{(w)}}[ \tilde g_{t_j, \gamma_k, \beta_k^{(w+1)}}^1(b_i) | t_i, \delta_i, y_i] \ind{\{t_j\leq t_i\}} \Big] 
+\end{align*}
+based on the quantities involved in $\cQ_n(\theta, \theta^{(w)})$ that depend on $\gamma_k$, with $\tilde g_{s, \gamma_k, \beta_k}^1$ and $\tilde g_{s, \gamma_k, \beta_k}^2$ defined in~\eqref{eq:g-tilde-1-2}. The integration over the survival process has been replaced with a finite sum over the process evaluated at the distinct event times $(t_1, \ldots, t_J)$ with $J \in~\N$, since $\lambda_0^{(w+1)}$ defined in~\eqref{eq:update_lambda_0} is always zero except at observed event times. The update for $\gamma_k^{(w)}$ therefore requires to solve the following minimization problem
+\begin{equation}
+  \label{eq:minimization-beta_k}
+  \gamma_k^{(w+1)} \in \argmin_{\gamma_k \in \R^{p+L\mathcal{A}}} Q^{(w)}_{n,k}(\gamma_k) + \zeta_{2,k} \norm{\gamma_k}_{\text{sg} l_1, \tilde{\eta}}.
+\end{equation}
+We then rewrite problem~\eqref{eq:minimization-beta_k} as the following differentiable problem with box constraints
+\begin{equation}
+  \label{eq:sub-problem-beta_k}
+  \begin{split}
+    \text{minimize}& \quad \quad Q_{n, k}^{(w)}(\gamma_k^+ - \gamma_k^-) + \zeta_{2,k} \big((1 - \tilde \eta) \sum_{l=1}^L \norm{{\gamma_k^l}^+ - {\gamma_k^l}^-}_2 + \tilde \eta \sum_{j=1}^{p+L\mathcal{A}} (\gamma_{k,j}^+ + \gamma_{k,j}^-) \big) \\
+    \text{subject to}& \quad \quad \gamma_{k,j}^+ \geq 0 \text{ and } \gamma_{k,j}^- \geq 0 \text{ for } j = 1, \ldots, p+L\mathcal{A}.
+  \end{split} 
+\end{equation}
+% compute gradient
+
+
+Finally, for the update of $\beta_k^{(w)}$ for $k=0, \ldots, K-1$, we similarly denote
+\begin{align*}
+  R^{(w)}_{n,k}(\beta_k) = -n^{-1} \sum_{i=1}^n \hat \pi_{ik}^{\theta^{(w)}} \Big[ &\delta_i \hat \E_{\theta^{(w)}}[ \tilde g_{t_i, \gamma_k^{(w+1)}, \beta_k}^2(b_i) | t_i, \delta_i, y_i] \\
+  & - \sum_{j=1}^J \lambda_0^{(w+1)}(t_j) \hat \E_{\theta^{(w)}}[ \tilde g_{t_j, \gamma_k^{(w+1)}, \beta_k}^1(b_i) | t_i, \delta_i, y_i] \ind{\{t_j\leq t_i\}} \\
+  & + (y_i \odot \Phi_i^{(w+1)})^\top \hat \E_{\theta^{(w)}}[ M_{ik} | t_i, \delta_i, y_i] \\
+  & - \hat \E_{\theta^{(w)}}[ c_{\phi^{(w+1)}}(M_{ik}) | t_i, \delta_i, y_i] \Big] 
+\end{align*}
+based on the quantities involved in $\cQ_n(\theta, \theta^{(w)})$ depending on $\beta_k$, and solve The update for $\beta_k^{(w)}$ therefore requires to solve the following differentiable problem with box constraints
+\begin{equation}
+  \label{eq:sub-problem-beta_k}
+  \begin{split}
+    \text{minimize}& \quad \quad R_{n, k}^{(w)}(\beta_k^+ - \beta_k^-) + \zeta_{3,k} \big((1 - \tilde \eta) \sum_{l=1}^L \norm{{\beta_k^l}^+ - {\beta_k^l}^-}_2 + \tilde \eta \sum_{j=1}^q (\beta_{k,j}^+ + \beta_{k,j}^-) \big) \\
+    \text{subject to}& \quad \quad \beta_{k,j}^+ \geq 0 \text{ and } \beta_{k,j}^- \geq 0 \text{ for } j = 1, \ldots, q.
+  \end{split} 
+\end{equation}
+% calculer gradient
+
+% dire qqch in practice sur la dépendance de lambda, gamma et beta dans l'update
+
 
 
 \paragraph*{Initialization.}
-Because our algorithm gives a local minimum, it is clever to choose an initial value $\theta^{(0)}$ relatively close to the final solution $\hat \theta$.
+Because our algorithm gives a local minimum, it is clever to choose an initial value $\theta^{(0)}$ relatively close to the final solution $\hat \theta$. Then, let us give some details about the starting point of Algorithm~\ref{alg:QNMCEM}. 
+For all $k = 0, \ldots, K-1$, we first use $\xi_k^{(0)}$ as the zero vector.
 
 
 \paragraph*{The QNMCEM algorithm.}
@@ -456,16 +553,19 @@ Compute the starting parameters $\theta^{(0)} \in \R^\vartheta$ following ?? \\
 \For{$w = 1,\ldots,$ until convergence}    
 { 
   \tcc{Monte Carlo E-step}
-  Compute $\hat \Lambda_{ik,\tilde g}^{\theta^{(w)}}$ using~\eqref{eq:hat_Lambda_ik}\\
+  Compute $\hat \Lambda_{ik,\tilde g}^{\theta^{(w)}}$ using~\eqref{eq:hat_Lambda_ik} for the required functions $\tilde g$\\
   Compute $\hat \pi_{ik}^{\theta^{(w)}}$ using~\eqref{eq:hat_pi_ik-def}\\
   \If{Condition}
   {
-      $N \leftarrow N + $
+      $N \leftarrow N + $\\
+      $tol \leftarrow tol - $
   }
   \tcc{Quasi-Newton M-step}
   Update $\lambda_0^{(w+1)}$ using~\eqref{eq:update_lambda_0}\\
   Update $D^{(w+1)}$ using~\eqref{eq:update_D}\\
-  
+  Compute $(\xi_k^{(w+1)})_{k=0,\ldots,K-1}$ by solving~\eqref{eq:sub-problem-xi_k} with the L-BFGS-B algorithm\\
+  % \phi^{(w+1)} apres beta^{(w+1)} !!!!
+  Update $\phi^{(w+1)}$ using~\eqref{eq:update_phi} \quad \tcp{Gaussian case}
 }
 \textbf{Return:} {$\hat \theta$}
 \end{algorithm}
@@ -474,7 +574,7 @@ Compute the starting parameters $\theta^{(0)} \in \R^\vartheta$ following ?? \\
 \subsection{Practical details}
 \label{sec:practical details}
 
-Let us give some numerical details about the choices made for using the lights model in practice.
+Let us give some details about the choices made for using the lights model in practice.
 
 \paragraph{Cross-validation procedure.}
 
@@ -614,15 +714,38 @@ All the methodology discussed in this paper is implemented in \texttt{Python}. T
 \section*{Acknowledgements}
 \textit{Conflict of Interest}: None declared.
 
-% \appendix
+\appendix
 
-% \begin{center}
-% \LARGE \textbf{Appendices}
-% \end{center}
+\begin{center}
+\LARGE \textbf{Appendices}
+\end{center}
 
-% \section{Proofs}
-% \label{sec:proofs}
+\section{Numerical details}
+\label{sec:numerical-details}
 
+Concerning the 10-fold cross-validation procedure for tuning $(\zeta_{1,k}, \zeta_{2,k}, \zeta_{3,k})^\top \in \R_+^3$, we then use a randomized search with the C-index metric (see Section~\ref{sec:practical details}). 
+Let us precise that we choose $\zeta_{1,k}$ as the largest value such that error is within one standard error of the minimum, and that a randomized search is made during the cross-validation on an interval $[\zeta_{1,k}^{\text{max}} \times 10^{-4}, \zeta_{1,k}^{\text{max}} ]$, with $\zeta_{1,k}^{\text{max}}$ the interval upper bound computed hereafter.
+
+Considering the convex minimization problem~\eqref{eq:minimization-xi_k} at a given step $w$,
+and regarding the randomly chosen candidate values for $\zeta_{1,k}$, we consider $\zeta_{1,k}^1 \leq \zeta_{1,k}^2 \leq \dots \leq \zeta_{1,k}^{\text{max}}$. At $\zeta_{1,k}^{\text{max}}$, all coefficients $\hat \xi_{k, j}$ for all $j = 1, \dots, p$ are exactly zero.
+The KKT conditions \citep{boyd2004convex} claim that
+\begin{center}
+  $\left\{
+      \begin{aligned}
+        &\frac{\partial P_{n, k}^{(w)}(\hat \xi_k)}{\partial \xi_j} =  \zeta_{1,k} \big( (\eta-1)\ \text{sgn}(\hat \xi_{k,j}) - \eta \hat \xi_{k,j} \big)  \quad \ \ \ \forall j \in \hat \cA_k \\
+        &\left| \frac{\partial P_{n, k}^{(w)}(\hat \xi_k)}{\partial \xi_j} \right| < \zeta_{1,k} (1 - \eta) \quad \quad \quad \quad \quad \quad \quad \ \forall j \notin \hat \cA_k
+      \end{aligned}
+    \right.$,
+\end{center}
+where $\hat \cA_k = \big\{j = 1, \dots, p : \hat \xi_{k,j} \neq 0 \big\}$ is the active set of the $\hat \xi_k $ estimator, and for all $x \in~\R\setminus~\{0\},\ \text{sgn}(x) = \mathds{1}_{\{x>0\}} - \mathds{1}_{\{x<0\}} $. Then, using~\eqref{eq:grad-xi_k}, one obtains
+\begin{equation*}
+\hat \xi_{k, j} = 0 \ \Rightarrow \ \left| n^{-1} \sum_{i=1}^n \hat \pi_{ik}^{\theta^{(w)}} \big( 1 - \pi_{\xi_k}(x_i) \big) x_{ij}  \right| < \zeta_{1,k} (1 - \eta)
+\end{equation*}
+for all $j = 1, \dots, p$.
+Hence, we choose the following upper bound for the randomly chosen candidate interval during the cross-validation procedure
+\begin{equation*}
+\zeta_{1,k}^{\text{max}} = \frac{1}{n(1-\eta)} \underset{j = 1, \dots, p}{\text{max}} \sum_{i=1}^n |x_{ij}|.
+\end{equation*}
 
 \bibliography{biblio}
 \bibliographystyle{plainnat}{}
