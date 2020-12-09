@@ -81,12 +81,12 @@ On these high-dimensional datasets, our proposed method significantly outperform
 
 \section{Introduction}
 
-In many clinical studies, it has become increasingly common to record the values of longitudinal features (e.g. biomarkers) until the occurrence of an event of interest for a subject. The ``joint modeling'' approaches, namely modeling the longitudinal and survival outcomes through a joint likelihood model rather than separately, has received considerable attention during the past two decades~\citep{tsiatis2004joint}. Numerical studies suggest that these approaches are among the most satisfactory to combine information~\citep{yu2004joint}. They have the advantage of making more efficient use of the data since information about survival also goes into modeling the longitudinal features. In addition, they produce unbiased estimates and do not rely on approximations for incorporating conplex longitudinal trajectories. Most developments have either focused on shared random-effect models (SREMs)~\citep{wulfsohn1997joint}, in which characteristics of the longitudinal processes (for instance functions of the random effects) are included as features in the survival model ; or on joint latent class models (JLCMs)~\citep{vermunt2003latent}, in which the population is considered as heterogeneous, with the assumption that there exist homogeneous latent subgroups sharing the same marker trajectories and the same prognostic.
+In many clinical studies, it has become increasingly common to record the values of longitudinal features (e.g., biomarkers) until the occurrence of an event of interest for a subject. The ``joint modeling'' approaches, namely modeling the longitudinal and survival outcomes through a joint likelihood model rather than separately, has received considerable attention during the past two decades~\citep{tsiatis2004joint}. Numerical studies suggest that these approaches are among the most satisfactory to combine information~\citep{yu2004joint}. They have the advantage of making more efficient use of the data since information about survival also goes into modeling the longitudinal features. In addition, they produce unbiased estimates and do not rely on approximations for incorporating conplex longitudinal trajectories. Most developments have either focused on shared random-effect models (SREMs)~\citep{wulfsohn1997joint}, in which characteristics of the longitudinal processes (for instance functions of the random effects) are included as features in the survival model ; or on joint latent class models (JLCMs)~\citep{vermunt2003latent}, in which the population is considered as heterogeneous, with the assumption that there exist homogeneous latent subgroups sharing the same marker trajectories and the same prognostic.
 
 \paragraph{The high-dimensional longitudinal data context.}
 With the development of electronic health records, high-dimensional settings are becoming increasingly frequent in various contexts where the number of available features to consider as potential risk factors is tremendous.
 Moreover, with an increased focus on personalised medicine, the need to implement multivariate models that account for a large number of longitudinal outcomes is critical. Despite this, joint models have predominantly focused on univariate data, with attempts to fit multiple univariate joint models separately~\citep{wang2012joint}, which is inefficient~\citep{lin2002maximum}. 
-Despite many multivariate models being presented in full generality, questions arrising from the high-dimensional context -- e.g. computational power, limits in numerical estimation, or sample size -- are never considered in analyses (to the best of our knowledge), and the number of longitudinal outcomes considered in numerical studies are often very low (see~\citet{hickey2016joint} for a complete review). For instance,~\citet{jaffa2014joint} only considers 3 longitudinal outcomes in the simulation study while mentioning a ``high-dimensional multivariate longitudinal data'' context.
+Despite many multivariate models being presented in full generality, questions arrising from the high-dimensional context -- e.g., computational power, limits in numerical estimation, or sample size -- are never considered in analyses (to the best of our knowledge), and the number of longitudinal outcomes considered in numerical studies are often very low (see~\citet{hickey2016joint} for a complete review). For instance,~\citet{jaffa2014joint} only considers 3 longitudinal outcomes in the simulation study while mentioning a ``high-dimensional multivariate longitudinal data'' context.
 
 
 \paragraph{General framework.}
@@ -99,7 +99,7 @@ T = T^\star \wedge C \quad \text{and} \quad \Delta = \ind{\{T^\star \leq C\}}
 \end{equation*}
 respectively, where $a \wedge b$ denotes the minimum between two numbers $a$ and $b$, and $\ind{\{\cdot\}}$ the indicator function taking the value $1$ if the condition in $\{\cdot\}$ is satisfied and $0$ otherwise.
 
-Let $X$ denotes the $p$-dimensional vector of time-independent features (e.g. patients characteristics, therapeutic strategy, or omics features recorded at the begining of a study), and let  $Y(t) = \big(Y^1(t), \ldots, Y^L(t) \big)^\top \in \R^L$ denote the value of the $L$-dimensional longitudinal outcome at time point $t \geq 0$, with $L \in \N_+$.
+Let $X$ denotes the $p$-dimensional vector of time-independent features (e.g., patients characteristics, therapeutic strategy, or omics features recorded at the begining of a study), and let  $Y(t) = \big(Y^1(t), \ldots, Y^L(t) \big)^\top \in \R^L$ denote the value of the $L$-dimensional longitudinal outcome at time point $t \geq 0$, with $L \in \N_+$.
 
 
 \paragraph{Heterogeneity of the population.}
@@ -130,7 +130,7 @@ A precise description of the model is given in Section~\ref{sec:Method}.
 Section~\ref{sec:inference} focuses on a regularized version of the
 model to exploit dimension reduction and prevent overfitting. Inference is
 presented under this framework, as well as the developed algorithm.
-Section~\ref{sec:Performance evaluation} introduces the C-index metric, as well as a novel evaluation strategy to assess diagnostic prediction performances while mimicking a real-time use of the model in clinical care, and finally the competing methods considered.
+Section~\ref{sec:Performance evaluation} introduces the C-index metric, as well as a novel evaluation strategy to assess diagnostic prediction performances while mimicking a real-time use of the model in clinical care, and finally the considered competing methods.
 Section~\ref{sec:simulation study} presents the simulation procedure used to evaluate the performance of our method in a high-dimensional context and compares it with state-of-the-art ones. In Section~\ref{sec:application}, we apply our method to high-dimensional publicly available datasets. Finally, we discuss the obtained results in Section~\ref{sec:conclusion}.
 
 \paragraph{Notations.}
@@ -184,7 +184,7 @@ To quantify the effect of the longitudinal outcomes on the risk for an event, we
 \end{equation}
 where $\lambda_0(\cdot)$ is an unspecified baseline hazard function and given that $G = k$, we denote 
 \[\cM_k(t) = \{m_k^l(u), 0 \leq u < t\}\] 
-the history of the true unobserved longitudinal process up to time $t$, $x$ is the $p$-vector of time-independant features (also used in~\eqref{eq:pi}, with no \textit{a priori} on the choice of features involved in the definition of $\pi_{\xi_k}$ nor $\lambda$, since independant regularizations are used during the inference, see~\eqref{eq:pen-log-lik}) with corresponding fixed effects $\gamma_{k,0} \in \R^p$, and for each $l$-th longitudinal outcome, we consider $\cA \in \N_+$ known functionals $\varphi_a$ defining a shared association with $\gamma_{k,a}^l \in \R^{\rho_a}$ the corresponding joint association parameters, and $\rho_a \in \N_+$ the dimension of the corresponding $\varphi_a$. 
+the history of the true unobserved longitudinal process up to time $t$. We choose to incorporate $x$, also used in~\eqref{eq:pi}, with no \textit{a priori} on the choice of time-independant features involved in the definition of $\pi_{\xi_k}$ nor $\lambda$, since independant regularizations are used during inference, see~\eqref{eq:pen-log-lik}. Corresponding fixed effects are denoted $\gamma_{k,0} \in \R^p$, and for each $l$-th longitudinal outcome, we consider $\cA \in \N_+$ known functionals $\varphi_a$ defining a shared association with $\gamma_{k,a}^l \in \R^{\rho_a}$ the corresponding joint association parameters, and $\rho_a \in \N_+$ the dimension of the corresponding $\text{Im}(\varphi_a)$. 
 This can be viewed as a generalization of SREMs~\citep{rizopoulos2010jm}. Let us finally denote
 \[\gamma_k= (\gamma_{k,0}^\top, \gamma_{k,1}^1, \ldots, \gamma_{k,\cA}^1, \ldots, \gamma_{k,1}^L, \ldots, \gamma_{k,\cA}^L )^\top \in \R^{p+L\cA}. \]
 
@@ -193,17 +193,17 @@ This can be viewed as a generalization of SREMs~\citep{rizopoulos2010jm}. Let us
 The association structure between the longitudinal and the time-to-event submodels is key to the joint modeling framework. In spite of that, rationale for selecting shared associations has received little attention. We then propose to include some of the most common parameterization with no \textit{a priori}, set out in Table~\ref{table:shared_associations}, and let the model select the relevant ones through the regularization strategy described in Section~\ref{sec:penalized-obj}.
 \begin{table}[htb]
 \centering
-\begin{tabular}{cccc}
+\begin{tabular}{ccccc}
 \toprule
-Description & $\varphi_a(t, \beta_k^l, b^l)$ & $\rho_a$ & Reference \\
+Description & $\varphi_a(t, \beta_k^l, b^l)$ & $\frac{\partial \varphi_a(t, \beta_k^l, b^l)}{\partial \beta_k^l}$ & $\rho_a$ & Reference \\
 \midrule
-Linear predictor & $m_k^l(t)$ & 1 & \citet{chi2006joint} \\ [.15cm]
-Random effects & $b^l$ & $r_l$ & \citet{hatfield2011joint} \\ 
-Time-dependent slope & $\dfrac{\dd}{\dd t} m_k^l(t)$ & 1 & \citet{rizopoulos2011bayesian} \\ [.3cm]
-Cumulative effect & $\int_0^t m_k^l(s) \dd s$ & 1 & \citet{andrinopoulou2017combined} \\ [.1cm]
+Linear predictor & $m_k^l(t)$ & $u^l(t)$ & 1 & \citet{chi2006joint} \\ [.15cm]
+Random effects & $b^l$ & $\mathbf{0}_{q_l}$ & $r_l$ & \citet{hatfield2011joint} \\ 
+Time-dependent slope & $\dfrac{\dd}{\dd t} m_k^l(t)$ & $\dfrac{\dd}{\dd t} u^l(t)$ & 1 & \citet{rizopoulos2011bayesian} \\ [.3cm]
+Cumulative effect & $\int_0^t m_k^l(s) \dd s$ & $\int_0^t u^l(s) \dd s$ & 1 & \citet{andrinopoulou2017combined} \\ [.1cm]
  \bottomrule
 \end{tabular}
-\caption[]{Description of the shared associations we include in the group-specific risk of event submodel~\eqref{eq:intensity-model}.}
+\caption[]{Description of the shared associations included in the group-specific risk of event submodel~\eqref{eq:intensity-model}. The gradient with respect to $\beta_k^l$ is also given, which will be useful for inference in Section~\ref{sec:QNMCEM}.}
 \label{table:shared_associations}
 \end{table}
  
@@ -260,7 +260,7 @@ For all $k = 0, \ldots, K-1$, we denote
 and 
 \[M_{ik} = U_i\beta_k + V_ib_i \in \R^{n_i}. \]
 
-Given~\eqref{eq:link-function}, each $y_i^l$ is assumed to be from a one-parameter exponential family with respect to a reference measure which is either the Lebesgue measure (e.g. in the Gaussian case) or the counting measure (e.g. in the logistic cases).
+Given~\eqref{eq:link-function}, each $y_i^l$ is assumed to be from a one-parameter exponential family with respect to a reference measure which is either the Lebesgue measure (e.g., in the Gaussian case) or the counting measure (e.g., in the logistic cases).
 The conditional distribution of $y_i|b_i, G_i=k$ is then assumed to be from a distribution with a density of the form
 \begin{equation}
 	\label{eq:exp-family-density}
@@ -316,16 +316,17 @@ and
 
 \paragraph{Specification of the design matrices.}
  
-In many practical applications, subjects show highly nonlinear longitudinal trajectories. In~\eqref{eq:log-lik}, the complete longitudinal history is required for the computation of the survival function. Hence, in order to produce a good estimate of $\cM(t)$, we consider a flexible representations for $u^l(t)$ using a high-dimensional vector of polynomial functions of time $t$, namely 
-\[u^l(t) = (1, t, t^2, \ldots, t^\alpha)^\top.\]
+In many practical applications, subjects show highly nonlinear longitudinal trajectories. In~\eqref{eq:log-lik}, the complete longitudinal history is required for the computation of the survival function. Hence, in order to produce a good estimate of $\cM_k(t)$, we consider a flexible representations for $u^l(t)$ using a high-dimensional vector of time monomials, namely 
+\[u^l(t) = (1, t, t^2, \ldots, t^\alpha)^\top\]
+with $\alpha \in \N_+$.
 % TODO: en pratique essayer d'ajouter X dans u^l(t) pr voir si ça améliore les perf ou non. Si oui l'ajouter au modèle.
-The idea here is to allow a wide range of orders for the polynomial so that a suitable one can be automatically chosen for each trajectory -- depending on its inherent complexity -- thanks to the regularization (see~\eqref{eq:pen-log-lik}).
-We then let \[v^l(t) = (1, t)^\top\] so that each trajectory of each subject gets an affine random effect. Hence with this choice in practice, one has $q_l=\alpha + 1$ and $r_l=2$ for for all $l=1, \ldots, L$.
+The idea here is to allow a wide range of polynomial orders for the representation so that a suitable one can be automatically chosen for each trajectory -- depending on its inherent complexity -- thanks to the regularization strategy proposed in~\eqref{eq:pen-log-lik}.
+We then let \[v^l(t) = (1, t)^\top\] so that each trajectory of each subject gets an affine random effect. Hence with this choice in practice, one has $q_l=\alpha + 1$ and $r_l=2$ for all $l=1, \ldots, L$.
 
 \section{Inference}
 \label{sec:inference}
 
-In this section, we describe the procedure for estimating the parameters of the lights model. We begin by presenting the considered penalized objective, and then focus on the algorithm we use for inference.
+In this section, we describe the procedure for estimating the parameters of the lights model. Let us first present the considered penalized objective, and then focus on the algorithm proposed for inference.
 
 \subsection{Penalized objective}
 \label{sec:penalized-obj}
@@ -336,9 +337,9 @@ In order to avoid overfitting and improve the prediction power of our method, we
 	\ell_n^\text{pen}(\theta) = - \ell_n(\theta) + \sum_{k=0}^{K-1} \zeta_{1,k} \norm{\xi_k}_{\text{en}, \eta} + \zeta_{2,k} \norm{\gamma_k}_{\text{sg} l_1, \tilde{\eta}} + \zeta_{3,k} \norm{\beta_k}_{\text{sg} l_1, \tilde{\eta}}
 \end{equation}
 where for all $k=0, \ldots, K-1$, we add an elastic net regularization~\citep{zou2005regularization} of the vector $\xi_k$ and a sparse group lasso regularization~\citep{simon2013sparse} of the vectors $\gamma_k$ and $\beta_k$, for tuning hyper-parameters $(\zeta_{1,k}, \zeta_{2,k}, \zeta_{3,k})^\top \in \R_+^3$. Here, $(\eta, \tilde{\eta}) \in [0, 1]^2$ are fixed and we denote
-\[ \norm{v}_{\text{en}, \eta} = (1-\eta)\norm{v}_1 + \dfrac\eta2 \norm{v}_2^2 \]
-for any vector $v$, that is a linear combination of the lasso ($\ell_1$) and ridge (squared $\ell_2$) penalties, and
-\[ \norm{v}_{\text{sg} l_1, \tilde{\eta}} = (1-\tilde{\eta})\sum_{l=1}^L\norm{v^l}_2 + \tilde{\eta} \norm{v}_1 \] for the sparse group lasso penalty, for which we do not have to account for group sizes since they all have the same one.
+\[ \norm{z}_{\text{en}, \eta} = (1-\eta)\norm{z}_1 + \dfrac\eta2 \norm{z}_2^2 \]
+for any vector $z$, that is a linear combination of the lasso ($\ell_1$) and ridge (squared $\ell_2$) penalties, and
+\[ \norm{z}_{\text{sg} l_1, \tilde{\eta}} = (1-\tilde{\eta})\sum_{l=1}^L\norm{z^l}_2 + \tilde{\eta} \norm{z}_1 \] for the sparse group lasso penalty, for which we do not have to account for group sizes since they all have the same one.
 Note that in the $\gamma_k$ penalty, $l$ actually starts at 0 (and not 1), but for simplicity we do not change the notation. 
 Hence, the resulting optimization problem is written
 \begin{equation}
@@ -382,7 +383,7 @@ for different functions $g$, where we denote
   \pi_{ik}^{\theta^{(w)}} = \P_{\theta^{(w)}}[G_i = k | t_i, \delta_i, y_i] 
 \end{equation}
 the posterior probability of the latent class membership using parameters $\theta^{(w)}$. 
-Then, either $g(b_i, G_i) = \tilde g(bi)$ (for instance $\tilde g: b_i \mapsto b_i^\top D^{-1}b_i$), or $g(b_i, G_i) = g_k(G_i)$ with $g_k~:~G_i \mapsto \ind{\{G_i=k\}}$.
+Then, either $g(b_i, G_i) = \tilde g(b_i)$ (for instance $\tilde g: b_i \mapsto b_i^\top D^{-1}b_i$), or $g(b_i, G_i) = g_k(G_i)$ with $g_k~:~G_i \mapsto \ind{\{G_i=k\}}$.
 
 In the case $g(b_i, G_i) = \tilde g(b_i)$, one has
 \begin{equation}
@@ -438,34 +439,23 @@ Now in the case $g = g_k$, one has $\E_{\theta^{(w)}}[g_k(Gi) | t_i, \delta_i, y
 
 \paragraph*{Quasi-Newton M-step.}
 Here, we need to compute \[\theta^{(w+1)} \in \argmin_{\theta \in \R^\vartheta} \cQ_n(\theta, \theta^{(w)}) + \sum_{k=0}^{K-1} \zeta_{1,k} \norm{\xi_k}_{\text{en}, \eta} + \zeta_{2,k} \norm{\gamma_k}_{\text{sg} l_1, \tilde{\eta}} + \zeta_{3,k} \norm{\beta_k}_{\text{sg} l_1, \tilde{\eta}}.\]
-First, for the update of $\lambda_0^{(w)}$, we treat the jump size at the observed event times as parameters to be estimated~\citep{klein1992semiparametric}. The closed-form update is then given by
-\begin{equation}
-  \label{eq:update_lambda_0}
-  \lambda_0^{(w+1)}(t)= \dfrac{\sum_{i=1}^n \delta_i \ind{\{t=t_i\}}}{\sum_{i=1}^n \sum_{k=0}^{K-1} \hat \pi_{ik}^{\theta^{(w)}} \hat \Lambda_{ik,\tilde g_{t_i, \gamma_k^{(w+1)}, \beta_k^{(w+1)}}^1}^{\theta^{(w)}} \ind{\{t_i \geq t\}} },
-\end{equation}
-which is a Breslow like estimator~\citep{breslow1972contribution} adapted to our model, and where 
+Let us introduce the following useful function
 \begin{equation}
   \label{eq:g-tilde-1-2}
   \left\{
     \begin{array}{ll}
-        \tilde g_{s, \gamma_k, \beta_k}^1&: b_i \mapsto \exp \big\{ x_i^\top \gamma_{k,0} + \tilde g_{s, \gamma_k, \beta_k}^2(b_i) \big\},\\
-        \tilde g_{s, \gamma_k, \beta_k}^2&: b_i \mapsto \sum_{l=1}^L \sum_{a=1}^\cA {\gamma_{k,a}^l}^\top \varphi_a(s, \beta_k^l, b_i^l).
+        \tilde g_{s, \gamma_k, \beta_k}^1&: b_i \mapsto \exp \big\{ x_i^\top \gamma_{k,0} + \tilde g_{s, \gamma_k, \beta_k}^2(b_i) \big\}\\
+        \tilde g_{s, \gamma_k, \beta_k}^2&: b_i \mapsto \sum_{l=1}^L \sum_{a=1}^\cA {\gamma_{k,a}^l}^\top \varphi_a(s, \beta_k^l, b_i^l)
     \end{array}
   \right.
 \end{equation}
-Then, the update of $D^{(w)}$ is naturally given in closed-form by
+and present the parameters updates in the order given in Algorithm~\ref{alg:QNMCEM}.
+First, the update of $D^{(w)}$ is naturally given in closed-form by
 \begin{equation}
   \label{eq:update_D}
   D^{(w+1)} = n^{-1} \sum_{i=1}^n \hat \E_{\theta^{(w)}}[ b_i b_i^\top | t_i, \delta_i, y_i].
 \end{equation}
-Concerning the update of $\phi^{(w)}$ now, and regarding Table~\ref{table:glm}, let us focus on the Gaussian case being particularly useful in practice. It is also obtained in closed-form by
-\begin{align}
-  \label{eq:update_phi}
-  \phi_l^{(w+1)} = \big(\sum_{i=1}^n n_i^l \big)^{-1} \sum_{i=1}^n \sum_{k=0}^{K-1} \hat \pi_{ik}^{\theta^{(w)}} \Big[ &\big(y_i^l - U_{il} {\beta_k^l}^{(w+1)}\big)^\top \Big(y_i^l - U_{il} {\beta_k^l}^{(w+1)} \nonumber \\
-  & - 2V_{il} \hat \E_{\theta^{(w)}}[ b_i^l | t_i, \delta_i, y_i]\Big) \nonumber \\
-  & + \Tr\big(V_{il}^\top V_{il}\hat \E_{\theta^{(w)}}[ b_i^l {b_i^l}^\top | t_i, \delta_i, y_i]\big) \Big].
-\end{align}
-Let us focus now on the update of $\xi_k^{(w)}$ for $k=0, \ldots, K-1$. By denoting
+Then, let us focus on the update of $\xi_k^{(w)}$ for $k=0, \ldots, K-1$. We denote
 \[ P^{(w)}_{n,k}(\xi_k) = -n^{-1} \sum_{i=1}^n \hat \pi_{ik}^{\theta^{(w)}} \log \pi_{\xi_k}(x_i) \]
 based on the quantities involved in $\cQ_n(\theta, \theta^{(w)})$ that depend on $\xi_k$. The update for $\xi_k^{(w)}$ therefore requires to solve the following convex minimization problem
 \begin{equation}
@@ -490,45 +480,79 @@ where $\xi_k^\pm = (\xi_{k,1}^\pm, \ldots, \xi_{k,p}^\pm)^\top$. The L-BFGS-B so
 \end{equation}
 Similarly to the strategy of increasing $N$ with the iterations $w$ for computational reasons, it is not clever to use a too small solver tolerance in the early steps of the algorithm, where we call tolerance the value for which iterations stop when the stopping criterion is below it. We then decrease the L-BFGS-B tolerance (which we denote $tol$) with every increase of $N$ (see Algorithm~\ref{alg:QNMCEM}).
 
+Now, for the update of $\beta_k^{(w)}$ for $k=0, \ldots, K-1$, we similarly denote
+\begin{align}
+  \label{eq:R-def}
+  R^{(w)}_{n,k}(\beta_k) = -n^{-1} \sum_{i=1}^n \hat \pi_{ik}^{\theta^{(w)}} \Big[ &\delta_i \hat \E_{\theta^{(w)}}[ \tilde g_{t_i, \gamma_k^{(w+1)}, \beta_k}^2(b_i) | t_i, \delta_i, y_i] \\ \nonumber
+  & - \sum_{j=1}^J \lambda_0^{(w+1)}(t_j) \hat \E_{\theta^{(w)}}[ \tilde g_{t_j, \gamma_k^{(w+1)}, \beta_k}^1(b_i) | t_i, \delta_i, y_i] \ind{\{t_j\leq t_i\}} \\ \nonumber
+  & + (y_i \odot \Phi_i^{(w+1)})^\top \hat \E_{\theta^{(w)}}[ M_{ik} | t_i, \delta_i, y_i] \\ \nonumber
+  & - \hat \E_{\theta^{(w)}}[ c_{\phi^{(w+1)}}(M_{ik}) | t_i, \delta_i, y_i] \Big] 
+\end{align}
+based on the quantities involved in $\cQ_n(\theta, \theta^{(w)})$ depending on $\beta_k$, with $\tilde g_{t_j, \gamma_k^{(w+1)}, \beta_k}^1$ and $\tilde g_{t_i, \gamma_k^{(w+1)}, \beta_k}^2$ defined in~\eqref{eq:g-tilde-1-2}. Since $R^{(w)}_{n,k}$ depends on parameters estimates at iteration $w+1$ that have not been computed yet ($\gamma_k^{(w+1)}$, $\lambda_0^{(w+1)}$ and $\phi^{(w+1)}$), we denote $R^{(w^-)}_{n,k}$ the function obtained from~\eqref{eq:R-def} by replacing $(w+1)$ with $(w)$, that is using the last iteration estimates.
+Hence, we update $\beta_k^{(w)}$ by solving the following problem
+\begin{equation}
+  \label{eq:sub-problem-beta_k}
+  \begin{split}
+    \text{minimize}& \quad \quad R_{n, k}^{(w^-)}(\beta_k^+ - \beta_k^-) + \zeta_{3,k} \big((1 - \tilde \eta) \sum_{l=1}^L \norm{{\beta_k^l}^+ - {\beta_k^l}^-}_2 + \tilde \eta \sum_{j=1}^q (\beta_{k,j}^+ + \beta_{k,j}^-) \big) \\
+    \text{subject to}& \quad \quad \beta_{k,j}^+ \geq 0 \text{ and } \beta_{k,j}^- \geq 0 \text{ for } j = 1, \ldots, q.
+  \end{split} 
+\end{equation}
+The value of the gradient for the Gaussian case is here given by
+\begin{align*}
+  \label{eq:grad-beta_k}
+  \frac{\partial R_{n,k}^{(w^-)}(\beta_k)}{\partial \beta_k^l} = -n^{-1} &\sum_{i=1}^n \hat \pi_{ik}^{\theta^{(w)}} \Big[\sum_{a=1}^\mathcal{A} {\gamma_{k,a}^l}^{(w)} \Big( \delta_i  \hat \E_{\theta^{(w)}}[ \frac{\partial \varphi_a(t_i, \beta_k^l, b_i^l)}{\partial \beta_k^l} | t_i, \delta_i, y_i] \\
+  &- \sum_{j=1}^J \lambda_0^{(w)}(t_j) \hat \E_{\theta^{(w)}}[ \frac{\partial \varphi_a(t_j, \beta_k^l, b_i^l)}{\partial \beta_k^l} \tilde g_{t_j, \gamma_k^{(w)}, \beta_k}^1(b_i) | t_i, \delta_i, y_i] \ind{\{t_j\leq t_i\}} \Big) \\
+  &+ U_{il}^\top \phi_l^{-2}I_{n_{il}} (y_i^l - U_{il}\beta_k^l - V_{il}\hat \E_{\theta^{(w)}}[ b_i | t_i, \delta_i, y_i])\Big]
+\end{align*}
+for all $l = 1, \ldots, L$. Note that the gradients of the considered $\varphi_a$ functions with respect to $\beta_k^l$ are given in Table~\ref{table:shared_associations}. 
+
+
+For the update of $\lambda_0^{(w)}$, we treat the jump size at the observed event times as parameters to be estimated~\citep{klein1992semiparametric}. The closed-form update is then given by
+\begin{equation}
+  \label{eq:update_lambda_0}
+  \lambda_0^{(w+1)}(t)= \dfrac{\sum_{i=1}^n \delta_i \ind{\{t=t_i\}}}{\sum_{i=1}^n \sum_{k=0}^{K-1} \hat \pi_{ik}^{\theta^{(w)}} \hat \Lambda_{ik,\tilde g_{t_i, \gamma_k^{(w+1)}, \beta_k^{(w+1)}}^1}^{\theta^{(w)}} \ind{\{t_i \geq t\}} },
+\end{equation}
+which is a Breslow like estimator~\citep{breslow1972contribution} adapted to our model. 
+
+
 Concerning the update of $\gamma_k^{(w)}$ for $k=0, \ldots, K-1$, let us follow the same strategy by denoting
 \begin{align*}
   Q^{(w)}_{n,k}(\gamma_k) = -n^{-1} \sum_{i=1}^n \hat \pi_{ik}^{\theta^{(w)}} \Big[ &\delta_i \hat \E_{\theta^{(w)}}[ \log \circ \tilde g_{t_i, \gamma_k, \beta_k^{(w+1)}}^1(b_i) | t_i, \delta_i, y_i] \\
   & - \sum_{j=1}^J \lambda_0^{(w+1)}(t_j) \hat \E_{\theta^{(w)}}[ \tilde g_{t_j, \gamma_k, \beta_k^{(w+1)}}^1(b_i) | t_i, \delta_i, y_i] \ind{\{t_j\leq t_i\}} \Big] 
 \end{align*}
-based on the quantities involved in $\cQ_n(\theta, \theta^{(w)})$ that depend on $\gamma_k$, with $\tilde g_{s, \gamma_k, \beta_k}^1$ and $\tilde g_{s, \gamma_k, \beta_k}^2$ defined in~\eqref{eq:g-tilde-1-2}. The integration over the survival process has been replaced with a finite sum over the process evaluated at the distinct event times $(t_1, \ldots, t_J)$ with $J \in~\N$, since $\lambda_0^{(w+1)}$ defined in~\eqref{eq:update_lambda_0} is always zero except at observed event times. The update for $\gamma_k^{(w)}$ therefore requires to solve the following minimization problem
+based on the quantities involved in $\cQ_n(\theta, \theta^{(w)})$ that depend on $\gamma_k$, with $\tilde g_{t_j, \gamma_k, \beta_k^{(w+1)}}^1$ defined in~\eqref{eq:g-tilde-1-2}. The integration over the survival process has been replaced with a finite sum over the process evaluated at the distinct event times $(t_1, \ldots, t_J)$ with $J \in~\N_+$, since $\lambda_0^{(w+1)}$ defined in~\eqref{eq:update_lambda_0} is always zero except at observed event times. The update for $\gamma_k^{(w)}$ therefore requires to solve the following minimization problem
 \begin{equation}
   \label{eq:minimization-beta_k}
   \gamma_k^{(w+1)} \in \argmin_{\gamma_k \in \R^{p+L\mathcal{A}}} Q^{(w)}_{n,k}(\gamma_k) + \zeta_{2,k} \norm{\gamma_k}_{\text{sg} l_1, \tilde{\eta}}.
 \end{equation}
 We then rewrite problem~\eqref{eq:minimization-beta_k} as the following differentiable problem with box constraints
 \begin{equation}
-  \label{eq:sub-problem-beta_k}
+  \label{eq:sub-problem-gamma_k}
   \begin{split}
     \text{minimize}& \quad \quad Q_{n, k}^{(w)}(\gamma_k^+ - \gamma_k^-) + \zeta_{2,k} \big((1 - \tilde \eta) \sum_{l=1}^L \norm{{\gamma_k^l}^+ - {\gamma_k^l}^-}_2 + \tilde \eta \sum_{j=1}^{p+L\mathcal{A}} (\gamma_{k,j}^+ + \gamma_{k,j}^-) \big) \\
     \text{subject to}& \quad \quad \gamma_{k,j}^+ \geq 0 \text{ and } \gamma_{k,j}^- \geq 0 \text{ for } j = 1, \ldots, p+L\mathcal{A}.
   \end{split} 
 \end{equation}
-% compute gradient
-
-
-Finally, for the update of $\beta_k^{(w)}$ for $k=0, \ldots, K-1$, we similarly denote
+One can also compute the gradient since one has
+\begin{equation*}
+  \frac{\partial Q_{n,k}^{(w)}(\gamma_k)}{\partial \gamma_{k,0}} = -n^{-1} \sum_{i=1}^n \hat \pi_{ik}^{\theta^{(w)}} \Big[ \delta_i - \sum_{j=1}^J \lambda_0^{(w+1)}(t_j) \hat \E_{\theta^{(w)}}[ \tilde g_{t_j, \gamma_k, \beta_k^{(w+1)}}^1(b_i) | t_i, \delta_i, y_i] \ind{\{t_j\leq t_i\}} \Big] x_i
+\end{equation*}
+and
 \begin{align*}
-  R^{(w)}_{n,k}(\beta_k) = -n^{-1} \sum_{i=1}^n \hat \pi_{ik}^{\theta^{(w)}} \Big[ &\delta_i \hat \E_{\theta^{(w)}}[ \tilde g_{t_i, \gamma_k^{(w+1)}, \beta_k}^2(b_i) | t_i, \delta_i, y_i] \\
-  & - \sum_{j=1}^J \lambda_0^{(w+1)}(t_j) \hat \E_{\theta^{(w)}}[ \tilde g_{t_j, \gamma_k^{(w+1)}, \beta_k}^1(b_i) | t_i, \delta_i, y_i] \ind{\{t_j\leq t_i\}} \\
-  & + (y_i \odot \Phi_i^{(w+1)})^\top \hat \E_{\theta^{(w)}}[ M_{ik} | t_i, \delta_i, y_i] \\
-  & - \hat \E_{\theta^{(w)}}[ c_{\phi^{(w+1)}}(M_{ik}) | t_i, \delta_i, y_i] \Big] 
+  \frac{\partial Q_{n,k}^{(w)}(\gamma_k)}{\partial \gamma_{k,a}^l} = -n^{-1} &\sum_{i=1}^n \hat \pi_{ik}^{\theta^{(w)}} \Big[ \delta_i  \hat \E_{\theta^{(w)}}[ \varphi_a(t_i, {\beta_k^l}^{(w+1)}, b_i^l) | t_i, \delta_i, y_i] \\
+   &- \sum_{j=1}^J \lambda_0^{(w+1)}(t_j) \hat \E_{\theta^{(w)}}[ \varphi_a(t_j, {\beta_k^l}^{(w+1)}, b_i^l) \tilde g_{t_j, \gamma_k, \beta_k^{(w+1)}}^1(b_i) | t_i, \delta_i, y_i] \ind{\{t_j\leq t_i\}} \Big]
 \end{align*}
-based on the quantities involved in $\cQ_n(\theta, \theta^{(w)})$ depending on $\beta_k$, and solve The update for $\beta_k^{(w)}$ therefore requires to solve the following differentiable problem with box constraints
-\begin{equation}
-  \label{eq:sub-problem-beta_k}
-  \begin{split}
-    \text{minimize}& \quad \quad R_{n, k}^{(w)}(\beta_k^+ - \beta_k^-) + \zeta_{3,k} \big((1 - \tilde \eta) \sum_{l=1}^L \norm{{\beta_k^l}^+ - {\beta_k^l}^-}_2 + \tilde \eta \sum_{j=1}^q (\beta_{k,j}^+ + \beta_{k,j}^-) \big) \\
-    \text{subject to}& \quad \quad \beta_{k,j}^+ \geq 0 \text{ and } \beta_{k,j}^- \geq 0 \text{ for } j = 1, \ldots, q.
-  \end{split} 
-\end{equation}
-% calculer gradient
+for all $a = 1, \ldots, \mathcal{A}$ and $l = 1, \ldots, L$.
 
-% dire qqch in practice sur la dépendance de lambda, gamma et beta dans l'update
+
+Finally, for the update of $\phi^{(w)}$ and regarding Table~\ref{table:glm}, we focus on the Gaussian case being particularly useful in practice. It is obtained in closed-form by
+\begin{align}
+  \label{eq:update_phi}
+  \phi_l^{(w+1)} = \big(\sum_{i=1}^n n_i^l \big)^{-1} \sum_{i=1}^n \sum_{k=0}^{K-1} \hat \pi_{ik}^{\theta^{(w)}} \Big[ &\big(y_i^l - U_{il} {\beta_k^l}^{(w+1)}\big)^\top \Big(y_i^l - U_{il} {\beta_k^l}^{(w+1)} \nonumber \\
+  & - 2V_{il} \hat \E_{\theta^{(w)}}[ b_i^l | t_i, \delta_i, y_i]\Big) \nonumber \\
+  & + \Tr\big(V_{il}^\top V_{il}\hat \E_{\theta^{(w)}}[ b_i^l {b_i^l}^\top | t_i, \delta_i, y_i]\big) \Big].
+\end{align}
+
 
 
 
@@ -538,18 +562,18 @@ For all $k = 0, \ldots, K-1$, we first use $\xi_k^{(0)}$ as the zero vector.
 
 
 \paragraph*{The QNMCEM algorithm.}
-Algorithm~\ref{alg:QNMCEM} describes the main steps of the resulting QNMCEM algorithm to solve the optimisation problem~\eqref{eq:optim-pb}.
+Algorithm~\ref{alg:QNMCEM} describes the main steps of the resulting QNMCEM algorithm to solve the optimization problem~\eqref{eq:optim-pb}.
 
 \vspace{.5cm}
 
 \begin{algorithm}[H]
 \DontPrintSemicolon
-\caption{QNMCEM algorithm for inference of the lights model}
+\caption{QNMCEM algorithm for the lights model inference}
 \label{alg:QNMCEM}
 \KwInput{Training data $\cD_n$; initialize $N=50L$; tuning hyper-parameters $(\zeta_{1,k}, \zeta_{2,k}, \zeta_{3,k})_{k=0,\ldots,K-1}$}
 \KwOutput{Last parameters $\hat \theta \in \R^\vartheta$}
 \tcc{Initialization}
-Compute the starting parameters $\theta^{(0)} \in \R^\vartheta$ following ?? \\
+Compute the starting parameters $\theta^{(0)} \in \R^\vartheta$ \\
 \For{$w = 1,\ldots,$ until convergence}    
 { 
   \tcc{Monte Carlo E-step}
@@ -561,11 +585,12 @@ Compute the starting parameters $\theta^{(0)} \in \R^\vartheta$ following ?? \\
       $tol \leftarrow tol - $
   }
   \tcc{Quasi-Newton M-step}
-  Update $\lambda_0^{(w+1)}$ using~\eqref{eq:update_lambda_0}\\
   Update $D^{(w+1)}$ using~\eqref{eq:update_D}\\
-  Compute $(\xi_k^{(w+1)})_{k=0,\ldots,K-1}$ by solving~\eqref{eq:sub-problem-xi_k} with the L-BFGS-B algorithm\\
-  % \phi^{(w+1)} apres beta^{(w+1)} !!!!
-  Update $\phi^{(w+1)}$ using~\eqref{eq:update_phi} \quad \tcp{Gaussian case}
+  Update $(\xi_k^{(w+1)})_{k=0,\ldots,K-1}$ by solving~\eqref{eq:sub-problem-xi_k} \\
+  Update $(\beta_k^{(w+1)})_{k=0,\ldots,K-1}$ by solving~\eqref{eq:sub-problem-beta_k} \\
+  Update $\lambda_0^{(w+1)}$ using~\eqref{eq:update_lambda_0}\\
+  Update $(\gamma_k^{(w+1)})_{k=0,\ldots,K-1}$ by solving~\eqref{eq:sub-problem-gamma_k} \\
+  Update $\phi^{(w+1)}$ using~\eqref{eq:update_phi} \\
 }
 \textbf{Return:} {$\hat \theta$}
 \end{algorithm}
@@ -604,7 +629,7 @@ In this section, we first introduce the C-index metric used to assess performanc
 \subsection{The C-index metric}
 \label{sec:Metrics}
 
-We detail in this section the metric considered to evaluate risk prediction performances. Let us denote by $M$ the marker under study (e.g. the posterior group membership probabilities $\hat \pi_{ik}^{\hat\theta}$ (see~\eqref{eq:hat_pi_ik-def}) for the lights model), and assume that it is measured once at $t = 0$.
+We detail in this section the metric considered to evaluate risk prediction performances. Let us denote by $M$ the marker under study (e.g., the posterior group membership probabilities $\hat \pi_{ik}^{\hat\theta}$ (see~\eqref{eq:hat_pi_ik-def}) for the lights model), and assume that it is measured once at $t = 0$.
 A common concordance measure that does not depend on time is the C-index~\citep{harrell1996tutorial} defined by
 \begin{equation*}
   \cC =\P[M_i > M_j | T^\star_i < T^\star_j],
