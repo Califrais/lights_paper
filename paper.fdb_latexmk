@@ -1,12 +1,12 @@
 # Fdb version 3
-["bibtex paper"] 1594481294 "paper.aux" "paper.bbl" "paper" 1595154068
+["bibtex paper"] 1595597209 "paper.aux" "paper.bbl" "paper" 1595859981
   "/usr/local/texlive/2019/texmf-dist/bibtex/bst/natbib/plainnat.bst" 1233624470 26816 ffe5423d2019860bad9f54bc402fac15 ""
   "biblio.bib" 1592471285 386322 24a864ef08a8ccc95fee6cb6a595e823 ""
-  "paper.aux" 1594481595 17224 ae456b619dce5ee1469a7c55dff06ec1 "pdflatex"
+  "paper.aux" 1595859981 17430 6c35778e55694bee345e0a05ab56097f "pdflatex"
   (generated)
   "paper.blg"
   "paper.bbl"
-["pdflatex"] 1594481594 "paper.tex" "paper.pdf" "paper" 1595154068
+["pdflatex"] 1595859980 "paper.tex" "paper.pdf" "paper" 1595859981
   "/usr/local/texlive/2019/texmf-dist/fonts/map/fontname/texfonts.map" 1511824771 3332 103109f5612ad95229751940c61aada0 ""
   "/usr/local/texlive/2019/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex7.tfm" 1246382020 1004 54797486969f23fa377b128694d548df ""
   "/usr/local/texlive/2019/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex8.tfm" 1246382020 988 bdf658c3bfc2d96d3c8b02cfc1c94c20 ""
@@ -147,12 +147,12 @@
   "/usr/local/texlive/2019/texmf-var/web2c/pdftex/pdflatex.fmt" 1566055158 4259636 ffa9dc7544261bc5971125f402d51369 ""
   "/usr/local/texlive/2019/texmf.cnf" 1557341546 577 d150fef99ac436ad1156e86b0892f6ef ""
   "figures/beta_law.pdf" 1589700568 68887 be7b734afdfaaccf13ca911d5c3a2f39 ""
-  "paper.aux" 1594481595 17224 ae456b619dce5ee1469a7c55dff06ec1 "pdflatex"
-  "paper.bbl" 1594481294 17242 3fbcebabffe639e515dbd98b88a002d8 "bibtex paper"
-  "paper.out" 1594481595 1425 fe48c7baab9a1c3a0024f4d7cea936ac "pdflatex"
-  "paper.tex" 1594481602 76078 537b3aee4282a892ac3ae35f9dbaa931 ""
+  "paper.aux" 1595859981 17430 6c35778e55694bee345e0a05ab56097f "pdflatex"
+  "paper.bbl" 1595597210 17242 3fbcebabffe639e515dbd98b88a002d8 "bibtex paper"
+  "paper.out" 1595859981 1493 8b9f2227cdce92a6efb5901681f598d1 "pdflatex"
+  "paper.tex" 1595859980 79083 38ee898cb63cc4952edffe8a9891f753 ""
   (generated)
-  "paper.log"
-  "paper.aux"
-  "paper.pdf"
   "paper.out"
+  "paper.aux"
+  "paper.log"
+  "paper.pdf"

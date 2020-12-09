@@ -1,8 +1,11 @@
 \documentclass[11pt]{article}
 
+\usepackage{xcolor}
+\definecolor{darkpastelgreen}{rgb}{0.01, 0.75, 0.24}
+
 \usepackage[colorlinks=true,
             linkcolor=red,
-            urlcolor=blue,
+            urlcolor=darkpastelgreen,
             citecolor=blue,
             breaklinks=true]{hyperref}
 \usepackage{breakurl} 
@@ -14,6 +17,7 @@
 \usepackage{authblk}
 \title{\vspace{-.5cm} Lights: a generalized joint model for high-dimensional multivariate longitudinal data and censored durations \vspace{.5cm}}
 \author[1,2]{Simon Bussy\thanks{Corresponding author: \href{mailto:simon.bussy@gmail.com}{\texttt{simon.bussy@gmail.com}}}}
+\author[2]{Van Tuan Nguyen}
 \author[3]{Antoine Barbieri}
 \author[1]{Sarah Zohar}
 \author[1,4]{Anne-Sophie Jannot}
@@ -26,7 +30,6 @@
 
 \usepackage{mathtools}
 \usepackage{mathrsfs}
-\usepackage{xcolor}
 \usepackage{mathrsfs} 
 \usepackage{natbib}
 \usepackage{setspace}
@@ -118,7 +121,10 @@ An assumption of heterogeneity within the subject population is frequently relev
   \pi_{\xi_k}(x) = \P[G=k|X=x]
 \end{equation}
 the latent class membership probability given time-independent features $x \in \R^p$, and consider a softmax link function given by
-\[ \pi_{\xi_k}(x) = \dfrac{e^{x^\top\xi_k}}{\sum_{k=0}^{K-1}e^{x^\top\xi_k}} \]
+\begin{equation}
+  \label{eq:pi-softmax} 
+  \pi_{\xi_k}(x) = \dfrac{e^{x^\top\xi_k}}{\sum_{k=0}^{K-1}e^{x^\top\xi_k}}
+\end{equation}
 where $\xi_k \in \R^p$ denotes a vector of coefficients that quantifies the impact of each time-independent features on the probability that a subject belongs to the $k$-th group, with $\xi_0 = \mathbf{0}_p$ for overparameterization purpose, where $\mathbf{0}_p$ stands for the vector of $\R^p$ having all coordinates equal to zero. The intercept term is here omitted without loss of generality. 
 From now on, all computations are done conditionally on features $x$.
 
@@ -193,9 +199,9 @@ To quantify the effect of the longitudinal outcomes on the risk for an event, we
 \end{equation}
 where $\lambda_0(\cdot)$ is an unspecified baseline hazard function and given that $G = k$, we denote 
 \[\cM_k(t) = \{m_k^l(u), 0 \leq u < t\}\] 
-the history of the true unobserved longitudinal process up to time $t$. We choose to incorporate $x$, also used in~\eqref{eq:pi}, with no \textit{a priori} on the choice of time-independant features involved in the definition of $\pi_{\xi_k}$ nor $\lambda$, since independant regularizations are used during inference, see~\eqref{eq:pen-log-lik}. Corresponding fixed effects are denoted $\gamma_{k,0} \in \R^p$, and for each $l$-th longitudinal outcome, we consider $\cA \in \N_+$ known functionals $\varphi_a$ defining a shared association with $\gamma_{k,a}^l \in \R^{\imath_a}$ the corresponding joint association parameters, and $\imath_a \in \N_+$ the dimension of the corresponding $\text{Im}(\varphi_a)$. 
+the history of the true unobserved longitudinal process up to time $t$. We choose to incorporate $x$, also used in~\eqref{eq:pi}, with no \textit{a priori} on the choice of time-independent features involved in the definition of $\pi_{\xi_k}$ nor $\lambda$, since independent regularizations are used during inference, see~\eqref{eq:pen-log-lik}. Corresponding fixed effects are denoted $\gamma_{k,0} \in \R^p$, and for each $l$-th longitudinal outcome, we consider $\cA \in \N_+$ known functionals $\varphi_a$ defining a shared association with $\gamma_{k,a}^l \in \R^{\imath_a}$ the corresponding joint association parameters, and $\imath_a \in \N_+$ the dimension of the corresponding $\text{Im}(\varphi_a)$. 
 This can be viewed as a generalization of SREMs~\citep{rizopoulos2010jm}. Let us finally denote
-\[\gamma_k= (\gamma_{k,0}^\top, \gamma_{k,1}^1, \ldots, \gamma_{k,\cA}^1, \ldots, \gamma_{k,1}^L, \ldots, \gamma_{k,\cA}^L )^\top \in \R^{p+L\cA}. \]
+\[\gamma_k= (\gamma_{k,0}^\top, \gamma_{k,L\cA}^\top)= (\gamma_{k,0}^\top, \gamma_{k,1}^1, \ldots, \gamma_{k,\cA}^1, \ldots, \gamma_{k,1}^L, \ldots, \gamma_{k,\cA}^L )^\top \in \R^{p+L\cA}. \]
 
 \paragraph{Specification of the functionals $(\varphi_a)_{a\in \cA}$.}
 
@@ -296,8 +302,8 @@ The density described in~\eqref{eq:exp-family-density} encompasses several distr
 \end{table}
 
 Let us denote 
-\[ \theta = \big(\xi_0^\top \cdots \xi_{K-1}^\top, \beta_0^\top \cdots \beta_{K-1}^\top, \phi^\top, \text{vech}(D), \lambda_0(t), \gamma_0^\top \cdots \gamma_{K-1}^\top\big)^\top \in \R^\vartheta \]
-the collection of the $\vartheta \in \N_+$ unknown parameters to estimate.
+\[ \theta = \big(\xi_0^\top \cdots \xi_{K-1}^\top, \beta_0^\top \cdots \beta_{K-1}^\top, \phi^\top, \text{vech}(D), \lambda_0, \gamma_0^\top \cdots \gamma_{K-1}^\top\big)^\top \in \R^\vartheta \]
+the collection of the $\vartheta \in \N_+$ unknown parameters to estimate. Note that for ease of notations, we include $\lambda_0$ in $\theta$ although it is a function.
 To write the log-likelihood $\ell_n(\theta)$ (rescaled by $n^{-1}$)  for samples in $\cD_n$, corresponding to the joint distribution of the time-to-event and longitudinal outcomes, let us make the following hypothesis.
 \begin{assumption}
 \label{indep-hyp-3}
@@ -343,20 +349,19 @@ In this section, we describe the procedure for estimating the parameters of the 
 In order to avoid overfitting and improve the prediction power of our method, we propose to minimize the penalized objective
 \begin{equation}
   \label{eq:pen-log-lik}
-	\ell_n^\text{pen}(\theta) = - \ell_n(\theta) + \sum_{k=0}^{K-1} \zeta_{1,k} \norm{\xi_k}_{\text{en}, \eta} + \zeta_{2,k} \norm{\gamma_k}_{\text{sg} l_1, \tilde{\eta}} + \zeta_{3,k} \norm{\beta_k}_{\text{sg} l_1, \tilde{\eta}}
+	\ell_n^\text{pen}(\theta) = - \ell_n(\theta) + \sum_{k=0}^{K-1} \zeta_{1,k} \big(\norm{\xi_k}_{\text{en}, \eta} + \norm{\gamma_{k,0}}_{\text{en}, \eta}\big) + \zeta_{2,k} \norm{\gamma_{k,L\cA}}_{\text{sg} l_1, \tilde{\eta}} + \zeta_{3,k} \norm{\beta_k}_{\text{sg} l_1, \tilde{\eta}}
 \end{equation}
 where for all $k=0, \ldots, K-1$, we add an elastic net regularization~\citep{zou2005regularization} of the vector $\xi_k$ and a sparse group lasso regularization~\citep{simon2013sparse} of the vectors $\gamma_k$ and $\beta_k$, for tuning hyper-parameters $(\zeta_{1,k}, \zeta_{2,k}, \zeta_{3,k})^\top \in \R_+^3$. Here, $(\eta, \tilde{\eta}) \in [0, 1]^2$ are fixed and we denote
 \[ \norm{z}_{\text{en}, \eta} = (1-\eta)\norm{z}_1 + \dfrac\eta2 \norm{z}_2^2 \]
 for any vector $z$, that is a linear combination of the lasso ($\ell_1$) and ridge (squared $\ell_2$) penalties, and
-\[ \norm{z}_{\text{sg} l_1, \tilde{\eta}} = (1-\tilde{\eta})\norm{z}_1 + \tilde{\eta} \sum_{l=1}^L\norm{z^l}_2 \] for the sparse group lasso penalty, for which we do not have to account for group sizes since they all have the same one.
-Note that in the $\gamma_k$ penalty, $l$ actually starts at 0 (and not 1), but for simplicity we do not change the notation. 
+\[ \norm{z}_{\text{sg} l_1, \tilde{\eta}} = (1-\tilde{\eta})\norm{z}_1 + \tilde{\eta} \sum_{l=1}^L\norm{z^l}_2 \] for the sparse group lasso penalty, for which we do not have to account for group sizes since they all have the same one. 
 Hence, the resulting optimization problem is written
 \begin{equation}
   \label{eq:optim-pb}
    \hat \theta \in \argmin_{\theta \in \R^\vartheta} \ell_n^\text{pen}(\theta).
  \end{equation}
 
-One advantage of the considered regularization method is its ability to perform feature selection (the lasso part) and pinpoint the most important features relatively to the prediction objective : the support of $\xi_k$ thus informs on the time-independant features involved in the $k$-th group membership. The ridge part allows to handle potential correlation between features.
+One advantage of the considered regularization method is its ability to perform feature selection (the lasso part) and pinpoint the most important features relatively to the prediction objective : the support of $\xi_k$ thus informs on the time-independent features involved in the $k$-th group membership. The ridge part allows to handle potential correlation between features.
 On the other hand, the sparse group lasso allows to perform feature selection for each trajectory : the support of $\gamma_k^l$ informs on the features involved in the $k$-th group risk of event for the $l$-th longitudinal outcome.
 Finally, the sparse group lasso of $\beta_k$ allows to consider a flexible representation of time for the design matrices $(U_i)_{i=1, \dots, n}$ and lets the model automatically fit each trajectory $l$ with the right complexity.
 Note that in practice, the intercept is not regularized.
@@ -385,26 +390,26 @@ We need to compute the expected negative log-likelihood of the complete data con
   \cQ_n(\theta, \theta^{(w)}) = \E_{\theta^{(w)}}[\ell_n^\text{comp}(\theta) | \cD_n].
 \end{equation*}
 Given Assumption~\ref{assumption1}, the previous expression requires to compute expectations of the form
-\[ \E_{\theta^{(w)}}[ g(b_i, G_i) | t_i, \delta_i, y_i] = \sum_{k=0}^{K-1} \pi_{ik}^{\theta^{(w)}} \int_{\R^r} g(b_i, G_i) f(b_i | t_i, \delta_i, y_i ; \theta^{(w)}) \dd b_i \]
-for different functions $g$, where we denote 
+\[ \E_{\theta^{(w)}}[ g_i(b_i, G_i) | t_i, \delta_i, y_i] = \sum_{k=0}^{K-1} \pi_{ik}^{\theta^{(w)}} \int_{\R^r} g(b_i, G_i) f(b_i | t_i, \delta_i, y_i ; \theta^{(w)}) \dd b_i \]
+for different functions $g_i$, where we denote 
 \begin{equation}
   \label{eq:pi_ik-def}
   \pi_{ik}^{\theta^{(w)}} = \P_{\theta^{(w)}}[G_i = k | t_i, \delta_i, y_i] 
 \end{equation}
 the posterior probability of the latent class membership using parameters $\theta^{(w)}$. 
-Then, either $g(b_i, G_i) = \tilde g(b_i)$ (for instance $\tilde g: b_i \mapsto b_i^\top D^{-1}b_i$), or $g(b_i, G_i) = g_k(G_i)$ with $g_k~:~G_i \mapsto \ind{\{G_i=k\}}$.
+Then, either $g_i(b_i, G_i) = \tilde g_i(b_i)$ (for instance $\tilde g_i: b_i \mapsto b_i^\top D^{-1}b_i$), or $g_i(b_i, G_i) = g_k(G_i)$ with $g_k~:~G_i \mapsto \ind{\{G_i=k\}}$.
 
-In the case $g(b_i, G_i) = \tilde g(b_i)$, one has
+In the case $g_i(b_i, G_i) = \tilde g_i(b_i)$, one has
 \begin{equation}
   \label{eq:def-E-g-tilde}
-  \E_{\theta^{(w)}}[ \tilde g(b_i) | t_i, \delta_i, y_i] = \int_{\R^r} \tilde g(b_i) f(b_i | t_i, \delta_i, y_i ; \theta^{(w)}) \dd b_i = \dfrac{ \sum_{k=0}^{K-1} \pi_{\xi_k^{(w)}}(x_i) \Lambda_{ik,\tilde g}^{\theta^{(w)}}}{\sum_{k=0}^{K-1} \pi_{\xi_k^{(w)}}(x_i) \Lambda_{ik,1}^{\theta^{(w)}}}
+  \E_{\theta^{(w)}}[ \tilde g_i(b_i) | t_i, \delta_i, y_i] = \int_{\R^r} \tilde g_i(b_i) f(b_i | t_i, \delta_i, y_i ; \theta^{(w)}) \dd b_i = \dfrac{ \sum_{k=0}^{K-1} \pi_{\xi_k^{(w)}}(x_i) \Lambda_{ik,\tilde g_i}^{\theta^{(w)}}}{\sum_{k=0}^{K-1} \pi_{\xi_k^{(w)}}(x_i) \Lambda_{ik,1}^{\theta^{(w)}}}
 \end{equation}
 with
 \begin{equation}
   \label{eq:Lambda_ik-def}
-  \Lambda_{ik,\tilde g}^{\theta^{(w)}} = \int_{\R^r} \tilde g(b_i) f(t_i, \delta_i, y_i | b_i, G_i = k ; \theta^{(w)}) f(b_i ; \theta^{(w)}) \dd b_i,
+  \Lambda_{ik,\tilde g_i}^{\theta^{(w)}} = \int_{\R^r} \tilde g_i(b_i) f(t_i, \delta_i, y_i | b_i, G_i = k ; \theta^{(w)}) f(b_i ; \theta^{(w)}) \dd b_i,
 \end{equation}
-and $\Lambda_{ik,1}^{\theta^{(w)}}$ obtained from $\Lambda_{ik,\tilde g}^{\theta^{(w)}}$ taking $\tilde g: b_i \mapsto 1$.
+and $\Lambda_{ik,1}^{\theta^{(w)}}$ obtained from $\Lambda_{ik,\tilde g_i}^{\theta^{(w)}}$ taking $\tilde g_i: b_i \mapsto 1$.
 The integral in~\eqref{eq:Lambda_ik-def} is not tractable analytically, and some form of approximation must be used in practice. Standard numerical integration techniques (such as Gaussian quadrature) are not well suited in our high-dimensional context. We then propose to use Monte Carlo approximation, which has already been applied for generalized linear mixed models~\citep{booth1999maximizing}, with antithetic normal variates method~\citep{hammersley1956new} to reduce variance of the simulation result. Algorithm~\ref{alg:construct-set-S} describes how to construct the set $S^{(w)}$ used for the approximation.
 
 \vspace{.5cm}
@@ -430,12 +435,12 @@ Compute $C^{(w)} \in \R^{r \times r}$ such that $C^{(w)}{C^{(w)}}^\top = D^{(w)}
 \noindent The approximation of~\eqref{eq:def-E-g-tilde} is finally obtained by
 \begin{equation}
   \label{eq:def-hat-E-g-tilde}
-  \hat \E_{\theta^{(w)}}[ \tilde g(b_i) | t_i, \delta_i, y_i] = \dfrac{ \sum_{k=0}^{K-1} \pi_{\xi_k^{(w)}}(x_i) \hat \Lambda_{ik,\tilde g}^{\theta^{(w)}}}{\sum_{k=0}^{K-1} \pi_{\xi_k^{(w)}}(x_i) \hat \Lambda_{ik,1}^{\theta^{(w)}}}
+  \hat \E_{\theta^{(w)}}[ \tilde g_i(b_i) | t_i, \delta_i, y_i] = \dfrac{ \sum_{k=0}^{K-1} \pi_{\xi_k^{(w)}}(x_i) \hat \Lambda_{ik,\tilde g_i}^{\theta^{(w)}}}{\sum_{k=0}^{K-1} \pi_{\xi_k^{(w)}}(x_i) \hat \Lambda_{ik,1}^{\theta^{(w)}}}
 \end{equation}
 with
 \begin{equation}
   \label{eq:hat_Lambda_ik}
-  \hat \Lambda_{ik,\tilde g}^{\theta^{(w)}} = \dfrac{1}{2N} \sum_{\breve{b} \in S^{(w)}} \tilde g(\breve{b}) f(t_i, \delta_i, y_i | \breve{b}, G_i = k ; \theta^{(w)}).
+  \hat \Lambda_{ik,\tilde g_i}^{\theta^{(w)}} = \dfrac{1}{2N} \sum_{\breve{b} \in S^{(w)}} \tilde g_i(\breve{b}) f(t_i, \delta_i, y_i | \breve{b}, G_i = k ; \theta^{(w)}).
 \end{equation}
 
 It is common in Monte Carlo EM to increase $N$ with the iterations $w$~\citep{wei1990monte} since it is computationally inefficient to use a large $N$ in the early steps of the algorithm, when $\theta^{(w)}$ is far from $\hat \theta$. Multiple techniques have been proposed (see for instance~\citet{law2002joint} where a subjectively rule is followed, or~\citet{booth1999maximizing} that uses a rule based on confidence intervals for $\theta^{(w)}$ which requires additional variance estimation). We opt for a simple automated approach using relative differences of the objective function defined in~\eqref{eq:pen-log-lik} (see Algorithm~\ref{alg:QNMCEM}).
@@ -453,7 +458,7 @@ Let us introduce the following useful notations
   \label{eq:g-tilde-1-2}
   \left\{
     \begin{array}{ll}
-        \tilde g_{s, \gamma_k, \beta_k}^1&: b_i \mapsto \exp \big\{ x_i^\top \gamma_{k,0} + \tilde g_{s, \gamma_k, \beta_k}^2(b_i) \big\}, \\
+        \tilde g_{i, s, \gamma_k, \beta_k}^1&: b_i \mapsto \exp \big\{ x_i^\top \gamma_{k,0} + \tilde g_{s, \gamma_k, \beta_k}^2(b_i) \big\}, \\
         \tilde g_{s, \gamma_k, \beta_k}^2&: b_i \mapsto \sum_{l=1}^L \sum_{a=1}^\cA {\gamma_{k,a}^l}^\top \varphi_a(s, \beta_k^l, b_i^l).
     \end{array}
   \right. 
@@ -492,16 +497,16 @@ Similarly to the strategy of increasing $N$ with the iterations $w$ for computat
 Now, for the update of $\beta_k^{(w)}$ for $k=0, \ldots, K-1$, we similarly denote
 \begin{align*}
   R^{(w)}_{n,k}(\beta_k) = -n^{-1} \sum_{i=1}^n \hat \pi_{ik}^{\theta^{(w)}} \Big[ &\delta_i \hat \E_{\theta^{(w)}}[ \tilde g_{t_i, \gamma_k^{(w)}, \beta_k}^2(b_i) | t_i, \delta_i, y_i] \\
-  & - \sum_{j=1}^J \lambda_0^{(w)}(t_j) \hat \E_{\theta^{(w)}}[ \tilde g_{t_j, \gamma_k^{(w)}, \beta_k}^1(b_i) | t_i, \delta_i, y_i] \ind{\{t_j\leq t_i\}} \\
+  & - \sum_{j=1}^J \lambda_0^{(w)}(t_j) \hat \E_{\theta^{(w)}}[ \tilde g_{i, t_j, \gamma_k^{(w)}, \beta_k}^1(b_i) | t_i, \delta_i, y_i] \ind{\{t_j\leq t_i\}} \\
   & + (y_i \odot \Phi_i^{(w)})^\top \hat \E_{\theta^{(w)}}[ M_{ik} | t_i, \delta_i, y_i] \\
   & - \hat \E_{\theta^{(w)}}[ c_{\phi^{(w)}}(M_{ik}) | t_i, \delta_i, y_i] \Big] 
 \end{align*}
-based on the quantities involved in $\cQ_n(\theta, \theta^{(w)})$ depending on $\beta_k$, with $\tilde g_{t_j, \gamma_k^{(w)}, \beta_k}^1$ and $\tilde g_{t_i, \gamma_k^{(w)}, \beta_k}^2$ defined in~\eqref{eq:g-tilde-1-2}. The integration over the survival process has been replaced with a finite sum over the process evaluated at the distinct event times $(t_1, \ldots, t_J)$ with $J \in~\N_+$, since $\lambda_0^{(w)}$ defined in~\eqref{eq:update_lambda_0} is always zero except at observed event times.
+based on the quantities involved in $\cQ_n(\theta, \theta^{(w)})$ depending on $\beta_k$, with $\tilde g_{i, t_j, \gamma_k^{(w)}, \beta_k}^1$ and $\tilde g_{t_i, \gamma_k^{(w)}, \beta_k}^2$ defined in~\eqref{eq:g-tilde-1-2}. The integration over the survival process has been replaced with a finite sum over the process evaluated at the distinct event times $(t_1, \ldots, t_J)$ with $J \in~\N_+$, since $\lambda_0^{(w)}$ defined in~\eqref{eq:update_lambda_0} is always zero except at observed event times.
 Hence, we update $\beta_k^{(w)}$ by solving the following problem
 \begin{equation}
   \label{eq:sub-problem-beta_k}
   \begin{split}
-    \text{minimize}& \quad \quad R_{n, k}^{(w)}(\beta_k^+ - \beta_k^-) + \zeta_{3,k} \big((1 - \tilde \eta) \sum_{l=1}^L \norm{{\beta_k^l}^+ - {\beta_k^l}^-}_2 + \tilde \eta \sum_{j=1}^q (\beta_{k,j}^+ + \beta_{k,j}^-) \big) \\
+    \text{minimize}& \quad \quad R_{n, k}^{(w)}(\beta_k^+ - \beta_k^-) + \zeta_{3,k} \big((1 - \tilde \eta) \sum_{j=1}^q (\beta_{k,j}^+ + \beta_{k,j}^-) + \tilde \eta \sum_{l=1}^L \norm{{\beta_k^l}^+ - {\beta_k^l}^-}_2 \big) \\
     \text{subject to}& \quad \quad \beta_{k,j}^+ \geq 0 \text{ and } \beta_{k,j}^- \geq 0 \text{ for } j = 1, \ldots, q.
   \end{split} 
 \end{equation}
@@ -509,17 +514,17 @@ The value of the gradient for the Gaussian case is here given by
 \begin{align}
   \label{eq:grad-beta_k}
   \frac{\partial R_{n,k}^{(w)}(\beta_k)}{\partial \beta_k^l} = -n^{-1} &\sum_{i=1}^n \hat \pi_{ik}^{\theta^{(w)}} \Big[\sum_{a=1}^\mathcal{A} {\gamma_{k,a}^l}^{(w)} \Big( \delta_i  \hat \E_{\theta^{(w)}}[ \frac{\partial \varphi_a(t_i, \beta_k^l, b_i^l)}{\partial \beta_k^l} | t_i, \delta_i, y_i] \\ \nonumber
-  &- \sum_{j=1}^J \lambda_0^{(w)}(t_j) \hat \E_{\theta^{(w)}}[ \frac{\partial \varphi_a(t_j, \beta_k^l, b_i^l)}{\partial \beta_k^l} \tilde g_{t_j, \gamma_k^{(w)}, \beta_k}^1(b_i) | t_i, \delta_i, y_i] \ind{\{t_j\leq t_i\}} \Big) \\ \nonumber
-  &+ U_{il}^\top {\phi_l^{(w)}}^{-2}I_{n_{il}} (y_i^l - U_{il}\beta_k^l - V_{il}\hat \E_{\theta^{(w)}}[ b_i | t_i, \delta_i, y_i])\Big]
+  &- \sum_{j=1}^J \lambda_0^{(w)}(t_j) \hat \E_{\theta^{(w)}}[ \frac{\partial \varphi_a(t_j, \beta_k^l, b_i^l)}{\partial \beta_k^l} \tilde g_{i, t_j, \gamma_k^{(w)}, \beta_k}^1(b_i) | t_i, \delta_i, y_i] \ind{\{t_j\leq t_i\}} \Big) \\ \nonumber
+  &+ U_{il}^\top {\phi_l^{(w)}}^{-1}I_{n_{il}} (y_i^l - U_{il}\beta_k^l - V_{il}\hat \E_{\theta^{(w)}}[ b_i | t_i, \delta_i, y_i])\Big]
 \end{align}
 for all $l = 1, \ldots, L$. Note that the gradients of the considered $\varphi_a$ functions with respect to $\beta_k^l$ are given in Table~\ref{table:shared_associations}. 
 
 Concerning the update of $\gamma_k^{(w)}$ for $k=0, \ldots, K-1$, let us follow the same strategy by denoting
 \begin{align*}
-  Q^{(w)}_{n,k}(\gamma_k) = -n^{-1} \sum_{i=1}^n \hat \pi_{ik}^{\theta^{(w)}} \Big[ &\delta_i \hat \E_{\theta^{(w)}}[ \log \circ \tilde g_{t_i, \gamma_k, \beta_k^{(w+1)}}^1(b_i) | t_i, \delta_i, y_i] \\
-  & - \sum_{j=1}^J \lambda_0^{(w)}(t_j) \hat \E_{\theta^{(w)}}[ \tilde g_{t_j, \gamma_k, \beta_k^{(w+1)}}^1(b_i) | t_i, \delta_i, y_i] \ind{\{t_j\leq t_i\}} \Big] 
+  Q^{(w)}_{n,k}(\gamma_k) = -n^{-1} \sum_{i=1}^n \hat \pi_{ik}^{\theta^{(w)}} \Big[ &\delta_i \hat \E_{\theta^{(w)}}[ \log \circ \tilde g_{i, t_i, \gamma_k, \beta_k^{(w+1)}}^1(b_i) | t_i, \delta_i, y_i] \\
+  & - \sum_{j=1}^J \lambda_0^{(w)}(t_j) \hat \E_{\theta^{(w)}}[ \tilde g_{i, t_j, \gamma_k, \beta_k^{(w+1)}}^1(b_i) | t_i, \delta_i, y_i] \ind{\{t_j\leq t_i\}} \Big] 
 \end{align*}
-based on the quantities involved in $\cQ_n(\theta, \theta^{(w)})$ that depend on $\gamma_k$, with $\tilde g_{t_j, \gamma_k, \beta_k^{(w+1)}}^1$ defined in~\eqref{eq:g-tilde-1-2}. The update for $\gamma_k^{(w)}$ therefore requires to solve the following minimization problem
+based on the quantities involved in $\cQ_n(\theta, \theta^{(w)})$ that depend on $\gamma_k$, with $\tilde g_{i, t_j, \gamma_k, \beta_k^{(w+1)}}^1$ defined in~\eqref{eq:g-tilde-1-2}. The update for $\gamma_k^{(w)}$ therefore requires to solve the following minimization problem
 \begin{equation}
   \label{eq:minimization-beta_k}
   \gamma_k^{(w+1)} \in \argmin_{\gamma_k \in \R^{p+L\mathcal{A}}} Q^{(w)}_{n,k}(\gamma_k) + \zeta_{2,k} \norm{\gamma_k}_{\text{sg} l_1, \tilde{\eta}}.
@@ -528,27 +533,27 @@ We then rewrite problem~\eqref{eq:minimization-beta_k} as the following differen
 \begin{equation}
   \label{eq:sub-problem-gamma_k}
   \begin{split}
-    \text{minimize}& \quad \quad Q_{n, k}^{(w)}(\gamma_k^+ - \gamma_k^-) + \zeta_{2,k} \big((1 - \tilde \eta) \sum_{l=1}^L \norm{{\gamma_k^l}^+ - {\gamma_k^l}^-}_2 + \tilde \eta \sum_{j=1}^{p+L\mathcal{A}} (\gamma_{k,j}^+ + \gamma_{k,j}^-) \big) \\
+    \text{minimize}& \quad \quad Q_{n, k}^{(w)}(\gamma_k^+ - \gamma_k^-) + \zeta_{2,k} \big((1 - \tilde \eta) \sum_{j=1}^{p+L\mathcal{A}} (\gamma_{k,j}^+ + \gamma_{k,j}^-) + \tilde \eta \sum_{l=1}^L \norm{{\gamma_k^l}^+ - {\gamma_k^l}^-}_2 \big) \\
     \text{subject to}& \quad \quad \gamma_{k,j}^+ \geq 0 \text{ and } \gamma_{k,j}^- \geq 0 \text{ for } j = 1, \ldots, p+L\mathcal{A}.
   \end{split} 
 \end{equation}
 One can also compute the gradient since one has
 \begin{equation}
   \label{eq:grad-Q-1}
-  \frac{\partial Q_{n,k}^{(w)}(\gamma_k)}{\partial \gamma_{k,0}} = -n^{-1} \sum_{i=1}^n \hat \pi_{ik}^{\theta^{(w)}} \Big[ \delta_i - \sum_{j=1}^J \lambda_0^{(w)}(t_j) \hat \E_{\theta^{(w)}}[ \tilde g_{t_j, \gamma_k, \beta_k^{(w+1)}}^1(b_i) | t_i, \delta_i, y_i] \ind{\{t_j\leq t_i\}} \Big] x_i
+  \frac{\partial Q_{n,k}^{(w)}(\gamma_k)}{\partial \gamma_{k,0}} = -n^{-1} \sum_{i=1}^n \hat \pi_{ik}^{\theta^{(w)}} \Big[ \delta_i - \sum_{j=1}^J \lambda_0^{(w)}(t_j) \hat \E_{\theta^{(w)}}[ \tilde g_{i, t_j, \gamma_k, \beta_k^{(w+1)}}^1(b_i) | t_i, \delta_i, y_i] \ind{\{t_j\leq t_i\}} \Big] x_i
 \end{equation}
 and
 \begin{align}
   \label{eq:grad-Q-2}
   \frac{\partial Q_{n,k}^{(w)}(\gamma_k)}{\partial \gamma_{k,a}^l} = -n^{-1} &\sum_{i=1}^n \hat \pi_{ik}^{\theta^{(w)}} \Big[ \delta_i  \hat \E_{\theta^{(w)}}[ \varphi_a(t_i, {\beta_k^l}^{(w+1)}, b_i^l) | t_i, \delta_i, y_i] \\ \nonumber
-   &- \sum_{j=1}^J \lambda_0^{(w)}(t_j) \hat \E_{\theta^{(w)}}[ \varphi_a(t_j, {\beta_k^l}^{(w+1)}, b_i^l) \tilde g_{t_j, \gamma_k, \beta_k^{(w+1)}}^1(b_i) | t_i, \delta_i, y_i] \ind{\{t_j\leq t_i\}} \Big]
+   &- \sum_{j=1}^J \lambda_0^{(w)}(t_j) \hat \E_{\theta^{(w)}}[ \varphi_a(t_j, {\beta_k^l}^{(w+1)}, b_i^l) \tilde g_{i, t_j, \gamma_k, \beta_k^{(w+1)}}^1(b_i) | t_i, \delta_i, y_i] \ind{\{t_j\leq t_i\}} \Big]
 \end{align}
 for all $a = 1, \ldots, \mathcal{A}$ and $l = 1, \ldots, L$.
 
 For the update of $\lambda_0^{(w)}$, we treat the jump size at the observed event times as parameters to be estimated~\citep{klein1992semiparametric}. The closed-form update is then given by
 \begin{equation}
   \label{eq:update_lambda_0}
-  \lambda_0^{(w+1)}(t)= \dfrac{\sum_{i=1}^n \delta_i \ind{\{t=t_i\}}}{\sum_{i=1}^n \sum_{k=0}^{K-1} \hat \pi_{ik}^{\theta^{(w)}} \hat \Lambda_{ik,\tilde g_{t_i, \gamma_k^{(w+1)}, \beta_k^{(w+1)}}^1}^{\theta^{(w)}} \ind{\{t_i \geq t\}} },
+  \lambda_0^{(w+1)}(t)= \dfrac{\sum_{i=1}^n \delta_i \ind{\{t=t_i\}}}{\sum_{i=1}^n \sum_{k=0}^{K-1} \hat \pi_{ik}^{\theta^{(w)}} \hat \E_{\theta^{(w)}}\Big[ \tilde g_{i, t_i, \gamma_k^{(w+1)}, \beta_k^{(w+1)}}^1(b_i) | t_i, \delta_i, y_i \Big] \ind{\{t_i \geq t\}} },
 \end{equation}
 which is a Breslow like estimator~\citep{breslow1972contribution} adapted to our model. 
 
@@ -566,7 +571,7 @@ Finally, for the update of $\phi^{(w)}$ and regarding Table~\ref{table:glm}, we 
 
 \paragraph*{Initialization.}
 Our algorithm gives a local minimum, and it is clever to choose an initial value $\theta^{(0)}$ close to the final solution $\hat \theta$, so that the number of iterations required to reach convergence is reduced. We then give some details about the starting point $\theta^{(0)}$ of Algorithm~\ref{alg:QNMCEM}. 
-For all $k = 0, \ldots, K-1$, we first choose $\xi_k^{(0)} = \mathbf{0}_d$ and ${\gamma_{k,a}^l}^{(0)} = 0$ for all $l=1, \ldots, L$ and $a=1, \ldots, \cA$. Then, we initialize $\lambda_0^{(0)}$ and $\gamma_{k,0}^{(0)}$ like if there is no subgroup ($\gamma_{0,0}^{(0)} = \cdots = \gamma_{K-1,0}^{(0)}$) with a standard Cox proportional hazards regression with time-independent features using \texttt{R} package \texttt{survival}. Finally, the longitudinal submodels parameters $\beta_k^{(0)}$, $D^{(0)}$ and $\phi^{(0)}$ are initialized -- again like if there is no subgroup ($\beta_0^{(0)} = \cdots = \beta_{K-1}^{(0)}$) -- using a multivariate linear mixed model with an explicit EM algorithm, being itself initialized with univariates fits using \texttt{R} package \texttt{nlme}.
+For all $k = 0, \ldots, K-1$, we first choose $\xi_k^{(0)} = \mathbf{0}_d$ and ${\gamma_{k,a}^l}^{(0)} = 0$ for all $l=1, \ldots, L$ and $a=1, \ldots, \cA$. Then, we initialize $\lambda_0^{(0)}$ and $\gamma_{k,0}^{(0)}$ like if there is no subgroup ($\gamma_{0,0}^{(0)} = \cdots = \gamma_{K-1,0}^{(0)}$) with a standard Cox proportional hazards regression with time-independent features using the \texttt{Python} library \texttt{tick}. Finally, the longitudinal submodels parameters $\beta_k^{(0)}$, $D^{(0)}$ and $\phi^{(0)}$ are initialized -- again like if there is no subgroup ($\beta_0^{(0)} = \cdots = \beta_{K-1}^{(0)}$) -- using a multivariate linear mixed model with an explicit EM algorithm (the details are given in Appendix~\ref{sec:MLMM}), being itself initialized with univariates fits using the \texttt{Python} package \texttt{statsmodels}.
 
 \paragraph*{The QNMCEM algorithm.}
 Algorithm~\ref{alg:QNMCEM} describes the main steps of the resulting QNMCEM algorithm to solve the optimization problem~\eqref{eq:optim-pb}.
@@ -584,7 +589,7 @@ Compute the starting parameters $\theta^{(0)} \in \R^\vartheta$ \\
 \For{$w = 1,\ldots,$ until convergence}    
 { 
   \tcc{Monte Carlo E-step}
-  Compute $\hat \Lambda_{ik,\tilde g}^{\theta^{(w)}}$ using~\eqref{eq:hat_Lambda_ik} for the required functions $\tilde g$\\
+  Compute $\hat \Lambda_{ik,\tilde g_i}^{\theta^{(w)}}$ using~\eqref{eq:hat_Lambda_ik} for the required functions $\tilde g_i$\\
   Compute $\hat \pi_{ik}^{\theta^{(w)}}$ using~\eqref{eq:hat_pi_ik-def}\\
   \If{Condition}
   {
@@ -643,12 +648,12 @@ with
 \[ \hat f(t^{max}_i, y_i | b_i, G_i=k ; \hat \theta) = \dfrac{1}{2N} \sum_{\breve{b} \in \hat S} f(t^{max}_i, 0, y_i | \breve{b}, G_i = k ; \hat \theta), \]
 where $\hat S$ is obtained with Algorithm~\ref{alg:construct-set-S} using $\hat D$ (that is $S^{(w_{max})}$ for the last iteration $w_{max}$), and the density $f$ in the rigth hand side of the previous equation being defined in~\eqref{eq:ind-hyp}.
 Note that marker~\eqref{eq:marker-def} is in fact obtained from the definition of $\hat \pi_{ik}^{\hat\theta}$ in~\eqref{eq:hat_pi_ik-def} taking $(t_i, \delta_i) = (t^{max}_i, 0)$, and turns out to be an estimate of the following posterior probability 
-\[\P_\theta[G_i=k | T^\star_i > t^{max}_i, y_i].\]
+\[\P_\theta[G_i=k | T^\star_i > t^{max}_i, y_i, x_i].\]
 
 \subsection{The C-index metric}
 \label{sec:Metrics}
 
-We detail in this section the metric considered to evaluate risk prediction performances. Let us denote by $M$ the marker under study (e.g., the marker~\eqref{eq:marker-def} for the lights model), and assume that it is measured once at $t = t^{max}$.
+We detail in this section the metric considered to evaluate risk prediction performances. Let us recall that in practice, one considers the case $K=2$, see Section~\ref{sec:K=2}. Then, let us denote by $M$ the marker under study (e.g., the marker~\eqref{eq:marker-def} for the lights model), and assume that it is measured once at $t = t^{max}$.
 A common concordance measure that does not depend on time is the C-index~\citep{harrell1996tutorial} defined by
 \begin{equation*}
   \cC =\P[M_i > M_j | T^\star_i < T^\star_j],
@@ -669,9 +674,9 @@ Nevertheless, the idea of chosing $t^{max}$ when it comes to simulate data for m
 
 In this section, we briefly introduce the models we consider for performance comparisons in the simulation study as well as in the applications on real datasets in Section~\ref{sec:application}.
 
-\paragraph*{Penalized Cox model with time-independant features.}
+\paragraph*{Penalized Cox model with time-independent features.}
 
-The first model we consider as a baseline is the well known Cox PH model with time-independant features.
+The first model we consider as a baseline is the well known Cox PH model with time-independent features.
 In this model introduced in \citet{Cox1972JRSS}, a parameter vector $\beta$ is estimated by minimizing the partial log-likelihood given by
 \begin{equation*}
   \ell_n^{\text{cox}}(\beta) = n^{-1} \sum_{i=1}^n \delta_i \big( x_i^\top \beta - \log \sum_{i' : t_{i'} \geq t_i} \text{exp}(x_{i'}^\top \beta) \big).
@@ -680,7 +685,7 @@ We use respectively the \texttt{R} packages \texttt{survival} and \texttt{glmnet
 \begin{equation*}
   - \ell_n^{\text{cox}}(\beta) + \xi \big( (1-\eta)\norm{\beta}_1 + \frac{\eta}{2} \norm{\beta}_2^2 \big),
 \end{equation*}
-where $\xi$ is chosen by the a 10-fold cross-validation procedure, for a given $\eta \in [0, 1]$. Ties are handled via the Breslow approximation of the partial likelihood \citep{breslow1972contribution}. We also choose to include basic time-independant features extracted from longitudinal processes, namely the average value for each time-dependant feature.
+where $\xi$ is chosen by the a 10-fold cross-validation procedure, for a given $\eta \in [0, 1]$. Ties are handled via the Breslow approximation of the partial likelihood \citep{breslow1972contribution}. We also choose to include basic time-independent features extracted from longitudinal processes, namely the average value for each time-dependant feature.
 
 \paragraph*{The time-dependent Cox model.}
 
@@ -710,21 +715,23 @@ In this section, we provide details regarding data generation, followed by the r
 \subsection{Simulation design}
 \label{simulation design}
 
-In order to assess the proposed method, we run an extensive Monte Carlo simulation study in the case $K=2$ (see Section~\ref{sec:K=2}). We first generate $G_i \sim \cB\big(\pi_1\big)$, with $\pi_1 \in [0,1]$ a desired high-risk subjects proportion and where $\cB(\alpha)$ denotes the Bernoulli distribution with parameter $\alpha \in [0,1]$.
-We then choose a coefficient vector 
+In order to assess the proposed method, we run an extensive Monte Carlo simulation study in the case $K=2$ (see Section~\ref{sec:K=2}). We first choose a coefficient vector 
 \begin{equation}
   \label{eq:xi-sparse}
   \xi = (\underbrace{\varsigma_1,\ldots,\varsigma_1}_s,0,\ldots,0) \in \R^p,
 \end{equation} 
 with $\varsigma_1\in\R$ being the value of the active coefficients and $s\in \{1,\dots,p\}$ a sparsity parameter chosen such that a proportion $r_s$ of time-independent features are actually active, that is $s = \lfloor p \times r_s \rfloor$. 
+For a desired high-risk subjects proportion $\pi_1 \in [0,1]$, the high-risk subjects index set is given by
+\[\cH = \big\{\lfloor \pi_1 n \rfloor \text{ random samples without replacement} \big\} \subset \{1, \ldots,n\}.\]
 For the generation of the time-independent features matrix, we take 
 \[ [x_{ij}] \in \R^{n \times p} \sim \cN \big(0, \bSigma_1(\rho_1)\big),\] 
-with $\bSigma_1(\rho_1)$ a $(p \times p)$ Toeplitz covariance matrix \citep{mukherjee1988some} with correlation $\rho_1 \in (0, 1)$. 
-We then add a $gap \in \R^+$ value for high-risk subjects and subtract it for low-risk subjects, only on active features, that is
+with $\bSigma_1(\rho_1)$ a $(p \times p)$ Toeplitz covariance matrix \citep{mukherjee1988some} with correlation $\rho_1 \in (0, 1)$, that is $\bSigma_1(\rho_1)_{jj'} = \rho_1^{|j - j'|}$. 
+We then add a $gap \in \R^+$ value for subjects $i \in \cH$ and subtract it for subjects $i \notin \cH$, only on active features, that is
 \begin{center}
-$x_{ij} \leftarrow x_{ij} + (-1)^{\ind{\{G_i=0\}}} gap\ \text{for } j = 1, \dots, s$.
+$x_{ij} \leftarrow x_{ij} + (-1)^{\ind{\{i \notin \cH\}}} gap\ \text{for } j = 1, \dots, s$.
 \end{center}
-Note that this is equivalent to generate the time-independent features according to a gaussian mixture.
+Note that this is equivalent to generate the time-independent features according to a gaussian mixture. We finally normalize each time-independent features for practical interpretations.
+Then, we generate $G_i \sim \cB\big(\pi_\xi(x_i)\big)$, where $\pi_\xi(x_i)$ is computed given Equation~\eqref{eq:pi-softmax} and $\cB(\alpha)$ denotes the Bernoulli distribution with parameter $\alpha \in [0,1]$.
 
 Now, concerning the simulation of the longitudinal data, the idea is to sample from multivariate normal distributions. 
 We use linear time-varying features such that
@@ -743,8 +750,8 @@ Most joint modeling simulation studies use fixed time points~\citep{hickey2018jo
 Hawkes processes model self-exciting behavior, that is in our case, when the measurement of one longitudinal process makes future measurements of the process -- as well as those of others processes, in a multivariate way -- more likely to happen.
 Namely, for a subject $i$, times $\{t_{ij}^l\}_{j \geq 1}$ for processes $l=1, \ldots, L$ are simulated using a multivariate Hawkes process $N_{it} = [N_{it}^1 \cdots N_{it}^L]$ with $t \geq 0$ and $N_{it}^l = \sum_{j \geq 1} \ind{\{t_{ij}^l \leq t\}}$. The process $N_{it}$ is a multivariate counting process, whose components $N_{it}^l$ have intensities
 \[ \lambda_i^l(t) = \Upsilon_{l} + \sum_{l'=1}^L \sum_{j \geq 1} A_{ll'} \upsilon \exp\big(-\upsilon(t - t_{ij}^{l'}) \big) \]
-for $l=1, \ldots, L$. $\Upsilon_{l} \geq 0$ is called baseline intensity, and corresponds to the exogenous probability of having a measurement for process $l$. We sample $\Upsilon_{l} \sim \cU\big([0.1,0.5]\big)$ ] which produces unbalanced baselines, where $\cU\big([a,b]\big)$ stands for the uniform distribution on a segment $[a,b]$.
-The matrix $A = [A_{ll'}]_{1 \leq l,l' \leq L}$ is the adjacency matrix such that $A_{ll'} \geq 0$ quantifies the impact of past measurement time of process $l'$ on the measurement time of process $l$, and $\upsilon \geq 0$ is a memory parameter. We sample $A_{ll'} \sim \cU\big([0.05,0.1]\big)$, but then enforce $A$ to be sparse (with a chosen density of $0.3$) by randomly zeroing non-diagonal coefficients. Simulation of the Hawkes processes
+for $l=1, \ldots, L$. $\Upsilon_{l} \geq 0$ is called baseline intensity, and corresponds to the exogenous probability of having a measurement for process $l$. We sample $\Upsilon_{l} \sim \cU\big([0.1,1]\big)$ ] which produces unbalanced baselines, where $\cU\big([a,b]\big)$ stands for the uniform distribution on a segment $[a,b]$.
+The matrix $A = [A_{ll'}]_{1 \leq l,l' \leq L}$ is the adjacency matrix such that $A_{ll'} \geq 0$ quantifies the impact of past measurement time of process $l'$ on the measurement time of process $l$, and $\upsilon \geq 0$ is a memory parameter. We sample $A_{ll'} \sim \cU\big([0.1,0.2]\big)$, but then enforce $A$ to be sparse (with a chosen density of $0.3$) by randomly zeroing non-diagonal coefficients. Simulation of the Hawkes processes
 is achieved using the \texttt{tick} library~\citep{bacry2017tick}. An example of simulated longitudinal features for an individual is displayed in Figure~\ref{fig:example-data} below. 
 
 To generate survival times, we choose a risk model of the form
@@ -778,7 +785,7 @@ The distribution of the censoring variable $C_i$ is the geometric distribution $
 Finally, the prediction time for subject $i$ is draw according to 
 \begin{equation}
   \label{eq:law-t_i^max}
-  1 - t_i^{max} \sim T_i \times \text{Beta}(\nu_1, \nu_2)
+  t_i^{max} \sim T_i \times \big(1 - \text{Beta}(\nu_1, \nu_2)\big) 
 \end{equation}
 with $(\nu_1, \nu_2) \in \R_+^2$ two shape parameters. Figure~\ref{fig:timax-pdf} shows the corresponding probability density function for $t_i^{max}$ with some explanations.
 We then truncate all $Y_i$ measurements being after $t_i^{max}$, since it represents the ``present'' time, so the time up to which one has longitudinal data.
@@ -799,7 +806,7 @@ $\begin{pmatrix}
 $\begin{pmatrix}
   1 \\ 0.5
 \end{pmatrix}$ 
-& 0.5 & 0.5 & 3 & (2, 5) & $(10^{-3}, 0.1)$ & (1, 0.1) & 0.3 & 0.4 & 0.1 \\
+& 0.5 & 4 & 3 & (2, 5) & $(10^{-3}, 0.1)$ & (1, 0.1) & 0.3 & 0.4 & 0.1 \\
 \bottomrule
 \end{tabular}}
 \end{table}
@@ -858,8 +865,7 @@ selection and to prevent overfitting.
 
 
 \section*{Software}
-All the methodology discussed in this paper is implemented in \texttt{Python}. The code is available from \href{https://github.com/Califrais/lights}%
-{https://github.com/Califrais/lights} in the form of annotated programs, together with a notebook tutorial.
+All the methodology discussed in this paper is implemented in \texttt{Python}. The code is available from \url{https://github.com/Califrais/lights} in the form of annotated programs, together with a notebook tutorial.
 
 \section*{Acknowledgements}
 \textit{Conflict of Interest}: None declared.
@@ -918,76 +924,48 @@ with $U \sim \cU\big([0,1]\big)$.
 $\hfill\square$
 
 \section{Multivariate linear mixed model}
-We re-write the conditional distribution of $y_i|b_i; \theta $ is in form
-\begin{align*}
-	f(y_i|b_i, \theta) &= \exp \big\{(y_i \odot \Phi_i)^\top M_{i} - c_\phi(M_{i}) + d_\phi(y_i) \big\} \\
-	&= \exp \big\{( \Sigma_iy_i)^\top M_{i} - c_\phi(M_{i}) + d_\phi(y_i) \big\}
-\end{align*}
-where $\Sigma_i$ is a diagonal matrix whose diagonal is $\Phi_i$. And if the distribution $b_i; \theta$ is Gaussian, then its density form is
+\label{sec:MLMM}
 
-\begin{equation*}
-  \label{eq:b_density}
-  f(b_i ; \theta) = (2 \pi)^{-\dfrac r2} |D|^{-\dfrac12} \exp \Big\{ -\dfrac12 b_i^\top D^{-1}b_i \Big\}.
-\end{equation*}
-\\
-The complete log-likelihood
+Let us derive here the explicit EM algorithm for the multivariate linear mixed model used to initialized the longitudinal parameters $\beta_k^{(0)}$, $D^{(0)}$ and $\phi^{(0)}$ in the QNMCEM algorithm in Section~\ref{sec:QNMCEM}, acting as if there is no subgroup ($\beta_0^{(0)} = \cdots = \beta_{K-1}^{(0)}$). 
+For the sake of simplicity, let us denote here 
+\[\theta = (\beta^\top, \text{vech}(D), \phi^\top)^\top \in \R^\vartheta\]
+the parameter vector to infer.
+The conditional distribution of $y_i|b_i$ then writes
+\[f(y_i|b_i ; \theta) = \exp \big\{( \Sigma_iy_i)^\top M_{i} - c_\phi(M_{i}) + d_\phi(y_i) \big\},\]
+where $\Sigma_i$ is the diagonal matrix whose diagonal is $\Phi_i$. 
+The complete log-likelihood in this context writes
 \begin{align*}
-  \ell_n^\text{comp}(\theta) &= \ell_n^\text{comp}(\theta ; \cD_n, \textbf{\textit{b}}) \\ 
-  &= \text{log} (f(y, b ; \theta) \\ 
-  &= \sum_{i=1}^n \text{log}(f(y_i|b_i, \theta)) + \text{log}(f(b_i ; \theta))\\
-  &= \sum_{i=1}^n (\Sigma_iy_i)^\top M_{i} - c_\phi(M_{i}) + d_\phi(y_i) \\
-  &  \quad -\dfrac12 (r \log 2\pi + \log|D| + b_i^\top D^{-1}b_i).
+\ell_n^\text{comp}(\theta) &= \ell_n^\text{comp}(\theta ; \cD_n, \textbf{\textit{b}}) \\
+&= \sum_{i=1}^n (\Sigma_iy_i)^\top M_{i} - c_\phi(M_{i}) + d_\phi(y_i) -\dfrac12 \big(r \log 2\pi + \log|D| + b_i^\top D^{-1}b_i\big).
 \end{align*}
-
+  
 \paragraph*{E-step.}
-
-We need to compute the expected negative log-likelihood of the complete data conditional on the observed data and the current estimate of the parameters given by 
-\begin{equation*}
-  \cQ_n(\theta, \theta^{(w)}) = \E_{\theta^{(w)}}[\ell_n^\text{comp}(\theta) | \cD_n].
-\end{equation*}
-Here, computing $\E_{\theta^{(w)}}[\ell_n^\text{comp}(\theta) | \cD_n]$  reduces to computing $E_{\theta^{(w)}}[b_i | y_i, \theta]$ and $E_{\theta^{(w)}}[b_ib_i^T | y_i, \theta]$ for $i = 1,..,n$\\
-\\
-If the marginal distributions of $y_i$ and $b_i$ are both Gaussian, then conditional distribution of $b_i$ is also Gaussian with a mean and a variance that can be computed. Indeed, from Bayes Theorem,
-\begin{align*}
-    f(b_i|y_i; \theta) &= \frac{f(y_i|b_i; \theta)f(b_i; \theta)}{f(y_i; \theta} \\
-    &= C_1 \text{ x } \exp \big\{( S_iy_i)^\top M_{i} - c_\phi(M_{i}) + d_\phi(y_i) \big\} \text{ x } \exp \Big\{ -\dfrac12 b_i^\top D^{-1}b_i \Big\}\\
-    &= C_2  \text{ x } \exp \big\{-\dfrac12 {b_i}^\top ({V_i}^\top \Sigma_iV_i)b_i + {b_i}^\top {V_i}^\top S(y_i - U_i\beta) \big\} \text{ x } \exp \Big\{ -\dfrac12 b_i^\top D^{-1}b_i \Big\}\\
-    &= C_2  \text{ x } \exp \big\{-\dfrac12 {b_i}^\top ({V_i}^\top \Sigma_iV_i + D^{-1})b_i + {b_i}^\top {V_i}^\top \Sigma_i(y_i - U_i\beta) \big\}\\
-    &= C_2 \text{ x } \exp \big\{ -\dfrac12 (b_i - \mu_i)^\top \Omega_i^{-1} (b_i - \mu_i) \big\}
-\end{align*}
-where,
-\begin{align*}
-    \Omega_i = ({V_i}^\top \Sigma_iV_i + D^{-1})^{-1} \text{  ;   } \mu_i = \Omega_i{V_i}^\top \Sigma_i(y_i - U_i\beta)
-\end{align*}
-Then,
-\begin{align*}
-    \E_{\theta^{(w)}}[b_i | y_i, \theta] &= \mu_i \\
-    \E_{\theta^{(w)}}[b_ib_i^T | y_i, \theta] &= \text{Var}_{\theta^{(w)}}[b_i | y_i, \theta] + \E_{\theta^{(w)}}[b_i | y_i, \theta]\E_{\theta^{(w)}}[b_i | y_i, \theta]^\top\\
-                                        &= \Omega_i + \mu_i\mu_i^\top
-\end{align*}
+Supposing that we are at step $w + 1$ of the algorithm, with current iterate denoted $\theta^{(w)}$, we need to compute the expected negative log-likelihood of the complete data conditional on the observed data and the current estimate of the parameters, which is given by 
+\[\cQ_n(\theta, \theta^{(w)}) = \E_{\theta^{(w)}}[\ell_n^\text{comp}(\theta) | \cD_n].\]
+Here, computing this quantity reduces to computing $\E_{\theta^{(w)}}[b_i | y_i]$ and $\E_{\theta^{(w)}}[b_ib_i^T | y_i]$ for $i = 1,\ldots,n$.
+The marginal distributions of $y_i$ and $b_i$ being both Gaussian, one has from Bayes Theorem
+\[ f(b_i|y_i; \theta) \propto \exp \big\{ -\dfrac12 (b_i - \mu_i)^\top \Omega_i^{-1} (b_i - \mu_i) \big\}\]
+where
+\[\Omega_i = ({V_i}^\top \Sigma_iV_i + D^{-1})^{-1} \quad \text{ and } \quad \mu_i = \Omega_i{V_i}^\top \Sigma_i(y_i - U_i\beta).\]
+Then, on has
+\begin{center}
+  $\left\{
+    \begin{aligned}
+      &\E_{\theta^{(w)}}[b_i | y_i] = \mu_i, \\
+      &\E_{\theta^{(w)}}[b_ib_i^T | y_i] = \Omega_i + \mu_i\mu_i^\top.
+    \end{aligned}
+    \right.$
+\end{center}
 
 \paragraph*{M-step.}
 Here, we need to compute \[\theta^{(w+1)} \in \argmin_{\theta \in \R^\vartheta} \cQ_n(\theta, \theta^{(w)}) .\]
-The value of the gradient for the Gaussian case is here given by
+The parameters updates are then naturally given in closed form by zeroing the gradient. One obtains
+\[\beta^{(w+1)} = \Big(\sum_{i=1}^n U_{i}^\top U_{i}\Big)^{-1}  \sum_{i=1}^n \big[ U_{i}^\top  y_i - U_{i} V_{i} \E_{\theta^{(w)}}[ b_i | y_i]) \big],\]
 \begin{align*}
-  \label{eq:grad-beta}
-  \frac{\partial \cQ_n(\theta, \theta^{(w)})(\beta)}{\partial \beta} &= \sum_{i=1}^n 
-  \Big[ {y_i}^\top \Sigma U_{i} - U_{i}^\top \Sigma V_{i}\hat \E_{\theta^{(w)}}[ b_i | y_i; \theta]) - U_{i}^\top \Sigma U_{i}\beta \Big] \\
-  \frac{\partial \cQ_n(\theta, \theta^{(w)})(\phi)}{\partial \phi^l} &= \sum_{i=1}^n 
-  \dfrac12 {\phi_l}^{-2}\Big[ (y_i^l - U_{il}\beta_l)^\top (y_i^l - U_{il}\beta_l - 2V_{il}\hat \E_{\theta^{(w)}}[ b_i^l | y_i^l; \theta])) \\
-  & \quad \quad +  \Tr\big(V_{il}^\top V_{il}\hat \E_{\theta^{(w)}}[ b_i^l {b_i^l}^\top | y_i^l; \theta]\big) \Big] - \frac{n_i^l}{2} {\phi_l}^{-1}\\
-  \frac{\partial \cQ_n(\theta, \theta^{(w)})(D)}{\partial D} &= \sum_{i=1}^n 
-   \dfrac12 \big( D - \E_{\theta^{(w)}}[ b_i {b_i}^\top | y_i; \theta]\big)
+\phi_l^{(w+1)} = \big(\sum_{i=1}^n n_i^l \big)^{-1}  \sum_{i=1}^n \Big[(&y_i^l - U_{il}\beta_l^{(w+1)})^\top (y_i^l - U_{il}\beta_l^{(w+1)} - 2V_{il}\E_{\theta^{(w)}}[b_i^l | y_i^l])) \\
+&+\Tr\big(V_{il}^\top V_{il} \E_{\theta^{(w)}}[ b_i^l {b_i^l}^\top | y_i^l]\big) \Big]
 \end{align*}
-\\
-Then, the updated parameter $\theta^{(w)}$ will be
-\begin{align*}
-  \beta^{(w+1)} &= \Big(\sum_{i=1}^n U_{i}^\top U_{i}\Big)^{-1}  \Big( \sum_{i=1}^n \big[ U_{i}^\top  y_i - U_{i} V_{i}\hat \E_{\theta^{(w)}}[ b_i | y_i; \theta]) \big] \Big)\\
-  \phi_l^{(w+1)} &= \big(\sum_{i=1}^n n_i^l \big)^{-1}  \sum_{i=1}^n \Big[ (y_i^l - U_{il}\beta_l^{(w+1)})^\top (y_i^l - U_{il}\beta_l^{(w+1)} - 2V_{il}\hat \E_{\theta^{(w)}}[ b_i^l | y_i^l; \theta])) \\
-  & \hspace{3cm}+ \Tr\big(V_{il}^\top V_{il}\hat \E_{\theta^{(w)}}[ b_i^l {b_i^l}^\top | y_i^l; \theta]\big) \Big] \\
-  D^{(w+1)} &= n^{-1} \sum_{i=1}^n \E_{\theta^{(w)}}[ b_i {b_i}^\top | y_i; \theta]
-\end{align*}
-
+and \[D^{(w+1)} = n^{-1} \sum_{i=1}^n \E_{\theta^{(w)}}[ b_i {b_i}^\top | y_i].\]
 
 \bibliography{biblio}
 \bibliographystyle{plainnat}{}
