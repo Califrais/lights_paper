@@ -53,6 +53,7 @@
 \newcommand{\cN}{\mathcal N}
 \newcommand{\cA}{\mathcal A}
 \newcommand{\cQ}{\mathcal Q}
+\newcommand{\cR}{\mathcal R}
 \newcommand{\R}{\mathds R}
 \newcommand{\N}{\mathds N}
 \newcommand{\E}{\mathds E}
@@ -439,17 +440,17 @@ Now in the case $g = g_k$, one has $\E_{\theta^{(w)}}[g_k(Gi) | t_i, \delta_i, y
 
 \paragraph*{Quasi-Newton M-step.}
 Here, we need to compute \[\theta^{(w+1)} \in \argmin_{\theta \in \R^\vartheta} \cQ_n(\theta, \theta^{(w)}) + \sum_{k=0}^{K-1} \zeta_{1,k} \norm{\xi_k}_{\text{en}, \eta} + \zeta_{2,k} \norm{\gamma_k}_{\text{sg} l_1, \tilde{\eta}} + \zeta_{3,k} \norm{\beta_k}_{\text{sg} l_1, \tilde{\eta}}.\]
-Let us introduce the following useful function
+Let us introduce the following useful functions
 \begin{equation}
   \label{eq:g-tilde-1-2}
   \left\{
     \begin{array}{ll}
-        \tilde g_{s, \gamma_k, \beta_k}^1&: b_i \mapsto \exp \big\{ x_i^\top \gamma_{k,0} + \tilde g_{s, \gamma_k, \beta_k}^2(b_i) \big\}\\
-        \tilde g_{s, \gamma_k, \beta_k}^2&: b_i \mapsto \sum_{l=1}^L \sum_{a=1}^\cA {\gamma_{k,a}^l}^\top \varphi_a(s, \beta_k^l, b_i^l)
+        \tilde g_{s, \gamma_k, \beta_k}^1&: b_i \mapsto \exp \big\{ x_i^\top \gamma_{k,0} + \tilde g_{s, \gamma_k, \beta_k}^2(b_i) \big\}, \\
+        \tilde g_{s, \gamma_k, \beta_k}^2&: b_i \mapsto \sum_{l=1}^L \sum_{a=1}^\cA {\gamma_{k,a}^l}^\top \varphi_a(s, \beta_k^l, b_i^l).
     \end{array}
-  \right.
+  \right. 
 \end{equation}
-and present the parameters updates in the order given in Algorithm~\ref{alg:QNMCEM}.
+We then present the parameters updates in the order given in Algorithm~\ref{alg:QNMCEM}.
 First, the update of $D^{(w)}$ is naturally given in closed-form by
 \begin{equation}
   \label{eq:update_D}
@@ -478,49 +479,39 @@ where $\xi_k^\pm = (\xi_{k,1}^\pm, \ldots, \xi_{k,p}^\pm)^\top$. The L-BFGS-B so
   \label{eq:grad-xi_k}
   \frac{\partial P_{n,k}^{(w)}(\xi_k)}{\partial \xi_k} = -n^{-1} \sum_{i=1}^n \hat \pi_{ik}^{\theta^{(w)}} \big( 1 - \pi_{\xi_k}(x_i) \big) x_i.
 \end{equation}
-Similarly to the strategy of increasing $N$ with the iterations $w$ for computational reasons, it is not clever to use a too small solver tolerance in the early steps of the algorithm, where we call tolerance the value for which iterations stop when the stopping criterion is below it. We then decrease the L-BFGS-B tolerance (which we denote $tol$) with every increase of $N$ (see Algorithm~\ref{alg:QNMCEM}).
+Similarly to the strategy of increasing $N$ with the iterations $w$ for computational reasons, it is not clever to use a too small solver tolerance in the early steps of the algorithm, where we call tolerance the value for which iterations stop when the stopping criterion is below it. We then decrease the L-BFGS-B tolerance (which we denote $tol$ in Algorithm~\ref{alg:QNMCEM}) with every increase of $N$.
 
 Now, for the update of $\beta_k^{(w)}$ for $k=0, \ldots, K-1$, we similarly denote
-\begin{align}
-  \label{eq:R-def}
-  R^{(w)}_{n,k}(\beta_k) = -n^{-1} \sum_{i=1}^n \hat \pi_{ik}^{\theta^{(w)}} \Big[ &\delta_i \hat \E_{\theta^{(w)}}[ \tilde g_{t_i, \gamma_k^{(w+1)}, \beta_k}^2(b_i) | t_i, \delta_i, y_i] \\ \nonumber
-  & - \sum_{j=1}^J \lambda_0^{(w+1)}(t_j) \hat \E_{\theta^{(w)}}[ \tilde g_{t_j, \gamma_k^{(w+1)}, \beta_k}^1(b_i) | t_i, \delta_i, y_i] \ind{\{t_j\leq t_i\}} \\ \nonumber
-  & + (y_i \odot \Phi_i^{(w+1)})^\top \hat \E_{\theta^{(w)}}[ M_{ik} | t_i, \delta_i, y_i] \\ \nonumber
-  & - \hat \E_{\theta^{(w)}}[ c_{\phi^{(w+1)}}(M_{ik}) | t_i, \delta_i, y_i] \Big] 
-\end{align}
-based on the quantities involved in $\cQ_n(\theta, \theta^{(w)})$ depending on $\beta_k$, with $\tilde g_{t_j, \gamma_k^{(w+1)}, \beta_k}^1$ and $\tilde g_{t_i, \gamma_k^{(w+1)}, \beta_k}^2$ defined in~\eqref{eq:g-tilde-1-2}. Since $R^{(w)}_{n,k}$ depends on parameters estimates at iteration $w+1$ that have not been computed yet ($\gamma_k^{(w+1)}$, $\lambda_0^{(w+1)}$ and $\phi^{(w+1)}$), we denote $R^{(w^-)}_{n,k}$ the function obtained from~\eqref{eq:R-def} by replacing $(w+1)$ with $(w)$, that is using the last iteration estimates.
+\begin{align*}
+  R^{(w)}_{n,k}(\beta_k) = -n^{-1} \sum_{i=1}^n \hat \pi_{ik}^{\theta^{(w)}} \Big[ &\delta_i \hat \E_{\theta^{(w)}}[ \tilde g_{t_i, \gamma_k^{(w)}, \beta_k}^2(b_i) | t_i, \delta_i, y_i] \\
+  & - \sum_{j=1}^J \lambda_0^{(w)}(t_j) \hat \E_{\theta^{(w)}}[ \tilde g_{t_j, \gamma_k^{(w)}, \beta_k}^1(b_i) | t_i, \delta_i, y_i] \ind{\{t_j\leq t_i\}} \\
+  & + (y_i \odot \Phi_i^{(w)})^\top \hat \E_{\theta^{(w)}}[ M_{ik} | t_i, \delta_i, y_i] \\
+  & - \hat \E_{\theta^{(w)}}[ c_{\phi^{(w)}}(M_{ik}) | t_i, \delta_i, y_i] \Big] 
+\end{align*}
+based on the quantities involved in $\cQ_n(\theta, \theta^{(w)})$ depending on $\beta_k$, with $\tilde g_{t_j, \gamma_k^{(w)}, \beta_k}^1$ and $\tilde g_{t_i, \gamma_k^{(w)}, \beta_k}^2$ defined in~\eqref{eq:g-tilde-1-2}. The integration over the survival process has been replaced with a finite sum over the process evaluated at the distinct event times $(t_1, \ldots, t_J)$ with $J \in~\N_+$, since $\lambda_0^{(w)}$ defined in~\eqref{eq:update_lambda_0} is always zero except at observed event times.
 Hence, we update $\beta_k^{(w)}$ by solving the following problem
 \begin{equation}
   \label{eq:sub-problem-beta_k}
   \begin{split}
-    \text{minimize}& \quad \quad R_{n, k}^{(w^-)}(\beta_k^+ - \beta_k^-) + \zeta_{3,k} \big((1 - \tilde \eta) \sum_{l=1}^L \norm{{\beta_k^l}^+ - {\beta_k^l}^-}_2 + \tilde \eta \sum_{j=1}^q (\beta_{k,j}^+ + \beta_{k,j}^-) \big) \\
+    \text{minimize}& \quad \quad R_{n, k}^{(w)}(\beta_k^+ - \beta_k^-) + \zeta_{3,k} \big((1 - \tilde \eta) \sum_{l=1}^L \norm{{\beta_k^l}^+ - {\beta_k^l}^-}_2 + \tilde \eta \sum_{j=1}^q (\beta_{k,j}^+ + \beta_{k,j}^-) \big) \\
     \text{subject to}& \quad \quad \beta_{k,j}^+ \geq 0 \text{ and } \beta_{k,j}^- \geq 0 \text{ for } j = 1, \ldots, q.
   \end{split} 
 \end{equation}
 The value of the gradient for the Gaussian case is here given by
-\begin{align*}
+\begin{align}
   \label{eq:grad-beta_k}
-  \frac{\partial R_{n,k}^{(w^-)}(\beta_k)}{\partial \beta_k^l} = -n^{-1} &\sum_{i=1}^n \hat \pi_{ik}^{\theta^{(w)}} \Big[\sum_{a=1}^\mathcal{A} {\gamma_{k,a}^l}^{(w)} \Big( \delta_i  \hat \E_{\theta^{(w)}}[ \frac{\partial \varphi_a(t_i, \beta_k^l, b_i^l)}{\partial \beta_k^l} | t_i, \delta_i, y_i] \\
-  &- \sum_{j=1}^J \lambda_0^{(w)}(t_j) \hat \E_{\theta^{(w)}}[ \frac{\partial \varphi_a(t_j, \beta_k^l, b_i^l)}{\partial \beta_k^l} \tilde g_{t_j, \gamma_k^{(w)}, \beta_k}^1(b_i) | t_i, \delta_i, y_i] \ind{\{t_j\leq t_i\}} \Big) \\
-  &+ U_{il}^\top \phi_l^{-2}I_{n_{il}} (y_i^l - U_{il}\beta_k^l - V_{il}\hat \E_{\theta^{(w)}}[ b_i | t_i, \delta_i, y_i])\Big]
-\end{align*}
+  \frac{\partial R_{n,k}^{(w)}(\beta_k)}{\partial \beta_k^l} = -n^{-1} &\sum_{i=1}^n \hat \pi_{ik}^{\theta^{(w)}} \Big[\sum_{a=1}^\mathcal{A} {\gamma_{k,a}^l}^{(w)} \Big( \delta_i  \hat \E_{\theta^{(w)}}[ \frac{\partial \varphi_a(t_i, \beta_k^l, b_i^l)}{\partial \beta_k^l} | t_i, \delta_i, y_i] \\ \nonumber
+  &- \sum_{j=1}^J \lambda_0^{(w)}(t_j) \hat \E_{\theta^{(w)}}[ \frac{\partial \varphi_a(t_j, \beta_k^l, b_i^l)}{\partial \beta_k^l} \tilde g_{t_j, \gamma_k^{(w)}, \beta_k}^1(b_i) | t_i, \delta_i, y_i] \ind{\{t_j\leq t_i\}} \Big) \\ \nonumber
+  &+ U_{il}^\top {\phi_l^{(w)}}^{-2}I_{n_{il}} (y_i^l - U_{il}\beta_k^l - V_{il}\hat \E_{\theta^{(w)}}[ b_i | t_i, \delta_i, y_i])\Big]
+\end{align}
 for all $l = 1, \ldots, L$. Note that the gradients of the considered $\varphi_a$ functions with respect to $\beta_k^l$ are given in Table~\ref{table:shared_associations}. 
-
-
-For the update of $\lambda_0^{(w)}$, we treat the jump size at the observed event times as parameters to be estimated~\citep{klein1992semiparametric}. The closed-form update is then given by
-\begin{equation}
-  \label{eq:update_lambda_0}
-  \lambda_0^{(w+1)}(t)= \dfrac{\sum_{i=1}^n \delta_i \ind{\{t=t_i\}}}{\sum_{i=1}^n \sum_{k=0}^{K-1} \hat \pi_{ik}^{\theta^{(w)}} \hat \Lambda_{ik,\tilde g_{t_i, \gamma_k^{(w+1)}, \beta_k^{(w+1)}}^1}^{\theta^{(w)}} \ind{\{t_i \geq t\}} },
-\end{equation}
-which is a Breslow like estimator~\citep{breslow1972contribution} adapted to our model. 
-
 
 Concerning the update of $\gamma_k^{(w)}$ for $k=0, \ldots, K-1$, let us follow the same strategy by denoting
 \begin{align*}
   Q^{(w)}_{n,k}(\gamma_k) = -n^{-1} \sum_{i=1}^n \hat \pi_{ik}^{\theta^{(w)}} \Big[ &\delta_i \hat \E_{\theta^{(w)}}[ \log \circ \tilde g_{t_i, \gamma_k, \beta_k^{(w+1)}}^1(b_i) | t_i, \delta_i, y_i] \\
-  & - \sum_{j=1}^J \lambda_0^{(w+1)}(t_j) \hat \E_{\theta^{(w)}}[ \tilde g_{t_j, \gamma_k, \beta_k^{(w+1)}}^1(b_i) | t_i, \delta_i, y_i] \ind{\{t_j\leq t_i\}} \Big] 
+  & - \sum_{j=1}^J \lambda_0^{(w)}(t_j) \hat \E_{\theta^{(w)}}[ \tilde g_{t_j, \gamma_k, \beta_k^{(w+1)}}^1(b_i) | t_i, \delta_i, y_i] \ind{\{t_j\leq t_i\}} \Big] 
 \end{align*}
-based on the quantities involved in $\cQ_n(\theta, \theta^{(w)})$ that depend on $\gamma_k$, with $\tilde g_{t_j, \gamma_k, \beta_k^{(w+1)}}^1$ defined in~\eqref{eq:g-tilde-1-2}. The integration over the survival process has been replaced with a finite sum over the process evaluated at the distinct event times $(t_1, \ldots, t_J)$ with $J \in~\N_+$, since $\lambda_0^{(w+1)}$ defined in~\eqref{eq:update_lambda_0} is always zero except at observed event times. The update for $\gamma_k^{(w)}$ therefore requires to solve the following minimization problem
+based on the quantities involved in $\cQ_n(\theta, \theta^{(w)})$ that depend on $\gamma_k$, with $\tilde g_{t_j, \gamma_k, \beta_k^{(w+1)}}^1$ defined in~\eqref{eq:g-tilde-1-2}. The update for $\gamma_k^{(w)}$ therefore requires to solve the following minimization problem
 \begin{equation}
   \label{eq:minimization-beta_k}
   \gamma_k^{(w+1)} \in \argmin_{\gamma_k \in \R^{p+L\mathcal{A}}} Q^{(w)}_{n,k}(\gamma_k) + \zeta_{2,k} \norm{\gamma_k}_{\text{sg} l_1, \tilde{\eta}}.
@@ -534,15 +525,27 @@ We then rewrite problem~\eqref{eq:minimization-beta_k} as the following differen
   \end{split} 
 \end{equation}
 One can also compute the gradient since one has
-\begin{equation*}
-  \frac{\partial Q_{n,k}^{(w)}(\gamma_k)}{\partial \gamma_{k,0}} = -n^{-1} \sum_{i=1}^n \hat \pi_{ik}^{\theta^{(w)}} \Big[ \delta_i - \sum_{j=1}^J \lambda_0^{(w+1)}(t_j) \hat \E_{\theta^{(w)}}[ \tilde g_{t_j, \gamma_k, \beta_k^{(w+1)}}^1(b_i) | t_i, \delta_i, y_i] \ind{\{t_j\leq t_i\}} \Big] x_i
-\end{equation*}
+\begin{equation}
+  \label{eq:grad-Q-1}
+  \frac{\partial Q_{n,k}^{(w)}(\gamma_k)}{\partial \gamma_{k,0}} = -n^{-1} \sum_{i=1}^n \hat \pi_{ik}^{\theta^{(w)}} \Big[ \delta_i - \sum_{j=1}^J \lambda_0^{(w)}(t_j) \hat \E_{\theta^{(w)}}[ \tilde g_{t_j, \gamma_k, \beta_k^{(w+1)}}^1(b_i) | t_i, \delta_i, y_i] \ind{\{t_j\leq t_i\}} \Big] x_i
+\end{equation}
 and
-\begin{align*}
-  \frac{\partial Q_{n,k}^{(w)}(\gamma_k)}{\partial \gamma_{k,a}^l} = -n^{-1} &\sum_{i=1}^n \hat \pi_{ik}^{\theta^{(w)}} \Big[ \delta_i  \hat \E_{\theta^{(w)}}[ \varphi_a(t_i, {\beta_k^l}^{(w+1)}, b_i^l) | t_i, \delta_i, y_i] \\
-   &- \sum_{j=1}^J \lambda_0^{(w+1)}(t_j) \hat \E_{\theta^{(w)}}[ \varphi_a(t_j, {\beta_k^l}^{(w+1)}, b_i^l) \tilde g_{t_j, \gamma_k, \beta_k^{(w+1)}}^1(b_i) | t_i, \delta_i, y_i] \ind{\{t_j\leq t_i\}} \Big]
-\end{align*}
+\begin{align}
+  \label{eq:grad-Q-2}
+  \frac{\partial Q_{n,k}^{(w)}(\gamma_k)}{\partial \gamma_{k,a}^l} = -n^{-1} &\sum_{i=1}^n \hat \pi_{ik}^{\theta^{(w)}} \Big[ \delta_i  \hat \E_{\theta^{(w)}}[ \varphi_a(t_i, {\beta_k^l}^{(w+1)}, b_i^l) | t_i, \delta_i, y_i] \\ \nonumber
+   &- \sum_{j=1}^J \lambda_0^{(w)}(t_j) \hat \E_{\theta^{(w)}}[ \varphi_a(t_j, {\beta_k^l}^{(w+1)}, b_i^l) \tilde g_{t_j, \gamma_k, \beta_k^{(w+1)}}^1(b_i) | t_i, \delta_i, y_i] \ind{\{t_j\leq t_i\}} \Big]
+\end{align}
 for all $a = 1, \ldots, \mathcal{A}$ and $l = 1, \ldots, L$.
+
+For the update of $\lambda_0^{(w)}$, we treat the jump size at the observed event times as parameters to be estimated~\citep{klein1992semiparametric}. The closed-form update is then given by
+\begin{equation}
+  \label{eq:update_lambda_0}
+  \lambda_0^{(w+1)}(t)= \dfrac{\sum_{i=1}^n \delta_i \ind{\{t=t_i\}}}{\sum_{i=1}^n \sum_{k=0}^{K-1} \hat \pi_{ik}^{\theta^{(w)}} \hat \Lambda_{ik,\tilde g_{t_i, \gamma_k^{(w+1)}, \beta_k^{(w+1)}}^1}^{\theta^{(w)}} \ind{\{t_i \geq t\}} },
+\end{equation}
+which is a Breslow like estimator~\citep{breslow1972contribution} adapted to our model. 
+
+
+
 
 
 Finally, for the update of $\phi^{(w)}$ and regarding Table~\ref{table:glm}, we focus on the Gaussian case being particularly useful in practice. It is obtained in closed-form by
@@ -566,7 +569,7 @@ Algorithm~\ref{alg:QNMCEM} describes the main steps of the resulting QNMCEM algo
 
 \vspace{.5cm}
 
-\begin{algorithm}[H]
+\begin{algorithm}[]
 \DontPrintSemicolon
 \caption{QNMCEM algorithm for the lights model inference}
 \label{alg:QNMCEM}
@@ -595,36 +598,43 @@ Compute the starting parameters $\theta^{(0)} \in \R^\vartheta$ \\
 \textbf{Return:} {$\hat \theta$}
 \end{algorithm}
 
-
-\subsection{Practical details}
-\label{sec:practical details}
-
-Let us give some details about the choices made for using the lights model in practice.
-
-\paragraph{Cross-validation procedure.}
-
-When validating predictions or comparing performances of competing models in a survival context, one can be interested either in the discriminative power of the predictive rule and use concordance measures such as the C-index~\citep{heagerty2005survival} (defined in Section~\ref{sec:Metrics}), or in the predictive accuracy of the rule~\citep{schemper2000predictive}.
-Developments in the field of joint modeling have primarily focused on modeling and estimation, and most studies do not consider goodness of fit nor generalisation power in a prognostic prediction perspective~\citep{hickey2016joint}. However, practitioners will naturally require predictive prognostic tools to evaluate model fits and compare models.
-
-The lights model has the ability to produce prognostic predictions that can be dynamically updated according to the observed trajectory of the features. 
-Once the model is trained (so that one obtains $\hat\theta$ from~\eqref{eq:optim-pb} using our QNMCEM algorithm introduced in Section~\ref{sec:QNMCEM}), posterior risk classification can be made through $\hat \pi_{ik}^{\hat\theta}$ (see~\eqref{eq:hat_pi_ik-def}).
-We propose to use this probabilities as discriminative marker rule for risk prediction and use it in the cross-validation procedure for selecting the best regularization hyper-parameters. Indeed, it makes sense from a practical point of view, since one wants to obtain prognostic predictions as well as interpretation of the high-dimensional longitudinal features.
-
-\paragraph{The case $K=2$.}
+\subsection{The case $K=2$}
+\label{sec:K=2}
 
 In many practical applications -- including those addressed in Section~\ref{sec:application} -- we are interested in identifying one subgroup of the population with a high risk of adverse event compared to the others. Then, in the following, we consider $G \in \{ 0, 1\}$ where $G=1$ means high-risk of early adverse event and $G=0$ means low risk.
 To simplify notations, let us set $\xi = \xi_1$, $\pi_\xi(x)$ the conditional probability that a patient belongs to the group with high risk of adverse event given its time-independent features $x$, and $\zeta_1 = \zeta_{1,1}$.
 In this context, which is the one we consider in practice in Sections~\ref{sec:simulation study} and~\ref{sec:application}, we suppose that the ``right'' penalty strength for $\xi_k$ and $\gamma_k$ does not depend on $k$, so that we denote $\zeta_2 = \zeta_{2,0} = \zeta_{2,1}$ and $\zeta_3 = \zeta_{3,0} = \zeta_{3,1}$. 
 
-The hyper-parameters $(\zeta_1, \zeta_2, \zeta_3)^\top \in \R_+^3$ are then tuned during a 10-fold randomized search cross-validation procedure~\citep{bergstra2012random} using marker $\hat \pi_{ik}^{\hat\theta}$ (see~\eqref{eq:hat_pi_ik-def}) and the C-index score defined in Section~\ref{sec:Metrics}.
-Random search are indeed more efficient in terms of computing times than classical grid search for hyper-parameter optimization and finds better models by effectively searching a larger configuration space, which is appropriate to our high-dimensional problem.
+\paragraph{Cross-validation procedure.}
+
+The hyper-parameters $(\zeta_1, \zeta_2, \zeta_3)^\top \in \R_+^3$ are then tuned during a 10-fold randomized search cross-validation procedure~\citep{bergstra2012random} using predictive marker defined in Section~\ref{sec:evaluation strategy} and the C-index score defined in Section~\ref{sec:Metrics}.
+Random search is indeed more efficient in terms of computing times than classical grid search for hyper-parameters optimization and finds better models by effectively searching in a larger configuration space, which is appropriate to our high-dimensional problem. Moreover, the search interval for hyper-parameter $\zeta_1$ is automatically computed in a data driven way described in Appendix~\ref{sec:numerical-details}, while the search intervals for $\zeta_2$ and $\zeta_3$ are determined empirically.
 % TODO: Figure de visualisation de la CV de (\zeta_1, \zeta_2, \zeta_3) en 3D
 
 
 \section{Performance evaluation}
 \label{sec:Performance evaluation}
 
-In this section, we first introduce the C-index metric used to assess performances and briefly introduce the models we consider for performance comparisons. Then, we provide details regarding the simulation study and data generation. The chosen metrics for evaluating performances are then presented, followed by the results.
+In this section, we first present the proposed evaluation strategy to assess real-time prognostic prediction performances. We then introduce the appropriate metric used to this end: the C-index ; and finally, the considered models for performance comparisons.
+
+\subsection{Evaluation strategy: the real-time prediction paradigm}
+\label{sec:evaluation strategy}
+
+When validating predictions or comparing performances of competing models in a survival context, one can be interested either in the discriminative power of the predictive rule and use concordance measures such as the C-index~\citep{heagerty2005survival} (defined in Section~\ref{sec:Metrics}), or in the predictive accuracy of the rule~\citep{schemper2000predictive}.
+Developments in the field of joint modeling have primarily focused on modeling and estimation, and most studies do not consider goodness-of-fit nor generalization power in a prognostic prediction perspective~\citep{hickey2016joint}. However, with the prospect of using prognostic prediction in real-time on a daily basis, practitioners will naturally require predictive prognostic tools to evaluate models fit and compare models in terms of discriminative power. So we choose to put ourselves in this paradigm.
+
+\paragraph{Predictive marker.}
+
+The question now is to choose a discriminative marker rule for risk prediction to be used in the cross-validation procedure for selecting the best regularization hyper-parameters, and of course to be used as final risk prediction after hyper-parameters fine-tuning.
+The lights model has the ability to produce prognostic predictions that can be dynamically updated according to the observed trajectory of the features. 
+Once the model is trained (so that one obtains $\hat\theta$ from~\eqref{eq:optim-pb} using our QNMCEM algorithm introduced in Section~\ref{sec:QNMCEM}), posterior risk classification for subject $i$ and group $k$ can be made through $\hat \pi_{ik}^{\hat\theta}$ (see~\eqref{eq:hat_pi_ik-def}). Similar posterior probabilities have been considered for goodness-of-fit evaluation in other JLCMs models, see~\citet{proust2014joint} for instance.
+
+But in the real-time prediction paradigm, it makes no sense from a practical point of view to use this marker rule for risk prediction, since the latter requires to know the survival labels $(t_i, \delta_i)$, being intrinsically unknow in a context where we want to perform real-time risk prediction. Denoting $t^{max}_i$ the time for subject $i$ when one wants to perform the risk prediction -- so in practice, the time up to which one has data measurements for $Y_i$, say the ``present'' time for prediction -- we define
+\begin{equation}
+  \label{eq:marker-def}
+  \cR_i = \sum_{k=0}^{K-1} \pi_{\hat \xi_k}(x_i) \exp \big\{ \tilde g_{t^{max}_i, \hat \gamma_k, \hat \beta_k}^1(b_i) \big\}
+\end{equation}
+as predictive marker rule of the lights model for subject $i$.
 
 \subsection{The C-index metric}
 \label{sec:Metrics}
@@ -641,11 +651,6 @@ In our case,  $T^\star$ is subject to right censoring, so one would typically co
 \end{equation*}
 with $\tau$ corresponding to the fixed and prespecified follow-up period duration \citep{heagerty2005survival}. A Kaplan-Meier estimator for the censoring distribution leads to a nonparametric and consistent estimator of $\cC_\tau$ \citep{uno2011c}, already implemented in the \texttt{Python} package \texttt{lifelines}.
 Hence in the following, we consider the C-index metric to assess performances.
-
-
-\subsection{Evaluation strategy}
-\label{sec:evaluation strategy}
-
 
 \subsection{Competing models}
 \label{sec:competing models}
@@ -665,29 +670,30 @@ We use respectively the \texttt{R} packages \texttt{survival} and \texttt{glmnet
 \end{equation*}
 where $\xi$ is chosen by the a 10-fold cross-validation procedure, for a given $\eta \in [0, 1]$. Ties are handled via the Breslow approximation of the partial likelihood \citep{breslow1972contribution}. We also choose to include basic time-independant features extracted from longitudinal processes, namely the average value for each time-dependant feature.
 
-\paragraph*{The time-dependent Cox model with \texttt{survival} package.}
+\paragraph*{The time-dependent Cox model.}
 
 A classical extension of the Cox model supposes that features depend on time~\citep{sueyoshi1992semiparametric} (and then loosing the risk proportionality property), that is with our notations
 \[\lambda_i(t) = \lambda_0(t) \exp\big(y_i(t)^\top \beta \big). \]
 Using the \texttt{survival} \texttt{R} package~\citep{zhang2018time}, blabla description...
 
 
-\paragraph*{Multivariate joint modeling with \texttt{joineRML} package.}
-In this \texttt{R} package~\citep{hickey2018joinerml}, blabla description...
+\paragraph*{Multivariate joint modeling.}
 
-\paragraph*{The \texttt{JM} package.}
-In this \texttt{R} package~\citep{rizopoulos2010jm}, blabla description...
+\texttt{joineRML} package : in this \texttt{R} package~\citep{hickey2018joinerml}, blabla description...
 
-\paragraph*{The \texttt{JMbayes} package.}
-In this \texttt{R} package~\citep{rizopoulos2014r}, blabla description...
+The \texttt{JM} package : in this \texttt{R} package~\citep{rizopoulos2010jm}, blabla description...
+
+The \texttt{JMbayes} package : n this \texttt{R} package~\citep{rizopoulos2014r}, blabla description...
 
 % TODO: voir slide 132 \url{http://www.drizopoulos.com/courses/Int/JMwithR_CEN-ISBS_2017.pdf})
 
-\paragraph*{The \texttt{joineR} package.}
-In this \texttt{R} package~\citep{philipson2018package}, blabla description...
+The \texttt{joineR} package : in this \texttt{R} package~\citep{philipson2018package}, blabla description...
+
 
 \section{High-dimensional simulation study}
 \label{sec:simulation study}
+
+In this section, we provide details regarding data generation, followed by the results of the extensive Monte Carlo simulation study to examine our method and compare it with state-of-the-art.
 
 \subsection{Simulation design}
 \label{simulation design}
@@ -748,17 +754,20 @@ All the methodology discussed in this paper is implemented in \texttt{Python}. T
 \section{Numerical details}
 \label{sec:numerical-details}
 
-Concerning the 10-fold cross-validation procedure for tuning $(\zeta_{1,k}, \zeta_{2,k}, \zeta_{3,k})^\top \in \R_+^3$, we then use a randomized search with the C-index metric (see Section~\ref{sec:practical details}). 
-Let us precise that we choose $\zeta_{1,k}$ as the largest value such that error is within one standard error of the minimum, and that a randomized search is made during the cross-validation on an interval $[\zeta_{1,k}^{\text{max}} \times 10^{-4}, \zeta_{1,k}^{\text{max}} ]$, with $\zeta_{1,k}^{\text{max}}$ the interval upper bound computed hereafter.
+Concerning the cross-validation procedure for tuning 
+\[(\zeta_{1,0}, \zeta_{2,0}, \zeta_{3,0}, \ldots, \zeta_{1,K-1}, \zeta_{2,K-1}, \zeta_{3,K-1})^\top \in \R_+^{3K}, \]
+we use a randomized search with the C-index metric (see Section~\ref{sec:evaluation strategy}) where for all $k=0, \ldots, K-1$ and $j \in \{1, 2, 3\}$, each $\zeta_{j,k}$ finds its candidates in the interval 
+\[[\zeta_{j,k}^{\text{max}} \times 10^{-4}, \zeta_{j,k}^{\text{max}} ] \subset \R, \]
+with $\zeta_{j,k}^{\text{max}}$ the interval upper bound computed hereafter.
 
 Considering the convex minimization problem~\eqref{eq:minimization-xi_k} at a given step $w$,
-and regarding the randomly chosen candidate values for $\zeta_{1,k}$, we consider $\zeta_{1,k}^1 \leq \zeta_{1,k}^2 \leq \dots \leq \zeta_{1,k}^{\text{max}}$. At $\zeta_{1,k}^{\text{max}}$, all coefficients $\hat \xi_{k, j}$ for all $j = 1, \dots, p$ are exactly zero.
+let us denote $\zeta_{1,k}^1 \leq \zeta_{1,k}^2 \leq \dots \leq \zeta_{1,k}^{\text{max}}$ the randomly chosen candidate values for $\zeta_{1,k}$, such that at $\zeta_{1,k}^{\text{max}}$, all coefficients $\hat \xi_{k, j}$ for all $j = 1, \dots, p$ are exactly zero.
 The KKT conditions \citep{boyd2004convex} claim that
 \begin{center}
   $\left\{
       \begin{aligned}
-        &\frac{\partial P_{n, k}^{(w)}(\hat \xi_k)}{\partial \xi_j} =  \zeta_{1,k} \big( (\eta-1)\ \text{sgn}(\hat \xi_{k,j}) - \eta \hat \xi_{k,j} \big)  \quad \ \ \ \forall j \in \hat \cA_k \\
-        &\left| \frac{\partial P_{n, k}^{(w)}(\hat \xi_k)}{\partial \xi_j} \right| < \zeta_{1,k} (1 - \eta) \quad \quad \quad \quad \quad \quad \quad \ \forall j \notin \hat \cA_k
+        &\frac{\partial P_{n, k}^{(w)}(\hat \xi_k)}{\partial \xi_{k,j}} =  \zeta_{1,k} \big( (\eta-1)\ \text{sgn}(\hat \xi_{k,j}) - \eta \hat \xi_{k,j} \big)  \quad \ \ \ \forall j \in \hat \cA_k \\
+        &\left| \frac{\partial P_{n, k}^{(w)}(\hat \xi_k)}{\partial \xi_{k,j}} \right| < \zeta_{1,k} (1 - \eta) \quad \quad \quad \quad \quad \quad \quad \ \forall j \notin \hat \cA_k
       \end{aligned}
     \right.$,
 \end{center}
@@ -771,6 +780,7 @@ Hence, we choose the following upper bound for the randomly chosen candidate int
 \begin{equation*}
 \zeta_{1,k}^{\text{max}} = \frac{1}{n(1-\eta)} \underset{j = 1, \dots, p}{\text{max}} \sum_{i=1}^n |x_{ij}|.
 \end{equation*}
+Similar strategy to automatically compute $\zeta_{2,k}^{\text{max}}$ or $\zeta_{3,k}^{\text{max}}$ is not easy since without additionnal hypothesis, the gradients~\ref{eq:grad-beta_k},~\ref{eq:grad-Q-1} and~\ref{eq:grad-Q-2} are not upper bounded by a quantity that depends only on the data and not on the current iteration parameters estimates. We then choose those interval upper bounds empirically.
 
 \bibliography{biblio}
 \bibliographystyle{plainnat}{}

@@ -6,10 +6,10 @@
 \BOOKMARK [1][-]{section.3}{Inference}{}% 6
 \BOOKMARK [2][-]{subsection.3.1}{Penalized objective}{section.3}% 7
 \BOOKMARK [2][-]{subsection.3.2}{A Quasi-Newton Monte Carlo EM}{section.3}% 8
-\BOOKMARK [2][-]{subsection.3.3}{Practical details}{section.3}% 9
+\BOOKMARK [2][-]{subsection.3.3}{The case K=2}{section.3}% 9
 \BOOKMARK [1][-]{section.4}{Performance evaluation}{}% 10
-\BOOKMARK [2][-]{subsection.4.1}{The C-index metric}{section.4}% 11
-\BOOKMARK [2][-]{subsection.4.2}{Evaluation strategy}{section.4}% 12
+\BOOKMARK [2][-]{subsection.4.1}{Evaluation strategy: the real-time prediction paradigm}{section.4}% 11
+\BOOKMARK [2][-]{subsection.4.2}{The C-index metric}{section.4}% 12
 \BOOKMARK [2][-]{subsection.4.3}{Competing models}{section.4}% 13
 \BOOKMARK [1][-]{section.5}{High-dimensional simulation study}{}% 14
 \BOOKMARK [2][-]{subsection.5.1}{Simulation design}{section.5}% 15
