@@ -778,7 +778,7 @@ The distribution of the censoring variable $C_i$ is the geometric distribution $
 Finally, the prediction time for subject $i$ is draw according to 
 \begin{equation}
   \label{eq:law-t_i^max}
-  t_i^{max} \sim T_i \times \big(1 - \text{Beta}(\nu_1, \nu_2)\big) 
+  1 - t_i^{max} \sim T_i \times \text{Beta}(\nu_1, \nu_2)
 \end{equation}
 with $(\nu_1, \nu_2) \in \R_+^2$ two shape parameters. Figure~\ref{fig:timax-pdf} shows the corresponding probability density function for $t_i^{max}$ with some explanations.
 We then truncate all $Y_i$ measurements being after $t_i^{max}$, since it represents the ``present'' time, so the time up to which one has longitudinal data.
@@ -916,6 +916,78 @@ and one can generate event times according to
 \[ T \sim \dfrac{1}{\kappa_2 + b} \log \Big( 1 - \dfrac{(\kappa_2 + b)\log U}{\kappa_1 \kappa_2 e^a} \Big) \]
 with $U \sim \cU\big([0,1]\big)$.
 $\hfill\square$
+
+\section{Multivariate linear mixed model}
+We re-write the conditional distribution of $y_i|b_i; \theta $ is in form
+\begin{align*}
+	f(y_i|b_i, \theta) &= \exp \big\{(y_i \odot \Phi_i)^\top M_{i} - c_\phi(M_{i}) + d_\phi(y_i) \big\} \\
+	&= \exp \big\{( \Sigma_iy_i)^\top M_{i} - c_\phi(M_{i}) + d_\phi(y_i) \big\}
+\end{align*}
+where $\Sigma_i$ is a diagonal matrix whose diagonal is $\Phi_i$. And if the distribution $b_i; \theta$ is Gaussian, then its density form is
+
+\begin{equation*}
+  \label{eq:b_density}
+  f(b_i ; \theta) = (2 \pi)^{-\dfrac r2} |D|^{-\dfrac12} \exp \Big\{ -\dfrac12 b_i^\top D^{-1}b_i \Big\}.
+\end{equation*}
+\\
+The complete log-likelihood
+\begin{align*}
+  \ell_n^\text{comp}(\theta) &= \ell_n^\text{comp}(\theta ; \cD_n, \textbf{\textit{b}}) \\ 
+  &= \text{log} (f(y, b ; \theta) \\ 
+  &= \sum_{i=1}^n \text{log}(f(y_i|b_i, \theta)) + \text{log}(f(b_i ; \theta))\\
+  &= \sum_{i=1}^n (\Sigma_iy_i)^\top M_{i} - c_\phi(M_{i}) + d_\phi(y_i) \\
+  &  \quad -\dfrac12 (r \log 2\pi + \log|D| + b_i^\top D^{-1}b_i).
+\end{align*}
+
+\paragraph*{E-step.}
+
+We need to compute the expected negative log-likelihood of the complete data conditional on the observed data and the current estimate of the parameters given by 
+\begin{equation*}
+  \cQ_n(\theta, \theta^{(w)}) = \E_{\theta^{(w)}}[\ell_n^\text{comp}(\theta) | \cD_n].
+\end{equation*}
+Here, computing $\E_{\theta^{(w)}}[\ell_n^\text{comp}(\theta) | \cD_n]$  reduces to computing $E_{\theta^{(w)}}[b_i | y_i, \theta]$ and $E_{\theta^{(w)}}[b_ib_i^T | y_i, \theta]$ for $i = 1,..,n$\\
+\\
+If the marginal distributions of $y_i$ and $b_i$ are both Gaussian, then conditional distribution of $b_i$ is also Gaussian with a mean and a variance that can be computed. Indeed, from Bayes Theorem,
+\begin{align*}
+    f(b_i|y_i; \theta) &= \frac{f(y_i|b_i; \theta)f(b_i; \theta)}{f(y_i; \theta} \\
+    &= C_1 \text{ x } \exp \big\{( S_iy_i)^\top M_{i} - c_\phi(M_{i}) + d_\phi(y_i) \big\} \text{ x } \exp \Big\{ -\dfrac12 b_i^\top D^{-1}b_i \Big\}\\
+    &= C_2  \text{ x } \exp \big\{-\dfrac12 {b_i}^\top ({V_i}^\top \Sigma_iV_i)b_i + {b_i}^\top {V_i}^\top S(y_i - U_i\beta) \big\} \text{ x } \exp \Big\{ -\dfrac12 b_i^\top D^{-1}b_i \Big\}\\
+    &= C_2  \text{ x } \exp \big\{-\dfrac12 {b_i}^\top ({V_i}^\top \Sigma_iV_i + D^{-1})b_i + {b_i}^\top {V_i}^\top \Sigma_i(y_i - U_i\beta) \big\}\\
+    &= C_2 \text{ x } \exp \big\{ -\dfrac12 (b_i - \mu_i)^\top \Omega_i^{-1} (b_i - \mu_i) \big\}
+\end{align*}
+where,
+\begin{align*}
+    \Omega_i = ({V_i}^\top \Sigma_iV_i + D^{-1})^{-1} \text{  ;   } \mu_i = \Omega_i{V_i}^\top \Sigma_i(y_i - U_i\beta)
+\end{align*}
+Then,
+\begin{align*}
+    \E_{\theta^{(w)}}[b_i | y_i, \theta] &= \mu_i \\
+    \E_{\theta^{(w)}}[b_ib_i^T | y_i, \theta] &= \text{Var}_{\theta^{(w)}}[b_i | y_i, \theta] + \E_{\theta^{(w)}}[b_i | y_i, \theta]\E_{\theta^{(w)}}[b_i | y_i, \theta]^\top\\
+                                        &= \Omega_i + \mu_i\mu_i^\top
+\end{align*}
+
+\paragraph*{M-step.}
+Here, we need to compute \[\theta^{(w+1)} \in \argmin_{\theta \in \R^\vartheta} \cQ_n(\theta, \theta^{(w)}) .\]
+The value of the gradient for the Gaussian case is here given by
+\begin{align*}
+  \label{eq:grad-beta}
+  \frac{\partial \cQ_n(\theta, \theta^{(w)})(\beta)}{\partial \beta} &= \sum_{i=1}^n 
+  \Big[ {y_i}^\top \Sigma U_{i} - U_{i}^\top \Sigma V_{i}\hat \E_{\theta^{(w)}}[ b_i | y_i; \theta]) - U_{i}^\top \Sigma U_{i}\beta \Big] \\
+  \frac{\partial \cQ_n(\theta, \theta^{(w)})(\phi)}{\partial \phi^l} &= \sum_{i=1}^n 
+  \dfrac12 {\phi_l}^{-2}\Big[ (y_i^l - U_{il}\beta_l)^\top (y_i^l - U_{il}\beta_l - 2V_{il}\hat \E_{\theta^{(w)}}[ b_i^l | y_i^l; \theta])) \\
+  & \quad \quad +  \Tr\big(V_{il}^\top V_{il}\hat \E_{\theta^{(w)}}[ b_i^l {b_i^l}^\top | y_i^l; \theta]\big) \Big] - \frac{n_i^l}{2} {\phi_l}^{-1}\\
+  \frac{\partial \cQ_n(\theta, \theta^{(w)})(D)}{\partial D} &= \sum_{i=1}^n 
+   \dfrac12 \big( D - \E_{\theta^{(w)}}[ b_i {b_i}^\top | y_i; \theta]\big)
+\end{align*}
+\\
+Then, the updated parameter $\theta^{(w)}$ will be
+\begin{align*}
+  \beta^{(w+1)} &= \Big(\sum_{i=1}^n U_{i}^\top U_{i}\Big)^{-1}  \Big( \sum_{i=1}^n \big[ U_{i}^\top  y_i - U_{i} V_{i}\hat \E_{\theta^{(w)}}[ b_i | y_i; \theta]) \big] \Big)\\
+  \phi_l^{(w+1)} &= \big(\sum_{i=1}^n n_i^l \big)^{-1}  \sum_{i=1}^n \Big[ (y_i^l - U_{il}\beta_l^{(w+1)})^\top (y_i^l - U_{il}\beta_l^{(w+1)} - 2V_{il}\hat \E_{\theta^{(w)}}[ b_i^l | y_i^l; \theta])) \\
+  & \hspace{3cm}+ \Tr\big(V_{il}^\top V_{il}\hat \E_{\theta^{(w)}}[ b_i^l {b_i^l}^\top | y_i^l; \theta]\big) \Big] \\
+  D^{(w+1)} &= n^{-1} \sum_{i=1}^n \E_{\theta^{(w)}}[ b_i {b_i}^\top | y_i; \theta]
+\end{align*}
+
 
 \bibliography{biblio}
 \bibliographystyle{plainnat}{}
