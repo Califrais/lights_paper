@@ -642,10 +642,10 @@ But in the real-time prediction paradigm, it makes no sense from a practical poi
 Denoting $t^{max}_i$ the time for subject $i$ when one wants to perform the risk prediction -- so in practice, the time up to which one has data measurements for $Y_i$, say the ``present'' time for prediction -- a natural and appropriate marker rule of the lights model for subject $i$ being in subgroup $k$ would rather be 
 \begin{equation}
   \label{eq:marker-def}
-  \hat \cR_{ik} = \dfrac{\pi_{\hat \xi_k}(x_i) \hat f(t^{max}_i, y_i | b_i, G_i=k ; \hat \theta)}{\sum_{k=0}^{K-1} \pi_{\hat \xi_k}(x_i) \hat f(t^{max}_i, y_i | b_i, G_i=k ; \hat \theta)},
+  \hat \cR_{ik} = \dfrac{\pi_{\hat \xi_k}(x_i) \hat f(t^{max}_i, y_i | G_i=k ; \hat \theta)}{\sum_{k=0}^{K-1} \pi_{\hat \xi_k}(x_i) \hat f(t^{max}_i, y_i | G_i=k ; \hat \theta)},
 \end{equation}
 with 
-\[ \hat f(t^{max}_i, y_i | b_i, G_i=k ; \hat \theta) = \dfrac{1}{2N} \sum_{\breve{b} \in \hat S} f(t^{max}_i, 0, y_i | \breve{b}, G_i = k ; \hat \theta), \]
+\[ \hat f(t^{max}_i, y_i | G_i=k ; \hat \theta) = \dfrac{1}{2N} \sum_{\breve{b} \in \hat S} f(t^{max}_i, 0, y_i | \breve{b}, G_i = k ; \hat \theta), \]
 where $\hat S$ is obtained with Algorithm~\ref{alg:construct-set-S} using $\hat D$ (that is $S^{(w_{max})}$ for the last iteration $w_{max}$), and the density $f$ in the rigth hand side of the previous equation being defined in~\eqref{eq:ind-hyp}.
 Note that marker~\eqref{eq:marker-def} is in fact obtained from the definition of $\hat \pi_{ik}^{\hat\theta}$ in~\eqref{eq:hat_pi_ik-def} taking $(t_i, \delta_i) = (t^{max}_i, 0)$, and turns out to be an estimate of the following posterior probability 
 \[\P_\theta[G_i=k | T^\star_i > t^{max}_i, y_i, x_i].\]
@@ -655,7 +655,7 @@ Note that marker~\eqref{eq:marker-def} is in fact obtained from the definition o
 
 We detail in this section the metric considered to evaluate risk prediction performances. Let us recall that in practice, one considers the case $K=2$, see Section~\ref{sec:K=2}. 
 In this context, the predictive marker for the lights model is
-\[\hat \cR_i^\text{lights} = \dfrac{\pi_{\hat \xi}(x_i) \hat f(t^{max}_i, y_i | b_i, G_i=1 ; \hat \theta)}{\pi_{\hat \xi}(x_i) \hat f(t^{max}_i, y_i | b_i, G_i=1 ; \hat \theta) + \big(1 - \pi_{\hat \xi}(x_i) \big) \hat f(t^{max}_i, y_i | b_i, G_i=k ; \hat \theta)}.\]
+\[\hat \cR_i^\text{lights} = \dfrac{\pi_{\hat \xi}(x_i) \hat f(t^{max}_i, y_i | G_i=1 ; \hat \theta)}{\pi_{\hat \xi}(x_i) \hat f(t^{max}_i, y_i | G_i=1 ; \hat \theta) + \big(1 - \pi_{\hat \xi}(x_i) \big) \hat f(t^{max}_i, y_i | G_i=0 ; \hat \theta)}.\]
 Then, let us denote by $\hat \cR$ the marker under study in the general case, and assume that it is measured once at $t = t^{max}$.
 A common concordance measure that does not depend on time is the C-index~\citep{harrell1996tutorial} defined by
 \begin{equation*}
@@ -684,14 +684,14 @@ In the Cox PH model introduced in \citet{Cox1972JRSS}, a parameter vector $\beta
 \begin{equation*}
   \ell_n^{\text{cox}}(\beta) = n^{-1} \sum_{i=1}^n \delta_i \big( x_i^\top \beta - \log \sum_{i' : t_{i'} \geq t_i} \text{exp}(x_{i'}^\top \beta) \big).
 \end{equation*}
-For each time-dependant feature, we include subject-specific random effects, values of longitudinal processes at baseline and at time $t^{max}$, slope of longitudinal processes at time $t^{max}$ and area under of longitudinal processes from baseline up to $t^{max}$. The predictive marker for a new subject $i$ is the regular risk score~\citep{therneau2000cox}, that is $\hat \cR_i^{\text{cox}} = \exp (x_i^\top\hat\beta^{\text{cox}})$, with 
+For each time-dependant feature, we include subject-specific random effects, values of longitudinal processes at baseline and at time $t^{max}$, slope of longitudinal processes at time $t^{max}$ and area under of longitudinal processes from baseline up to $t^{max}$. The predictive marker for subject $i$ is the regular risk score~\citep{therneau2000cox}, that is $\hat \cR_i^{\text{cox}} = \exp (x_i^\top\hat\beta^{\text{cox}})$, with 
 \[\hat\beta^{\text{cox}} \in \argmin_{\beta \in \R^\vartheta} -\ell_n^{\text{cox}}(\beta).\]
 We use the \texttt{Python} package \texttt{tick} for the estimation of the previous quantity.
 Ties are handled via the Breslow approximation of the partial likelihood \citep{breslow1972contribution}.
 
 \paragraph*{Penalized Cox model.}
 
-We then consider a penalized version of the Cox model, including now much more time-independent features automatically extracted from longitudinal processes using the \texttt{Python} package \texttt{tsfresh}.
+We then consider a penalized version of the Cox model, including now much more time-independent features automatically extracted from longitudinal processes using the \texttt{Python} package \texttt{tsfresh}~\citep{christ2018time}.
 The predictive marker for the a subject $i$ is $\hat \cR_i^{\text{cox EN}} = \exp (x_i^\top\hat\beta^{\text{cox EN}})$, with 
 \[\hat\beta^{\text{cox EN}} \in \argmin_{\beta \in \R^\vartheta} -\ell_n^{\text{cox}}(\beta) + \xi \big( (1-\eta)\norm{\beta}_1 + \frac{\eta}{2} \norm{\beta}_2^2 \big)\] 
 the estimate obtained using elastic net penalization (still with the \texttt{tick} package), and
@@ -700,19 +700,20 @@ where $\xi$ is chosen by the a 10-fold cross-validation procedure, for a given $
 \paragraph*{The time-dependent Cox model.}
 
 A classical extension of the Cox model supposes that features depend on time~\citep{sueyoshi1992semiparametric} (and then loosing the risk proportionality property), that is with our notations
-\[\lambda_i(t) = \lambda_0(t) \exp\big(y_i(t)^\top \beta \big). \]
-Using the \texttt{survival} \texttt{R} package~\citep{zhang2018time}, blabla description...
+\[\lambda_i(t) = \lambda_0(t) \exp\big(x_i^\top \gamma_0 + y_i(t_i^{max})^\top \beta \big). \]
+We use the \texttt{survival} \texttt{R} package~\citep{zhang2018time}, and we consider the natural predictive marker for a subject $i$, that is the corresponding risk score given by
+\[\hat \cR_i^\text{cox t-d} = \exp \big(x_i^\top \hat\gamma_0 + y_i(t)^\top \hat\beta \big).\] 
 
 \paragraph*{Multivariate joint latent class model.} 
 
 We consider a multivariate version of JLCMs implemented in the \texttt{R} package \texttt{lcmm}~\citep{2017_lcmm}.
-Contrary to the lights model, there is no shared associations between the longitudinal models and the survival model. Given the group membership, each submodel is assumed to be independent. In this context, the predictive marker is
-\[\hat \cR_i^\text{lcmm} = \dfrac{\pi_{\hat \xi}(x_i) \hat f(t^{max}_i, y_i | b_i, G_i=1 ; \hat \theta)}{\pi_{\hat \xi}(x_i) \hat f(t^{max}_i, y_i | b_i, G_i=1 ; \hat \theta) + \big(1 - \pi_{\hat \xi}(x_i)\big) \hat f(t^{max}_i, y_i | b_i, G_i=0 ; \hat \theta)}.\]
+Contrary to the lights model, there is no shared associations between the longitudinal models and the survival model. Given the group membership, each submodel is assumed to be independent. In this context, the predictive marker for subject $i$ is
+\[\hat \cR_i^\text{lcmm} = \dfrac{\pi_{\hat \xi}(x_i) f(t^{max}_i, y_i | G_i=1 ; \hat \theta)}{\pi_{\hat \xi}(x_i) f(t^{max}_i, y_i | G_i=1 ; \hat \theta) + \big(1 - \pi_{\hat \xi}(x_i)\big) f(t^{max}_i, y_i | G_i=0 ; \hat \theta)}.\]
 
 \paragraph*{Multivariate shared random effect model.}
 
-In this context, we consider the \texttt{JMbayes} package~\citep{2017_JMbayes}. For a new subject $i$, the predictive marker associated with this model is naturally given by the corresponding risk score
-\[\hat \cR_i^\text{JMbayes} = \exp \Big\{ x_i^\top \hat\gamma_{k,0} + \sum_{l=1}^L \sum_{a=1}^\cA {\widehat{\gamma_{k,a}^l}}^\top \varphi_a(t_i^{max}, \hat \beta_k^l, b_i^l) \Big\}.\] 
+In this context, we consider the \texttt{JMbayes} package~\citep{2017_JMbayes}. The predictive marker associated with this model for subject $i$ is naturally given by the corresponding risk score
+\[\hat \cR_i^\text{JMbayes} = \exp \Big\{ x_i^\top \hat\gamma_0 + \sum_{l=1}^L \sum_{a=1}^\cA {\widehat{\gamma_{k,a}^l}}^\top \varphi_a(t_i^{max}, \hat \beta^l, b_i^l) \Big\}.\] 
 
 \texttt{@Antoine : est-ce qu'il peut prendre des time-indep feat ? et quelles sont les assos ?}
 
