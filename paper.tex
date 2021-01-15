@@ -653,15 +653,18 @@ Note that marker~\eqref{eq:marker-def} is in fact obtained from the definition o
 \subsection{The C-index metric}
 \label{sec:Metrics}
 
-We detail in this section the metric considered to evaluate risk prediction performances. Let us recall that in practice, one considers the case $K=2$, see Section~\ref{sec:K=2}. Then, let us denote by $M$ the marker under study (e.g., the marker~\eqref{eq:marker-def} for the lights model), and assume that it is measured once at $t = t^{max}$.
+We detail in this section the metric considered to evaluate risk prediction performances. Let us recall that in practice, one considers the case $K=2$, see Section~\ref{sec:K=2}. 
+In this context, the predictive marker for the lights model is
+\[\hat \cR_i^\text{lights} = \dfrac{\pi_{\hat \xi}(x_i) \hat f(t^{max}_i, y_i | b_i, G_i=1 ; \hat \theta)}{\pi_{\hat \xi}(x_i) \hat f(t^{max}_i, y_i | b_i, G_i=1 ; \hat \theta) + \big(1 - \pi_{\hat \xi}(x_i) \big) \hat f(t^{max}_i, y_i | b_i, G_i=k ; \hat \theta)}.\]
+Then, let us denote by $\hat \cR$ the marker under study in the general case, and assume that it is measured once at $t = t^{max}$.
 A common concordance measure that does not depend on time is the C-index~\citep{harrell1996tutorial} defined by
 \begin{equation*}
-  \cC =\P[M_i > M_j | T^\star_i < T^\star_j],
+  \cC =\P[\hat \cR_i > \hat \cR_j | T^\star_i < T^\star_j],
 \end{equation*}
 with $i \neq j$ two independent subjects (which does not depend on $i, j$ under the i.i.d. sample hypothesis). 
 In our case,  $T^\star$ is subject to right censoring, so one would typically consider the modified $\cC_\tau$ defined by
 \begin{equation*}
-  \cC_\tau =\P[M_i > M_j | T_i < T_j , T_i < \tau],
+  \cC_\tau =\P[\hat \cR_i > \hat \cR_j | T_i < T_j , T_i < \tau],
 \end{equation*}
 with $\tau$ corresponding to the fixed and prespecified follow-up period duration \citep{heagerty2005survival}. A Kaplan-Meier estimator for the censoring distribution leads to a nonparametric and consistent estimator of $\cC_\tau$ \citep{uno2011c}, already implemented in the \texttt{Python} package \texttt{lifelines}.
 Hence in the following, we consider the C-index metric to assess performances.
@@ -672,20 +675,27 @@ Nevertheless, the idea of chosing $t^{max}$ when it comes to simulate data for m
 \subsection{Competing models}
 \label{sec:competing models}
 
-In this section, we briefly introduce the models we consider for performance comparisons in the simulation study as well as in the applications on real datasets in Section~\ref{sec:application}.
+In this section, we briefly introduce the models we consider for performance comparisons in the simulation study as well as in the applications on real datasets in Section~\ref{sec:application}. We also give the corresponding marker rule for each model, using our notations.
 
-\paragraph*{Penalized Cox model with time-independent features.}
+\paragraph*{Landmark Cox model.}
 
-The first model we consider as a baseline is the well known Cox PH model with time-independent features.
-In this model introduced in \citet{Cox1972JRSS}, a parameter vector $\beta$ is estimated by minimizing the partial log-likelihood given by
+The first model we consider as a baseline is the well known Cox PH model with time-independent features, also known in the joint modeling context as the ``landmark'' model, in which we include basic time-independent features extracted from longitudinal processes and computed at the prediction time [REF].
+In the Cox PH model introduced in \citet{Cox1972JRSS}, a parameter vector $\beta$ is estimated by minimizing the partial log-likelihood given by
 \begin{equation*}
   \ell_n^{\text{cox}}(\beta) = n^{-1} \sum_{i=1}^n \delta_i \big( x_i^\top \beta - \log \sum_{i' : t_{i'} \geq t_i} \text{exp}(x_{i'}^\top \beta) \big).
 \end{equation*}
-We use respectively the \texttt{R} packages \texttt{survival} and \texttt{glmnet} \citep{simon2011regularization} for the partial log-likelihood and the minimization of the following quantity
-\begin{equation*}
-  - \ell_n^{\text{cox}}(\beta) + \xi \big( (1-\eta)\norm{\beta}_1 + \frac{\eta}{2} \norm{\beta}_2^2 \big),
-\end{equation*}
-where $\xi$ is chosen by the a 10-fold cross-validation procedure, for a given $\eta \in [0, 1]$. Ties are handled via the Breslow approximation of the partial likelihood \citep{breslow1972contribution}. We also choose to include basic time-independent features extracted from longitudinal processes, namely the average value for each time-dependant feature.
+For each time-dependant feature, we include subject-specific random effects, values of longitudinal processes at baseline and at time $t^{max}$, slope of longitudinal processes at time $t^{max}$ and area under of longitudinal processes from baseline up to $t^{max}$. The predictive marker for a new subject $i$ is the regular risk score~\citep{therneau2000cox}, that is $\hat \cR_i^{\text{cox}} = \exp (x_i^\top\hat\beta^{\text{cox}})$, with 
+\[\hat\beta^{\text{cox}} \in \argmin_{\beta \in \R^\vartheta} -\ell_n^{\text{cox}}(\beta).\]
+We use the \texttt{Python} package \texttt{tick} for the estimation of the previous quantity.
+Ties are handled via the Breslow approximation of the partial likelihood \citep{breslow1972contribution}.
+
+\paragraph*{Penalized Cox model.}
+
+We then consider a penalized version of the Cox model, including now much more time-independent features automatically extracted from longitudinal processes using the \texttt{Python} package \texttt{tsfresh}.
+The predictive marker for the a subject $i$ is $\hat \cR_i^{\text{cox EN}} = \exp (x_i^\top\hat\beta^{\text{cox EN}})$, with 
+\[\hat\beta^{\text{cox EN}} \in \argmin_{\beta \in \R^\vartheta} -\ell_n^{\text{cox}}(\beta) + \xi \big( (1-\eta)\norm{\beta}_1 + \frac{\eta}{2} \norm{\beta}_2^2 \big)\] 
+the estimate obtained using elastic net penalization (still with the \texttt{tick} package), and
+where $\xi$ is chosen by the a 10-fold cross-validation procedure, for a given $\eta \in [0, 1]$.
 
 \paragraph*{The time-dependent Cox model.}
 
@@ -693,18 +703,18 @@ A classical extension of the Cox model supposes that features depend on time~\ci
 \[\lambda_i(t) = \lambda_0(t) \exp\big(y_i(t)^\top \beta \big). \]
 Using the \texttt{survival} \texttt{R} package~\citep{zhang2018time}, blabla description...
 
+\paragraph*{Multivariate joint latent class model.} 
 
-\paragraph*{Multivariate joint modeling.}
+We consider a multivariate version of JLCMs implemented in the \texttt{R} package \texttt{lcmm}~\citep{2017_lcmm}.
+Contrary to the lights model, there is no shared associations between the longitudinal models and the survival model. Given the group membership, each submodel is assumed to be independent. In this context, the predictive marker is
+\[\hat \cR_i^\text{lcmm} = \dfrac{\pi_{\hat \xi}(x_i) \hat f(t^{max}_i, y_i | b_i, G_i=1 ; \hat \theta)}{\pi_{\hat \xi}(x_i) \hat f(t^{max}_i, y_i | b_i, G_i=1 ; \hat \theta) + \big(1 - \pi_{\hat \xi}(x_i)\big) \hat f(t^{max}_i, y_i | b_i, G_i=0 ; \hat \theta)}.\]
 
-\texttt{joineRML} package : in this \texttt{R} package~\citep{hickey2018joinerml}, blabla description...
+\paragraph*{Multivariate shared random effect model.}
 
-The \texttt{JM} package : in this \texttt{R} package~\citep{rizopoulos2010jm}, blabla description...
+In this context, we consider the \texttt{JMbayes} package~\citep{2017_JMbayes}. For a new subject $i$, the predictive marker associated with this model is naturally given by the corresponding risk score
+\[\hat \cR_i^\text{JMbayes} = \exp \Big\{ x_i^\top \hat\gamma_{k,0} + \sum_{l=1}^L \sum_{a=1}^\cA {\widehat{\gamma_{k,a}^l}}^\top \varphi_a(t_i^{max}, \hat \beta_k^l, b_i^l) \Big\}.\] 
 
-The \texttt{JMbayes} package : n this \texttt{R} package~\citep{rizopoulos2014r}, blabla description...
-
-% TODO: voir slide 132 \url{http://www.drizopoulos.com/courses/Int/JMwithR_CEN-ISBS_2017.pdf})
-
-The \texttt{joineR} package : in this \texttt{R} package~\citep{philipson2018package}, blabla description...
+\texttt{@Antoine : est-ce qu'il peut prendre des time-indep feat ? et quelles sont les assos ?}
 
 
 \section{High-dimensional simulation study}
