@@ -876,7 +876,7 @@ selection and to prevent overfitting.
 
 
 \section*{Software}
-All the methodology discussed in this paper is implemented in \texttt{Python}. The code is available from \url{https://github.com/Califrais/lights} in the form of annotated programs, together with a notebook tutorial.
+All the methodology discussed in this paper is implemented in \texttt{Python}. The code is available from \url{https://github.com/Califrais/lights} in the form of annotated programs, together with a notebook tutorial. A technical documentation is also provided in Appendix~\ref{sec:package}.
 
 \section*{Acknowledgements}
 \textit{Conflict of Interest}: None declared.
@@ -977,6 +977,43 @@ The parameters updates are then naturally given in closed form by zeroing the gr
 &+\Tr\big(V_{il}^\top V_{il} \E_{\theta^{(w)}}[ b_i^l {b_i^l}^\top | y_i^l]\big) \Big]
 \end{align*}
 and \[D^{(w+1)} = n^{-1} \sum_{i=1}^n \E_{\theta^{(w)}}[ b_i {b_i}^\top | y_i].\]
+
+
+\section{Technical documentation of the \texttt{lights} package}
+\label{sec:package}
+
+\subsection{\texttt{MLMM class}}
+
+This class implements an EM algorithm for fitting a multivariate linear mixed model used to initialize the MCQNEM algorithm.
+Let us introduce the list $\Omega^{(w)} = [\Omega_1^{(w)}, \ldots, \Omega_n^{(w)}]$, the matrices $\mu = [\mu_1, \ldots, \mu_n] \in \R^{r \times n}$, $U^l = [{U_{1l}}^\top \cdots {U_{nl}}^\top]^\top \in \R^{n_l \times q_l}$, $U = [U_1^\top \cdots U_n^\top]^\top \in \R^{\cN \times q}$,
+\[ V^l = \begin{bmatrix}
+    V_{1l} & \cdots & 0\\
+    \vdots &  \ddots & \vdots \\
+    0 & \cdots & V_{nl}
+\end{bmatrix},
+\quad
+V = \begin{bmatrix}
+  V_{1} & \cdots & 0\\
+  \vdots &  \ddots & \vdots \\
+  0 & \cdots & V_{n}
+\end{bmatrix}
+\quad \text{ and } \quad
+{\Omega^l}^{(w)} = \begin{bmatrix}
+    {\Omega_{1}^l}^{(w)} & \cdots & 0\\
+    \vdots &  \ddots & \vdots \\
+    0 & \cdots & {\Omega_{n}^l}^{(w)}
+\end{bmatrix}\]
+that belong respectively in $\R^{n_l \times nr_l}$, $\R^{\cN \times nr}$ and $\R^{nr_l \times nr_l}$, as well as the vectors $\tilde \mu^{(w)} = ({\mu_1^{(w)}}^\top \cdots {\mu_n^\top)^{(w)}}^\top \in \R^{nr}$, $(\tilde \mu^l)^{(w)} = \big({(\mu_1^l)^{(w)}}^\top \cdots {(\mu_n^l)^{(w)}}^\top \big)^\top \in \R^{nr_l}$, $y^l = ({y_1^l}^\top  \cdots {y_n^l}^\top)^\top \in \R^{n_l}$
+with $n_l = \sum_{i=1}^{n} n_i^l$ and $y = (y_1^\top \cdots y_n^\top)^\top \in \R^\cN$ with $\cN = \sum_{i=1}^{n} n_i$.
+The $\beta$ update then rewrites
+\[\beta^{(w+1)} = ({U}^\top U)^{-1}{U}^\top(y-V \tilde \mu^{(w)}).\]
+For the $D$ update, one has
+\[D^{(w+1)} = n^{-1} \big( \text{sum}(\Omega^{(w)}) + \mu^{(w)}{\mu^{(w)}}^\top\big).\]
+And finally for the $\phi$ update, one has
+\begin{align*}
+\phi_l^{(w+1)} = n_l^{-1} \big[&(y^l - U^l{\beta_l^{(w+1)})}^\top \big(y^l - U^l\beta_l^{(w+1)} - 2 V^l (\tilde\mu^l)^{(w)}\big) \\
+&+ \text{Tr}\big\{{V^l}^\top V^l \big({\Omega^l}^{(w)} + (\tilde\mu^l)^{(w)} {(\tilde\mu^l)^{(w)}}^\top\big)\big\} \big].
+\end{align*}
 
 \bibliography{biblio}
 \bibliographystyle{plainnat}{}
