@@ -955,15 +955,15 @@ Supposing that we are at step $w + 1$ of the algorithm, with current iterate den
 \[\cQ_n(\theta, \theta^{(w)}) = \E_{\theta^{(w)}}[\ell_n^\text{comp}(\theta) | \cD_n].\]
 Here, computing this quantity reduces to computing $\E_{\theta^{(w)}}[b_i | y_i]$ and $\E_{\theta^{(w)}}[b_ib_i^T | y_i]$ for $i = 1,\ldots,n$.
 The marginal distributions of $y_i$ and $b_i$ being both Gaussian, one has from Bayes Theorem
-\[ f(b_i|y_i; \theta) \propto \exp \big\{ -\dfrac12 (b_i - \mu_i)^\top \Omega_i^{-1} (b_i - \mu_i) \big\}\]
+\[ f(b_i|y_i; \theta^{(w)}) \propto \exp \big\{ -\dfrac12 (b_i - \mu_i^{(w)})^\top {\Omega_i^{(w)}}^{-1} (b_i - \mu_i^{(w)}) \big\}\]
 where
-\[\Omega_i = ({V_i}^\top \Sigma_iV_i + D^{-1})^{-1} \quad \text{ and } \quad \mu_i = \Omega_i{V_i}^\top \Sigma_i(y_i - U_i\beta).\]
+\[\Omega_i^{(w)} = ({V_i}^\top \Sigma_i^{(w)}V_i + {D^{(w)}}^{-1})^{-1} \quad \text{ and } \quad \mu_i^{(w)} = \Omega_i^{(w)}{V_i}^\top \Sigma_i^{(w)}(y_i - U_i\beta^{(w)}).\]
 Then, on has
 \begin{center}
   $\left\{
     \begin{aligned}
-      &\E_{\theta^{(w)}}[b_i | y_i] = \mu_i, \\
-      &\E_{\theta^{(w)}}[b_ib_i^T | y_i] = \Omega_i + \mu_i\mu_i^\top.
+      &\E_{\theta^{(w)}}[b_i | y_i] = \mu_i^{(w)}, \\
+      &\E_{\theta^{(w)}}[b_ib_i^T | y_i] = \Omega_i^{(w)} + \mu_i^{(w)}{\mu_i^{(w)}}^\top.
     \end{aligned}
     \right.$
 \end{center}
