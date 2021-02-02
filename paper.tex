@@ -553,7 +553,7 @@ for all $a = 1, \ldots, \mathcal{A}$ and $l = 1, \ldots, L$.
 For the update of $\lambda_0^{(w)}$, we treat the jump size at the observed event times as parameters to be estimated~\citep{klein1992semiparametric}. The closed-form update is then given by
 \begin{equation}
   \label{eq:update_lambda_0}
-  \lambda_0^{(w+1)}(t)= \dfrac{\sum_{i=1}^n \delta_i \ind{\{t=t_i\}}}{\sum_{i=1}^n \sum_{k=0}^{K-1} \hat \pi_{ik}^{\theta^{(w)}} \hat \E_{\theta^{(w)}}\Big[ \tilde g_{i, t_i, \gamma_k^{(w+1)}, \beta_k^{(w+1)}}^1(b_i) | t_i, \delta_i, y_i \Big] \ind{\{t_i \geq t\}} },
+  \lambda_0^{(w+1)}(t)= \dfrac{\sum_{i=1}^n \delta_i \ind{\{t=t_i\}}}{\sum_{i=1}^n \sum_{k=0}^{K-1} \hat \pi_{ik}^{\theta^{(w)}} \hat \E_{\theta^{(w)}}\Big[ \tilde g_{i, t, \gamma_k^{(w+1)}, \beta_k^{(w+1)}}^1(b_i) | t_i, \delta_i, y_i \Big] \ind{\{t_i \geq t\}} },
 \end{equation}
 which is a Breslow like estimator~\citep{breslow1972contribution} adapted to our model. 
 
