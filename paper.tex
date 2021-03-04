@@ -319,15 +319,16 @@ Then, one has
 \begin{align}
 	\label{eq:log-lik}
 	\ell_n(\theta) &= \ell_n(\theta ; \cD_n) \nonumber \\
-	&= n^{-1} \sum_{i=1}^n \log \int_{\R^r} \sum_{k=0}^{K-1} \pi_{\xi_k}(x_i) f(t_i, \delta_i| b_i, G_i = k ; \theta) f(y_i | b_i, G_i = k ; \theta) f(b_i ; \theta) \dd b_i,
+	&= n^{-1} \sum_{i=1}^n \log \sum_{k=0}^{K-1} \pi_{\xi_k}(x_i) f(y_i | G_i = k)\int_{\R^r} f(t_i, \delta_i| b_i, G_i = k ; \theta) f(b_i | y_i, G_i = k; \theta) \dd b_i,
 \end{align}
 where 
 \[f(t_i, \delta_i| b_i, G_i = k ; \theta) = \big[\lambda(t_i|\cM_k(t_i), G_i = k)\big]^{\delta_i} \exp \Big\{-\int_0^{t_i} \lambda(s|\cM_k(s), G_i = k) \dd s \Big\} \]
 and
-\begin{equation}
+\begin{align}
   \label{eq:b_density}
-  f(b_i ; \theta) = (2 \pi)^{-\dfrac r2} |D|^{-\dfrac12} \exp \Big\{ -\dfrac12 b_i^\top D^{-1}b_i \Big\}.
-\end{equation}
+  b_i | y_i, G_i=k; \theta &\sim \cN\Big((V_i^\top\Sigma_i^{-1}V_i + D^{-1})^{-1}V_i^T\Sigma_i^{-1}(y_i - U_i\beta_k), (V_i^\top\Sigma_i^{-1}V_i + D^{-1})^{-1}\Big) \nonumber \\
+  y_i | G_i = k; \theta &\sim \cN\Big(U_i\beta_k, V_iDV_i^\top + \Sigma_i\Big)
+\end{align}
 
 \paragraph{Specification of the design matrices.}
  
