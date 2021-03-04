@@ -408,7 +408,7 @@ In the case $g_i(b_i, G_i) = \tilde g_i(b_i)$, one has
 with
 \begin{equation}
   \label{eq:Lambda_ik-def}
-  \Lambda_{ik,\tilde g_i}^{\theta^{(w)}} = \int_{\R^r} \tilde g_i(b_i) f(t_i, \delta_i, y_i | b_i, G_i = k ; \theta^{(w)}) f(b_i ; \theta^{(w)}) \dd b_i,
+  \Lambda_{ik,\tilde g_i}^{\theta^{(w)}} = \int_{\R^r} \tilde g_i(b_i) f(t_i, \delta_i | b_i, G_i = k ; \theta^{(w)}) f(b_i | y_i, G_i = k; \theta^{(w)}) \dd b_i,
 \end{equation}
 and $\Lambda_{ik,1}^{\theta^{(w)}}$ obtained from $\Lambda_{ik,\tilde g_i}^{\theta^{(w)}}$ taking $\tilde g_i: b_i \mapsto 1$.
 The integral in~\eqref{eq:Lambda_ik-def} is not tractable analytically, and some form of approximation must be used in practice. Standard numerical integration techniques (such as Gaussian quadrature) are not well suited in our high-dimensional context. We then propose to use Monte Carlo approximation, which has already been applied for generalized linear mixed models~\citep{booth1999maximizing}, with antithetic normal variates method~\citep{hammersley1956new} to reduce variance of the simulation result. Algorithm~\ref{alg:construct-set-S} describes how to construct the set $S^{(w)}$ used for the approximation.
@@ -417,18 +417,18 @@ The integral in~\eqref{eq:Lambda_ik-def} is not tractable analytically, and some
 
 \begin{algorithm}[H]
 \DontPrintSemicolon
-\caption{Construction of the samples in $S^{(w)}$}
+\caption{Construction of the samples in $S_i^{(w)}$}
 \label{alg:construct-set-S}
-\KwInput{$S^{(w)} = \varnothing$}
-\KwOutput{$S^{(w)}$ filled with $2N$ samples}
-Compute $C^{(w)} \in \R^{r \times r}$ such that $C^{(w)}{C^{(w)}}^\top = D^{(w)}$ \tcp{Cholesky decomposition}
+\KwInput{$S_i^{(w)} = \varnothing$}
+\KwOutput{$S_i^{(w)}$ filled with $2N$ samples}
+Compute $C_i^{(w)} \in \R^{r \times r}$ such that $C_i^{(w)}{C_i^{(w)}}^\top = (V_i^\top{\Sigma_i^{(w)}}^{-1}V_i + {D^{(w)}}^{-1})^{-1}$ \tcp{Cholesky decomposition}
 \For{$\breve{n} = 1,\ldots,N$}    
 { 
   Sample $\Omega_{\breve{n}} \sim \cN(0, I_r)$ \\
-  Compute $\breve{b}_{\breve{n}} = C^{(w)} \Omega_{\breve{n}} \in \R^r$ \\
-  Update $S^{(w)} \leftarrow S^{(w)} \cup \{\breve{b}_{\breve{n}}, -\breve{b}_{\breve{n}} \}$
+  Compute $\breve{b}_{\breve{n}} = C_i^{(w)} \Omega_{\breve{n}} \in \R^r$ \\
+  Update $S_i^{(w)} \leftarrow S_i^{(w)} \cup \{\breve{b}_{\breve{n}}, -\breve{b}_{\breve{n}} \}$
 }
-\textbf{Return:} {$S^{(w)}$}
+\textbf{Return:} {$S_i^{(w)}$}
 \end{algorithm}
 
 \vspace{.5cm}
@@ -441,7 +441,7 @@ Compute $C^{(w)} \in \R^{r \times r}$ such that $C^{(w)}{C^{(w)}}^\top = D^{(w)}
 with
 \begin{equation}
   \label{eq:hat_Lambda_ik}
-  \hat \Lambda_{ik,\tilde g_i}^{\theta^{(w)}} = \dfrac{1}{2N} \sum_{\breve{b} \in S^{(w)}} \tilde g_i(\breve{b}) f(t_i, \delta_i, y_i | \breve{b}, G_i = k ; \theta^{(w)}).
+  \hat \Lambda_{ik,\tilde g_i}^{\theta^{(w)}} = \dfrac{1}{2N} \sum_{\breve{b} \in S_i^{(w)}} \tilde g_i(\breve{b}) f(t_i, \delta_i | \breve{b}, G_i = k ; \theta^{(w)}).
 \end{equation}
 
 It is common in Monte Carlo EM to increase $N$ with the iterations $w$~\citep{wei1990monte} since it is computationally inefficient to use a large $N$ in the early steps of the algorithm, when $\theta^{(w)}$ is far from $\hat \theta$. Multiple techniques have been proposed (see for instance~\citet{law2002joint} where a subjectively rule is followed, or~\citet{booth1999maximizing} that uses a rule based on confidence intervals for $\theta^{(w)}$ which requires additional variance estimation). We opt for a simple automated approach using relative differences of the objective function defined in~\eqref{eq:pen-log-lik} (see Algorithm~\ref{alg:QNMCEM}).
