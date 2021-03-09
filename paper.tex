@@ -319,15 +319,16 @@ Then, one has
 \begin{align}
 	\label{eq:log-lik}
 	\ell_n(\theta) &= \ell_n(\theta ; \cD_n) \nonumber \\
-	&= n^{-1} \sum_{i=1}^n \log \int_{\R^r} \sum_{k=0}^{K-1} \pi_{\xi_k}(x_i) f(t_i, \delta_i| b_i, G_i = k ; \theta) f(y_i | b_i, G_i = k ; \theta) f(b_i ; \theta) \dd b_i,
+	&= n^{-1} \sum_{i=1}^n \log \sum_{k=0}^{K-1} \pi_{\xi_k}(x_i) f(y_i | G_i = k)\int_{\R^r} f(t_i, \delta_i| b_i, G_i = k ; \theta) f(b_i | y_i, G_i = k; \theta) \dd b_i,
 \end{align}
 where 
 \[f(t_i, \delta_i| b_i, G_i = k ; \theta) = \big[\lambda(t_i|\cM_k(t_i), G_i = k)\big]^{\delta_i} \exp \Big\{-\int_0^{t_i} \lambda(s|\cM_k(s), G_i = k) \dd s \Big\} \]
 and
-\begin{equation}
+\begin{align}
   \label{eq:b_density}
-  f(b_i ; \theta) = (2 \pi)^{-\dfrac r2} |D|^{-\dfrac12} \exp \Big\{ -\dfrac12 b_i^\top D^{-1}b_i \Big\}.
-\end{equation}
+  b_i | y_i, G_i=k; \theta &\sim \cN\Big((V_i^\top\Sigma_i^{-1}V_i + D^{-1})^{-1}V_i^T\Sigma_i^{-1}(y_i - U_i\beta_k), (V_i^\top\Sigma_i^{-1}V_i + D^{-1})^{-1}\Big) \nonumber \\
+  y_i | G_i = k; \theta &\sim \cN\Big(U_i\beta_k, V_iDV_i^\top + \Sigma_i\Big)
+\end{align}
 
 \paragraph{Specification of the design matrices.}
  
@@ -407,7 +408,7 @@ In the case $g_i(b_i, G_i) = \tilde g_i(b_i)$, one has
 with
 \begin{equation}
   \label{eq:Lambda_ik-def}
-  \Lambda_{ik,\tilde g_i}^{\theta^{(w)}} = \int_{\R^r} \tilde g_i(b_i) f(t_i, \delta_i, y_i | b_i, G_i = k ; \theta^{(w)}) f(b_i ; \theta^{(w)}) \dd b_i,
+  \Lambda_{ik,\tilde g_i}^{\theta^{(w)}} = \int_{\R^r} \tilde g_i(b_i) f(t_i, \delta_i | b_i, G_i = k ; \theta^{(w)}) f(b_i | y_i, G_i = k; \theta^{(w)}) \dd b_i,
 \end{equation}
 and $\Lambda_{ik,1}^{\theta^{(w)}}$ obtained from $\Lambda_{ik,\tilde g_i}^{\theta^{(w)}}$ taking $\tilde g_i: b_i \mapsto 1$.
 The integral in~\eqref{eq:Lambda_ik-def} is not tractable analytically, and some form of approximation must be used in practice. Standard numerical integration techniques (such as Gaussian quadrature) are not well suited in our high-dimensional context. We then propose to use Monte Carlo approximation, which has already been applied for generalized linear mixed models~\citep{booth1999maximizing}, with antithetic normal variates method~\citep{hammersley1956new} to reduce variance of the simulation result. Algorithm~\ref{alg:construct-set-S} describes how to construct the set $S^{(w)}$ used for the approximation.
@@ -416,18 +417,18 @@ The integral in~\eqref{eq:Lambda_ik-def} is not tractable analytically, and some
 
 \begin{algorithm}[H]
 \DontPrintSemicolon
-\caption{Construction of the samples in $S^{(w)}$}
+\caption{Construction of the samples in $S_i^{(w)}$}
 \label{alg:construct-set-S}
-\KwInput{$S^{(w)} = \varnothing$}
-\KwOutput{$S^{(w)}$ filled with $2N$ samples}
-Compute $C^{(w)} \in \R^{r \times r}$ such that $C^{(w)}{C^{(w)}}^\top = D^{(w)}$ \tcp{Cholesky decomposition}
+\KwInput{$S_i^{(w)} = \varnothing$}
+\KwOutput{$S_i^{(w)}$ filled with $2N$ samples}
+Compute $C_i^{(w)} \in \R^{r \times r}$ such that $C_i^{(w)}{C_i^{(w)}}^\top = (V_i^\top{\Sigma_i^{(w)}}^{-1}V_i + {D^{(w)}}^{-1})^{-1}$ \tcp{Cholesky decomposition}
 \For{$\breve{n} = 1,\ldots,N$}    
 { 
   Sample $\Omega_{\breve{n}} \sim \cN(0, I_r)$ \\
-  Compute $\breve{b}_{\breve{n}} = C^{(w)} \Omega_{\breve{n}} \in \R^r$ \\
-  Update $S^{(w)} \leftarrow S^{(w)} \cup \{\breve{b}_{\breve{n}}, -\breve{b}_{\breve{n}} \}$
+  Compute $\breve{b}_{\breve{n}} = C_i^{(w)} \Omega_{\breve{n}} \in \R^r$ \\
+  Update $S_i^{(w)} \leftarrow S_i^{(w)} \cup \{\breve{b}_{\breve{n}}, -\breve{b}_{\breve{n}} \}$
 }
-\textbf{Return:} {$S^{(w)}$}
+\textbf{Return:} {$S_i^{(w)}$}
 \end{algorithm}
 
 \vspace{.5cm}
@@ -440,7 +441,7 @@ Compute $C^{(w)} \in \R^{r \times r}$ such that $C^{(w)}{C^{(w)}}^\top = D^{(w)}
 with
 \begin{equation}
   \label{eq:hat_Lambda_ik}
-  \hat \Lambda_{ik,\tilde g_i}^{\theta^{(w)}} = \dfrac{1}{2N} \sum_{\breve{b} \in S^{(w)}} \tilde g_i(\breve{b}) f(t_i, \delta_i, y_i | \breve{b}, G_i = k ; \theta^{(w)}).
+  \hat \Lambda_{ik,\tilde g_i}^{\theta^{(w)}} = \dfrac{1}{2N} \sum_{\breve{b} \in S_i^{(w)}} \tilde g_i(\breve{b}) f(t_i, \delta_i | \breve{b}, G_i = k ; \theta^{(w)}).
 \end{equation}
 
 It is common in Monte Carlo EM to increase $N$ with the iterations $w$~\citep{wei1990monte} since it is computationally inefficient to use a large $N$ in the early steps of the algorithm, when $\theta^{(w)}$ is far from $\hat \theta$. Multiple techniques have been proposed (see for instance~\citet{law2002joint} where a subjectively rule is followed, or~\citet{booth1999maximizing} that uses a rule based on confidence intervals for $\theta^{(w)}$ which requires additional variance estimation). We opt for a simple automated approach using relative differences of the objective function defined in~\eqref{eq:pen-log-lik} (see Algorithm~\ref{alg:QNMCEM}).
@@ -574,7 +575,16 @@ Our algorithm gives a local minimum, and it is clever to choose an initial value
 For all $k = 0, \ldots, K-1$, we first choose $\xi_k^{(0)} = \mathbf{0}_d$ and ${\gamma_{k,a}^l}^{(0)} = 0$ for all $l=1, \ldots, L$ and $a=1, \ldots, \cA$. Then, we initialize $\lambda_0^{(0)}$ and $\gamma_{k,0}^{(0)}$ like if there is no subgroup ($\gamma_{0,0}^{(0)} = \cdots = \gamma_{K-1,0}^{(0)}$) with a standard Cox proportional hazards regression with time-independent features using the \texttt{Python} library \texttt{tick}. Finally, the longitudinal submodels parameters $\beta_k^{(0)}$, $D^{(0)}$ and $\phi^{(0)}$ are initialized -- again like if there is no subgroup ($\beta_0^{(0)} = \cdots = \beta_{K-1}^{(0)}$) -- using a multivariate linear mixed model with an explicit EM algorithm (the details are given in Appendix~\ref{sec:MLMM}), being itself initialized with univariates fits using the \texttt{Python} package \texttt{statsmodels}.
 
 \paragraph*{The QNMCEM algorithm.}
-Algorithm~\ref{alg:QNMCEM} describes the main steps of the resulting QNMCEM algorithm to solve the optimization problem~\eqref{eq:optim-pb}.
+Algorithm~\ref{alg:QNMCEM} describes the main steps of the resulting QNMCEM algorithm to solve the optimization problem~\eqref{eq:optim-pb}. The $Condition$ in algorithm~\ref{alg:QNMCEM} is cv$(\Delta_{\text{rel}}^{(w+1)}) >$ cv$(\Delta_{\text{rel}}^{(w)})$, where cv$(\Delta_{\text{rel}}^{(w)})$ is coefficient of variation at the $(w + 1)$-th iteration computed as
+\begin{equation*}
+  \label{eq:coefficient_variation}
+  \text{cv}(\Delta_{\text{rel}}^{(w+1)})= \dfrac{\text{sd}(\Delta_{\text{rel}}^{(w-1)}, \Delta_{\text{rel}}^{(w)}, \Delta_{\text{rel}}^{(w+1)})}{\text{mean}(\Delta_{\text{rel}}^{(w-1)}, \Delta_{\text{rel}}^{(w)}, \Delta_{\text{rel}}^{(w+1)})},
+\end{equation*}
+where sd(.) and mean(.) are the sample standard deviation and mean functions respectively and relative difference $\Delta_{\text{rel}}^{(w+1)}$ is given by 
+\begin{equation*}
+  \label{eq:relative_difference}
+  \Delta_{\text{rel}}^{(w+1)} = \text{max} \Big\{\dfrac{|\theta^{(w+1)} - \theta^{(w)}|}{|\theta^{(w)}| + \epsilon } \Big\}
+\end{equation*}
 
 \vspace{.5cm}
 
