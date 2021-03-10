@@ -324,11 +324,11 @@ Then, one has
 where 
 \[f(t_i, \delta_i| b_i, G_i = k ; \theta) = \big[\lambda(t_i|\cM_k(t_i), G_i = k)\big]^{\delta_i} \exp \Big\{-\int_0^{t_i} \lambda(s|\cM_k(s), G_i = k) \dd s \Big\} \]
 and
-\begin{align}
-  \label{eq:b_density}
-  b_i | y_i, G_i=k; \theta &\sim \cN\Big((V_i^\top\Sigma_i^{-1}V_i + D^{-1})^{-1}V_i^T\Sigma_i^{-1}(y_i - U_i\beta_k), (V_i^\top\Sigma_i^{-1}V_i + D^{-1})^{-1}\Big) \nonumber \\
-  y_i | G_i = k; \theta &\sim \cN\Big(U_i\beta_k, V_iDV_i^\top + \Sigma_i\Big)
-\end{align}
+\begin{align*}
+  y_i | G_i = k &\sim \cN\big(U_i\beta_k, V_iDV_i^\top + \Sigma_i\big) \\
+  b_i | y_i, G_i=k &\sim \cN \big(W_iV_i^T\Sigma_i^{-1}(y_i - U_i\beta_k), W_i\big)  
+\end{align*}
+with $W_i = (V_i^\top\Sigma_i^{-1}V_i + D^{-1})^{-1}$.
 
 \paragraph{Specification of the design matrices.}
  
