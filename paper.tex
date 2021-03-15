@@ -45,6 +45,7 @@
 \SetKwInput{KwOutput}{Output}
 
 \newtheorem{assumption}{Assumption}{\bf}{\rm} 
+\newtheorem{lemma}{Lemma}
 
 \DeclareMathOperator{\argmin}{argmin}
 \DeclareMathOperator{\Tr}{Tr}
@@ -195,13 +196,13 @@ In the sequel of the paper, our aim is to associate the true and unobserved valu
 To quantify the effect of the longitudinal outcomes on the risk for an event, we use a Cox~\citep{Cox1972JRSS} relative risk model of the form
 \begin{equation}
 	\label{eq:intensity-model}
-	\lambda(t|\cM_k(t), G = k) = \lambda_0(t) \exp \Big\{ x^\top \gamma_{k,0} + \sum_{l=1}^L \sum_{a=1}^\cA {\gamma_{k,a}^l}^\top \varphi_a(t, \beta_k^l, b^l) \Big\},
+	\lambda(t|\cM_k(t), G = k) = \lambda_0(t) \exp \Big\{ x^\top \gamma_k^0 + \sum_{l=1}^L \sum_{a=1}^\cA {\gamma_{k,a}^l}^\top \varphi_a(t, \beta_k^l, b^l) \Big\},
 \end{equation}
 where $\lambda_0(\cdot)$ is an unspecified baseline hazard function and given that $G = k$, we denote 
 \[\cM_k(t) = \{m_k^l(u), 0 \leq u < t\}\] 
-the history of the true unobserved longitudinal process up to time $t$. We choose to incorporate $x$, also used in~\eqref{eq:pi}, with no \textit{a priori} on the choice of time-independent features involved in the definition of $\pi_{\xi_k}$ nor $\lambda$, since independent regularizations are used during inference, see~\eqref{eq:pen-log-lik}. Corresponding fixed effects are denoted $\gamma_{k,0} \in \R^p$, and for each $l$-th longitudinal outcome, we consider $\cA \in \N_+$ known functionals $\varphi_a$ defining a shared association with $\gamma_{k,a}^l \in \R^{\imath_a}$ the corresponding joint association parameters, and $\imath_a \in \N_+$ the dimension of the corresponding $\text{Im}(\varphi_a)$. 
+the history of the true unobserved longitudinal process up to time $t$. We choose to incorporate $x$, also used in~\eqref{eq:pi}, with no \textit{a priori} on the choice of time-independent features involved in the definition of $\pi_{\xi_k}$ nor $\lambda$, since independent regularizations are used during inference, see~\eqref{eq:pen-log-lik}. Corresponding fixed effects are denoted $\gamma_k^0 \in \R^p$, and for each $l$-th longitudinal outcome, we consider $\cA \in \N_+$ known functionals $\varphi_a$ defining a shared association with $\gamma_{k,a}^l \in \R^{\imath_a}$ the corresponding joint association parameters, and $\imath_a \in \N_+$ the dimension of the corresponding $\text{Im}(\varphi_a)$. 
 This can be viewed as a generalization of SREMs~\citep{rizopoulos2010jm}. Let us finally denote
-\[\gamma_k= (\gamma_{k,0}^\top, \gamma_{k,L\cA}^\top)= (\gamma_{k,0}^\top, \gamma_{k,1}^1, \ldots, \gamma_{k,\cA}^1, \ldots, \gamma_{k,1}^L, \ldots, \gamma_{k,\cA}^L )^\top \in \R^{p+L\cA}. \]
+\[({\gamma_k^0}^\top, \gamma_k^\top)^\top= ({\gamma_k^0}^\top, \gamma_{k,1}^1, \ldots, \gamma_{k,\cA}^1, \ldots, \gamma_{k,1}^L, \ldots, \gamma_{k,\cA}^L )^\top \in \R^{p+L\cA}. \]
 
 \paragraph{Specification of the functionals $(\varphi_a)_{a\in \cA}$.}
 
@@ -322,13 +323,7 @@ Then, one has
 	&= n^{-1} \sum_{i=1}^n \log \sum_{k=0}^{K-1} \pi_{\xi_k}(x_i) f(y_i | G_i = k)\int_{\R^r} f(t_i, \delta_i| b_i, G_i = k ; \theta) f(b_i | y_i, G_i = k; \theta) \dd b_i,
 \end{align}
 where 
-\[f(t_i, \delta_i| b_i, G_i = k ; \theta) = \big[\lambda(t_i|\cM_k(t_i), G_i = k)\big]^{\delta_i} \exp \Big\{-\int_0^{t_i} \lambda(s|\cM_k(s), G_i = k) \dd s \Big\} \]
-and
-\begin{align*}
-  y_i | G_i = k &\sim \cN\big(U_i\beta_k, V_iDV_i^\top + \Sigma_i\big) \\
-  b_i | y_i, G_i=k &\sim \cN \big(W_iV_i^T\Sigma_i^{-1}(y_i - U_i\beta_k), W_i\big)  
-\end{align*}
-with $W_i = (V_i^\top\Sigma_i^{-1}V_i + D^{-1})^{-1}$.
+\[f(t_i, \delta_i| b_i, G_i = k ; \theta) = \big[\lambda(t_i|\cM_k(t_i), G_i = k)\big]^{\delta_i} \exp \Big\{-\int_0^{t_i} \lambda(s|\cM_k(s), G_i = k) \dd s \Big\}. \]
 
 \paragraph{Specification of the design matrices.}
  
@@ -350,12 +345,12 @@ In this section, we describe the procedure for estimating the parameters of the 
 In order to avoid overfitting and improve the prediction power of our method, we propose to minimize the penalized objective
 \begin{equation}
   \label{eq:pen-log-lik}
-	\ell_n^\text{pen}(\theta) = - \ell_n(\theta) + \sum_{k=0}^{K-1} \zeta_{1,k} \big(\norm{\xi_k}_{\text{en}, \eta} + \norm{\gamma_{k,0}}_{\text{en}, \eta}\big) + \zeta_{2,k} \norm{\gamma_{k,L\cA}}_{\text{sg} l_1, \tilde{\eta}} + \zeta_{3,k} \norm{\beta_k}_{\text{sg} l_1, \tilde{\eta}}
+	\ell_n^\text{pen}(\theta) = - \ell_n(\theta) + \sum_{k=0}^{K-1} \zeta_{1,k} \big(\norm{\xi_k}_{\text{en}, \eta} + \norm{\gamma_k^0}_{\text{en}, \eta}\big) + \zeta_{2,k} \norm{\beta_k}_{\text{sg} l_1, \tilde{\eta}} + \zeta_{3,k} \norm{\gamma_k}_{\text{sg} l_1, \tilde{\eta}} 
 \end{equation}
 where for all $k=0, \ldots, K-1$, we add an elastic net regularization~\citep{zou2005regularization} of the vector $\xi_k$ and a sparse group lasso regularization~\citep{simon2013sparse} of the vectors $\gamma_k$ and $\beta_k$, for tuning hyper-parameters $(\zeta_{1,k}, \zeta_{2,k}, \zeta_{3,k})^\top \in \R_+^3$. Here, $(\eta, \tilde{\eta}) \in [0, 1]^2$ are fixed and we denote
 \[ \norm{z}_{\text{en}, \eta} = (1-\eta)\norm{z}_1 + \dfrac\eta2 \norm{z}_2^2 \]
 for any vector $z$, that is a linear combination of the lasso ($\ell_1$) and ridge (squared $\ell_2$) penalties, and
-\[ \norm{z}_{\text{sg} l_1, \tilde{\eta}} = (1-\tilde{\eta})\norm{z}_1 + \tilde{\eta} \sum_{l=1}^L\norm{z^l}_2 \] for the sparse group lasso penalty, for which we do not have to account for group sizes since they all have the same one. 
+\[ \norm{z}_{\text{sg} l_1, \tilde{\eta}} = (1-\tilde{\eta})\norm{z}_1 + \tilde{\eta} \sum_{l=1}^L\norm{z}_{2,l} \] for the sparse group lasso penalty with $\norm{z}_{2,l}=\norm{z^l}_2$, for which we do not have to account for group sizes since they all have the same one. 
 Hence, the resulting optimization problem is written
 \begin{equation}
   \label{eq:optim-pb}
@@ -378,8 +373,8 @@ It can be written
 \begin{align*}
   \ell_n^\text{comp}(\theta) &= \ell_n^\text{comp}(\theta ; \cD_n, \textbf{\textit{b}}, \textbf{\textit{G}}) \\ 
   &= - n^{-1} \sum_{i=1}^n -\dfrac12 (r \log 2\pi + \log|D| + b_i^\top D^{-1}b_i) + \sum_{k=0}^{K-1} \ind{\{G_i=k\}} \Big[ \log \pi_{\xi_k}(x_i) \\ 
-  & \quad + \delta_i \Big(\log \lambda_0(t_i) + x_i^\top \gamma_{k,0} + \sum_{l=1}^L \sum_{a=1}^\cA {\gamma_{k,a}^l}^\top \varphi_a(t_i, \beta_k^l, b_i^l) \Big) \\
-  & \quad -\int_0^{t_i} \lambda_0(s) \exp \Big\{ x_i^\top \gamma_{k,0} + \sum_{l=1}^L \sum_{a=1}^\cA {\gamma_{k,a}^l}^\top \varphi_a(s, \beta_k^l, b_i^l) \Big\} \dd s \\
+  & \quad + \delta_i \Big(\log \lambda_0(t_i) + x_i^\top \gamma_k^0 + \sum_{l=1}^L \sum_{a=1}^\cA {\gamma_{k,a}^l}^\top \varphi_a(t_i, \beta_k^l, b_i^l) \Big) \\
+  & \quad -\int_0^{t_i} \lambda_0(s) \exp \Big\{ x_i^\top \gamma_k^0 + \sum_{l=1}^L \sum_{a=1}^\cA {\gamma_{k,a}^l}^\top \varphi_a(s, \beta_k^l, b_i^l) \Big\} \dd s \\
   & \quad + (y_i \odot \Phi_i)^\top M_{ik} - c_\phi(M_{ik}) + d_\phi(y_i) \Big].
 \end{align*}
 Suppose that we are at step $w + 1$ of the algorithm, with current iterate denoted $\theta^{(w)}$. 
@@ -411,6 +406,15 @@ with
   \Lambda_{ik,\tilde g_i}^{\theta^{(w)}} = \int_{\R^r} \tilde g_i(b_i) f(t_i, \delta_i | b_i, G_i = k ; \theta^{(w)}) f(b_i | y_i, G_i = k; \theta^{(w)}) \dd b_i,
 \end{equation}
 and $\Lambda_{ik,1}^{\theta^{(w)}}$ obtained from $\Lambda_{ik,\tilde g_i}^{\theta^{(w)}}$ taking $\tilde g_i: b_i \mapsto 1$.
+
+in the Gaussian case used in practice, one can also sample from
+\begin{align*}
+  y_i | G_i = k &\sim \cN\big(U_i\beta_k, V_iDV_i^\top + \Sigma_i\big) \\
+  b_i | y_i, G_i=k &\sim \cN \big(W_iV_i^T\Sigma_i^{-1}(y_i - U_i\beta_k), W_i\big)  
+\end{align*}
+with $W_i = (V_i^\top\Sigma_i^{-1}V_i + D^{-1})^{-1}$
+
+
 The integral in~\eqref{eq:Lambda_ik-def} is not tractable analytically, and some form of approximation must be used in practice. Standard numerical integration techniques (such as Gaussian quadrature) are not well suited in our high-dimensional context. We then propose to use Monte Carlo approximation, which has already been applied for generalized linear mixed models~\citep{booth1999maximizing}, with antithetic normal variates method~\citep{hammersley1956new} to reduce variance of the simulation result. Algorithm~\ref{alg:construct-set-S} describes how to construct the set $S^{(w)}$ used for the approximation.
 
 \vspace{.5cm}
@@ -421,7 +425,8 @@ The integral in~\eqref{eq:Lambda_ik-def} is not tractable analytically, and some
 \label{alg:construct-set-S}
 \KwInput{$S_i^{(w)} = \varnothing$}
 \KwOutput{$S_i^{(w)}$ filled with $2N$ samples}
-Compute $C_i^{(w)} \in \R^{r \times r}$ such that $C_i^{(w)}{C_i^{(w)}}^\top = (V_i^\top{\Sigma_i^{(w)}}^{-1}V_i + {D^{(w)}}^{-1})^{-1}$ \tcp{Cholesky decomposition}
+Compute $C_i^{(w)} \in \R^{r \times r}$ such that 
+$C_i^{(w)}{C_i^{(w)}}^\top = \text{M}_i^{-1}$ \tcp{Cholesky decomposition} \nonumber
 \For{$\breve{n} = 1,\ldots,N$}    
 { 
   Sample $\Omega_{\breve{n}} \sim \cN(0, I_r)$ \\
@@ -432,6 +437,10 @@ Compute $C_i^{(w)} \in \R^{r \times r}$ such that $C_i^{(w)}{C_i^{(w)}}^\top = (
 \end{algorithm}
 
 \vspace{.5cm}
+
+$\text{M}_i= V_i^\top{\Sigma_i^{(w)}}^{-1}V_i + {D^{(w)}}^{-1}$ or $\text{M}_i= D^{(w)}$
+
+\texttt{@VT: weird that $D^{(w)}$ and ${D^{(w)}}^{-1}$ ?}
 
 \noindent The approximation of~\eqref{eq:def-E-g-tilde} is finally obtained by
 \begin{equation}
@@ -453,13 +462,13 @@ Now in the case $g = g_k$, one has $\E_{\theta^{(w)}}[g_k(Gi) | t_i, \delta_i, y
 \end{equation}
 
 \paragraph*{Quasi-Newton M-step.}
-Here, we need to compute \[\theta^{(w+1)} \in \argmin_{\theta \in \R^\vartheta} \cQ_n(\theta, \theta^{(w)}) + \sum_{k=0}^{K-1} \zeta_{1,k} \norm{\xi_k}_{\text{en}, \eta} + \zeta_{2,k} \norm{\gamma_k}_{\text{sg} l_1, \tilde{\eta}} + \zeta_{3,k} \norm{\beta_k}_{\text{sg} l_1, \tilde{\eta}}.\]
+Here, we need to compute \[\theta^{(w+1)} \in \argmin_{\theta \in \R^\vartheta} \cQ_n(\theta, \theta^{(w)}) + \sum_{k=0}^{K-1} \zeta_{1,k} \big(\norm{\xi_k}_{\text{en}, \eta} + \norm{\gamma_k^0}_{\text{en}, \eta} \big) + \zeta_{2,k} \norm{\beta_k}_{\text{sg} l_1, \tilde{\eta}} + \zeta_{3,k} \norm{\gamma_k}_{\text{sg} l_1, \tilde{\eta}}.\]
 Let us introduce the following useful notations
 \begin{equation}
   \label{eq:g-tilde-1-2}
   \left\{
     \begin{array}{ll}
-        \tilde g_{i, s, \gamma_k, \beta_k}^1&: b_i \mapsto \exp \big\{ x_i^\top \gamma_{k,0} + \tilde g_{s, \gamma_k, \beta_k}^2(b_i) \big\}, \\
+        \tilde g_{i, s, \gamma_k^0, \gamma_k, \beta_k}^1&: b_i \mapsto \exp \big\{ x_i^\top \gamma_k^0 + \tilde g_{s, \gamma_k, \beta_k}^2(b_i) \big\}, \\
         \tilde g_{s, \gamma_k, \beta_k}^2&: b_i \mapsto \sum_{l=1}^L \sum_{a=1}^\cA {\gamma_{k,a}^l}^\top \varphi_a(s, \beta_k^l, b_i^l).
     \end{array}
   \right. 
@@ -493,61 +502,110 @@ where $\xi_k^\pm = (\xi_{k,1}^\pm, \ldots, \xi_{k,p}^\pm)^\top$. The L-BFGS-B so
   \label{eq:grad-xi_k}
   \frac{\partial P_{n,k}^{(w)}(\xi_k)}{\partial \xi_k} = -n^{-1} \sum_{i=1}^n \hat \pi_{ik}^{\theta^{(w)}} \big( 1 - \pi_{\xi_k}(x_i) \big) x_i.
 \end{equation}
-Similarly to the strategy of increasing $N$ with the iterations $w$ for computational reasons, it is not clever to use a too small solver tolerance in the early steps of the algorithm, where we call tolerance the value for which iterations stop when the stopping criterion is below it. We then decrease the L-BFGS-B tolerance (which we denote $tol$ in Algorithm~\ref{alg:QNMCEM}) with every increase of $N$.
+In practice, we use the \texttt{Python} solver \texttt{fmin\_l\_bfgs\_b} from \texttt{scipy.optimize}~\citep{virtanen2020scipy}. Similarly to the strategy of increasing $N$ with the iterations $w$ for computational reasons, it is not clever to use a too small solver tolerance in the early steps of the algorithm, where we call tolerance the value for which iterations stop when the stopping criterion is below it. We then decrease the L-BFGS-B tolerance (which we denote $tol$ in Algorithm~\ref{alg:QNMCEM}) with every increase of $N$.
 
 Now, for the update of $\beta_k^{(w)}$ for $k=0, \ldots, K-1$, we similarly denote
 \begin{align*}
   R^{(w)}_{n,k}(\beta_k) = -n^{-1} \sum_{i=1}^n \hat \pi_{ik}^{\theta^{(w)}} \Big[ &\delta_i \hat \E_{\theta^{(w)}}[ \tilde g_{t_i, \gamma_k^{(w)}, \beta_k}^2(b_i) | t_i, \delta_i, y_i] \\
-  & - \sum_{j=1}^J \lambda_0^{(w)}(t_j) \hat \E_{\theta^{(w)}}[ \tilde g_{i, t_j, \gamma_k^{(w)}, \beta_k}^1(b_i) | t_i, \delta_i, y_i] \ind{\{t_j\leq t_i\}} \\
+  & - \sum_{j=1}^J \lambda_0^{(w)}(t_j) \hat \E_{\theta^{(w)}}[ \tilde g_{i, t_j, {\gamma_k^0}^{(w)}, \gamma_k^{(w)}, \beta_k}^1(b_i) | t_i, \delta_i, y_i] \ind{\{t_j\leq t_i\}} \\
   & + (y_i \odot \Phi_i^{(w)})^\top \hat \E_{\theta^{(w)}}[ M_{ik} | t_i, \delta_i, y_i] \\
   & - \hat \E_{\theta^{(w)}}[ c_{\phi^{(w)}}(M_{ik}) | t_i, \delta_i, y_i] \Big] 
 \end{align*}
 based on the quantities involved in $\cQ_n(\theta, \theta^{(w)})$ depending on $\beta_k$, with $\tilde g_{i, t_j, \gamma_k^{(w)}, \beta_k}^1$ and $\tilde g_{t_i, \gamma_k^{(w)}, \beta_k}^2$ defined in~\eqref{eq:g-tilde-1-2}. The integration over the survival process has been replaced with a finite sum over the process evaluated at the distinct event times $(t_1, \ldots, t_J)$ with $J \in~\N_+$, since $\lambda_0^{(w)}$ defined in~\eqref{eq:update_lambda_0} is always zero except at observed event times.
-Hence, we update $\beta_k^{(w)}$ by solving the following problem
+The update for $\beta_k^{(w)}$ therefore requires to solve the following convex minimization problem
 \begin{equation}
-  \label{eq:sub-problem-beta_k}
-  \begin{split}
-    \text{minimize}& \quad \quad R_{n, k}^{(w)}(\beta_k^+ - \beta_k^-) + \zeta_{3,k} \big((1 - \tilde \eta) \sum_{j=1}^q (\beta_{k,j}^+ + \beta_{k,j}^-) + \tilde \eta \sum_{l=1}^L \norm{{\beta_k^l}^+ - {\beta_k^l}^-}_2 \big) \\
-    \text{subject to}& \quad \quad \beta_{k,j}^+ \geq 0 \text{ and } \beta_{k,j}^- \geq 0 \text{ for } j = 1, \ldots, q.
-  \end{split} 
+  \label{eq:minimization-beta_k}
+  \beta_k^{(w+1)} \in \argmin_{\beta_k \in \R^q} R^{(w)}_{n,k}(\beta_k) + \zeta_{2,k} \norm{\beta_k}_{\text{sg} l_1, \tilde{\eta}}.
 \end{equation}
-The value of the gradient for the Gaussian case is here given by
+The previous trick we used to handle the non-differentiability of the $\ell_1$ part in the elastic net is no longer sufficient for~\eqref{eq:minimization-beta_k}, since the $\ell_2$ norm in the sparse group lasso is not squared, leading to a non-differentiability at 0 (which is precisely the criterion exploited by the penalty to set some groups of coefficients to exactly 0~\citep{simon2013sparse}). Then, we choose to solve problem~\eqref{eq:minimization-beta_k} using the proximal gradient descent~\citep{boyd2004convex} described in Algorithm~\ref{alg:ISTA}.
+
+\vspace{.5cm}
+
+\begin{algorithm}[H]
+\DontPrintSemicolon
+\caption{Proximal gradient descent ISTA$_{\text{sg} l_1}$($v$, $f$, $\tilde \eta$, $\zeta$)}
+\label{alg:ISTA}
+\KwInput{A vector $v$, a function $f$ (its gradient), hyper-parameters $\tilde \eta$ and $\zeta$}
+\KwOutput{$\flat^{\breve{w}^{max}}$}
+Initialize $\flat^{(0)}=v$ \\
+\For{$\breve{w} = 0,\ldots,\breve{w}^{max}$}    
+{ 
+  \vspace{-.8cm}
+  \begin{align*}
+  \flat^{(\breve{w}+1)} \in &\argmin_u \Big\{\dfrac{1}{2\varrho_{\breve{w}}} \left\lVert u - \big(\flat^{(\breve{w})} - \varrho_{\breve{w}} \dfrac{\partial f(u)}{\partial u} \big)\right\rVert_2^2 + \zeta \norm{u}_{\text{sg} l_1, \tilde{\eta}} \Big\} \\
+  &\coloneqq\text{prox}_{\text{sg} l_1, \tilde{\eta}, \zeta} \Big(\flat^{(\breve{w})} - \varrho_{\breve{w}} \dfrac{\partial f(u)}{\partial u} \Big)
+  \end{align*}
+  \vspace{-.3cm}
+}
+\textbf{Return:} {$\flat^{\breve{w}^{max}}$}
+\end{algorithm}
+
+\vspace{.5cm}
+TODO w/ VT: note on $\breve{w}^{max}$. Lemma~\ref{lemma:prox-sgl1} bellow states that one can easily compute the proximal operator of the sparse group lasso defined in Algorithm~\ref{alg:ISTA}.
+\begin{lemma}
+\label{lemma:prox-sgl1}
+The proximal operator of the sparse group lasso can be expressed as the composition of the group lasso and the lasso proximal operators, that is
+\normalfont
+\begin{equation*}
+  \text{prox}_{\text{sg} l_1,\tilde \eta, \zeta} = \text{prox}_{\zeta \tilde \eta \sum_{l=1}^L \norm{\cdot}_{2,l}} \circ \text{prox}_{\zeta (1 - \tilde \eta) \norm{\cdot}_1}.
+\end{equation*}
+\end{lemma}
+The two proximal operators on the right hand side of Lemma~\ref{lemma:prox-sgl1} are both well known analytically~\citep{bach2011optimization} and tractable. We used the \texttt{Python} library \texttt{copt} for the implementation of proximal gradient descent~\citep{copt} and we propose in our package an implementation for the proximal operator of the sparse group lasso based on Lemma~\ref{lemma:prox-sgl1}.
+A proof of Lemma~\ref{lemma:prox-sgl1} is proposed in Appendix~\ref{sec:proof-lemma-prox-sgl1}.
+Hence, we update $\beta_k^{(w)}$ with the following step
+\begin{equation}
+  \label{eq:beta-update}
+  \beta_k^{(w+1)} = \text{ISTA}_{\text{sg} l_1}(\beta_k^{(w)}, R^{(w)}_{n,k}, \tilde \eta, \zeta_{2,k}).
+\end{equation}
+Note that the warmstart initialization is left to the user's choice, as well as the ISTA acceleration~\citep{beck2009fast}, since warmstart can diminish acceleration effectiveness~\citep{tibshirani2010proximal}.
+The gradient of $R_{n,k}^{(w)}$ for the Gaussian case is here given by
 \begin{align}
   \label{eq:grad-beta_k}
-  \frac{\partial R_{n,k}^{(w)}(\beta_k)}{\partial \beta_k^l} = -n^{-1} &\sum_{i=1}^n \hat \pi_{ik}^{\theta^{(w)}} \Big[\sum_{a=1}^\mathcal{A} {\gamma_{k,a}^l}^{(w)} \Big( \delta_i  \hat \E_{\theta^{(w)}}[ \frac{\partial \varphi_a(t_i, \beta_k^l, b_i^l)}{\partial \beta_k^l} | t_i, \delta_i, y_i] \\ \nonumber
-  &- \sum_{j=1}^J \lambda_0^{(w)}(t_j) \hat \E_{\theta^{(w)}}[ \frac{\partial \varphi_a(t_j, \beta_k^l, b_i^l)}{\partial \beta_k^l} \tilde g_{i, t_j, \gamma_k^{(w)}, \beta_k}^1(b_i) | t_i, \delta_i, y_i] \ind{\{t_j\leq t_i\}} \Big) \\ \nonumber
+  \frac{\partial R_{n,k}^{(w)}(\beta_k)}{\partial \beta_k^l} = -n^{-1} &\sum_{i=1}^n \hat \pi_{ik}^{\theta^{(w)}} \Big[\sum_{a=1}^\mathcal{A} {\gamma_{k,a}^l}^{(w)} \Big( \delta_i  \hat \E_{\theta^{(w)}}[ \frac{\partial \varphi_a(t_i, \beta_k^l, b_i^l)}{\partial \beta_k^l} | t_i, \delta_i, y_i] \nonumber \\ 
+  &- \sum_{j=1}^J \lambda_0^{(w)}(t_j) \hat \E_{\theta^{(w)}}[ \frac{\partial \varphi_a(t_j, \beta_k^l, b_i^l)}{\partial \beta_k^l} \tilde g_{i, t_j, {\gamma_k^0}^{(w)}, \gamma_k^{(w)}, \beta_k}^1(b_i) | t_i, \delta_i, y_i] \ind{\{t_j\leq t_i\}} \Big) \nonumber \\
   &+ U_{il}^\top {\phi_l^{(w)}}^{-1}I_{n_{il}} (y_i^l - U_{il}\beta_k^l - V_{il}\hat \E_{\theta^{(w)}}[ b_i | t_i, \delta_i, y_i])\Big]
 \end{align}
 for all $l = 1, \ldots, L$. Note that the gradients of the considered $\varphi_a$ functions with respect to $\beta_k^l$ are given in Table~\ref{table:shared_associations}. 
 
-Concerning the update of $\gamma_k^{(w)}$ for $k=0, \ldots, K-1$, let us follow the same strategy by denoting
+Concerning the update of ${\gamma_k^0}^{(w)}$ and $\gamma_k^{(w)}$ for $k=0, \ldots, K-1$, let us follow the same strategy by denoting
 \begin{align*}
-  Q^{(w)}_{n,k}(\gamma_k) = -n^{-1} \sum_{i=1}^n \hat \pi_{ik}^{\theta^{(w)}} \Big[ &\delta_i \hat \E_{\theta^{(w)}}[ \log \circ \tilde g_{i, t_i, \gamma_k, \beta_k^{(w+1)}}^1(b_i) | t_i, \delta_i, y_i] \\
-  & - \sum_{j=1}^J \lambda_0^{(w)}(t_j) \hat \E_{\theta^{(w)}}[ \tilde g_{i, t_j, \gamma_k, \beta_k^{(w+1)}}^1(b_i) | t_i, \delta_i, y_i] \ind{\{t_j\leq t_i\}} \Big] 
+  Q^{(w)}_{n,k}(\gamma_k^0, \gamma_k) = -n^{-1} \sum_{i=1}^n \hat \pi_{ik}^{\theta^{(w)}} \Big[ &\delta_i \hat \E_{\theta^{(w)}}[ \log \circ \tilde g_{i, t_i, \gamma_k^0, \gamma_k, \beta_k^{(w+1)}}^1(b_i) | t_i, \delta_i, y_i] \\
+  & - \sum_{j=1}^J \lambda_0^{(w)}(t_j) \hat \E_{\theta^{(w)}}[ \tilde g_{i, t_j, \gamma_k^0, \gamma_k, \beta_k^{(w+1)}}^1(b_i) | t_i, \delta_i, y_i] \ind{\{t_j\leq t_i\}} \Big] 
 \end{align*}
-based on the quantities involved in $\cQ_n(\theta, \theta^{(w)})$ that depend on $\gamma_k$, with $\tilde g_{i, t_j, \gamma_k, \beta_k^{(w+1)}}^1$ defined in~\eqref{eq:g-tilde-1-2}. The update for $\gamma_k^{(w)}$ therefore requires to solve the following minimization problem
+based on the quantities involved in $\cQ_n(\theta, \theta^{(w)})$ that depend on $\gamma_k^0$ and $\gamma_k$, with $\tilde g_{i, t_j, \gamma_k^0, \gamma_k, \beta_k^{(w+1)}}^1$ defined in~\eqref{eq:g-tilde-1-2}. The update for ${\gamma_k^0}^{(w)}$ therefore requires to solve the following minimization problem
 \begin{equation}
-  \label{eq:minimization-beta_k}
-  \gamma_k^{(w+1)} \in \argmin_{\gamma_k \in \R^{p+L\mathcal{A}}} Q^{(w)}_{n,k}(\gamma_k) + \zeta_{2,k} \norm{\gamma_k}_{\text{sg} l_1, \tilde{\eta}}.
+  \label{eq:minimization-gamma_k^0}
+  {\gamma_k^0}^{(w+1)} \in \argmin_{\gamma_k^0 \in \R^p} Q^{(w)}_{n,k}(\gamma_k^0, {\gamma_k}^{(w)}) + \zeta_{1,k} \norm{\gamma_k^0}_{\text{en}, \eta}.
 \end{equation}
-We then rewrite problem~\eqref{eq:minimization-beta_k} as the following differentiable problem with box constraints
+We then rewrite problem~\eqref{eq:minimization-gamma_k^0} as the following differentiable problem with box constraints
 \begin{equation}
-  \label{eq:sub-problem-gamma_k}
+  \label{eq:sub-problem-gamma_k^0}
   \begin{split}
-    \text{minimize}& \quad \quad Q_{n, k}^{(w)}(\gamma_k^+ - \gamma_k^-) + \zeta_{2,k} \big((1 - \tilde \eta) \sum_{j=1}^{p+L\mathcal{A}} (\gamma_{k,j}^+ + \gamma_{k,j}^-) + \tilde \eta \sum_{l=1}^L \norm{{\gamma_k^l}^+ - {\gamma_k^l}^-}_2 \big) \\
-    \text{subject to}& \quad \quad \gamma_{k,j}^+ \geq 0 \text{ and } \gamma_{k,j}^- \geq 0 \text{ for } j = 1, \ldots, p+L\mathcal{A}.
+    \text{minimize}& \quad \quad Q_{n, k}^{(w)}({\gamma_k^0}^+ - {\gamma_k^0}^-, {\gamma_k}^{(w)}) + \zeta_{1,k} \big((1 - \eta) \sum_{j=1}^p ({\gamma_{k,j}^0}^+ + {\gamma_{k,j}^0}^-) + \dfrac \eta 2 \norm{{\gamma_k^0}^+ - {\gamma_k^0}^-}_2^2 \big) \\
+    \text{subject to}& \quad \quad {\gamma_{k,j}^0}^+ \geq 0 \text{ and } {\gamma_{k,j}^0}^- \geq 0 \text{ for } j = 1, \ldots, p.
   \end{split} 
 \end{equation}
-One can also compute the gradient since one has
-\begin{equation}
+The gradient is here given by
+\begin{align}
   \label{eq:grad-Q-1}
-  \frac{\partial Q_{n,k}^{(w)}(\gamma_k)}{\partial \gamma_{k,0}} = -n^{-1} \sum_{i=1}^n \hat \pi_{ik}^{\theta^{(w)}} \Big[ \delta_i - \sum_{j=1}^J \lambda_0^{(w)}(t_j) \hat \E_{\theta^{(w)}}[ \tilde g_{i, t_j, \gamma_k, \beta_k^{(w+1)}}^1(b_i) | t_i, \delta_i, y_i] \ind{\{t_j\leq t_i\}} \Big] x_i
+  \frac{\partial Q_{n,k}^{(w)}(\gamma_k^0, {\gamma_k}^{(w)})}{\partial \gamma_k^0} = -n^{-1} &\sum_{i=1}^n \hat \pi_{ik}^{\theta^{(w)}} \Big[ \delta_i - \sum_{j=1}^J \lambda_0^{(w)}(t_j) \nonumber \\
+  &\times \hat \E_{\theta^{(w)}}[ \tilde g_{i, t_j, \gamma_k^0, {\gamma_k}^{(w)}, \beta_k^{(w+1)}}^1(b_i) | t_i, \delta_i, y_i] \ind{\{t_j\leq t_i\}} \Big] x_i.
+\end{align}
+Then, the update for $\gamma_k^{(w)}$ requires to solve the following minimization problem
+\begin{equation}
+  \label{eq:minimization-gamma_k}
+  \gamma_k^{(w+1)} \in \argmin_{\gamma_k \in \R^{L\mathcal{A}}} Q^{(w)}_{n,k}({\gamma_k^0}^{(w)}, \gamma_k) + \zeta_{3,k} \norm{\gamma_k}_{\text{sg} l_1, \tilde{\eta}}.
 \end{equation}
-and
+We treat problem~\eqref{eq:minimization-gamma_k} in the same way as~\eqref{eq:minimization-beta_k}, that is
+\begin{equation}
+  \label{eq:gamma-update}
+  \gamma_k^{(w+1)} = \text{ISTA}_{\text{sg} l_1}\big(\gamma_k^{(w)}, Q^{(w)}_{n,k}({\gamma_k^0}^{(w)}, \cdot), \tilde \eta, \zeta_{3,k}\big)
+\end{equation}
+with the gradient being known since
 \begin{align}
   \label{eq:grad-Q-2}
-  \frac{\partial Q_{n,k}^{(w)}(\gamma_k)}{\partial \gamma_{k,a}^l} = -n^{-1} &\sum_{i=1}^n \hat \pi_{ik}^{\theta^{(w)}} \Big[ \delta_i  \hat \E_{\theta^{(w)}}[ \varphi_a(t_i, {\beta_k^l}^{(w+1)}, b_i^l) | t_i, \delta_i, y_i] \\ \nonumber
-   &- \sum_{j=1}^J \lambda_0^{(w)}(t_j) \hat \E_{\theta^{(w)}}[ \varphi_a(t_j, {\beta_k^l}^{(w+1)}, b_i^l) \tilde g_{i, t_j, \gamma_k, \beta_k^{(w+1)}}^1(b_i) | t_i, \delta_i, y_i] \ind{\{t_j\leq t_i\}} \Big]
+  \frac{\partial Q_{n,k}^{(w)}({\gamma_k^0}^{(w)}, \gamma_k)}{\partial \gamma_{k,a}^l} &= -n^{-1} \sum_{i=1}^n \hat \pi_{ik}^{\theta^{(w)}} \Big[ \delta_i  \hat \E_{\theta^{(w)}}[ \varphi_a(t_i, {\beta_k^l}^{(w+1)}, b_i^l) | t_i, \delta_i, y_i] \\ \nonumber
+   &- \sum_{j=1}^J \lambda_0^{(w)}(t_j) \hat \E_{\theta^{(w)}}[ \varphi_a(t_j, {\beta_k^l}^{(w+1)}, b_i^l) \tilde g_{i, t_j, {\gamma_k^0}^{(w)}, \gamma_k, \beta_k^{(w+1)}}^1(b_i) | t_i, \delta_i, y_i] \ind{\{t_j\leq t_i\}} \Big]
 \end{align}
 for all $a = 1, \ldots, \mathcal{A}$ and $l = 1, \ldots, L$.
 
@@ -558,10 +616,6 @@ For the update of $\lambda_0^{(w)}$, we treat the jump size at the observed even
 \end{equation}
 which is a Breslow like estimator~\citep{breslow1972contribution} adapted to our model. 
 
-
-
-
-
 Finally, for the update of $\phi^{(w)}$ and regarding Table~\ref{table:glm}, we focus on the Gaussian case being particularly useful in practice. It is obtained in closed-form by
 \begin{align}
   \label{eq:update_phi}
@@ -569,10 +623,11 @@ Finally, for the update of $\phi^{(w)}$ and regarding Table~\ref{table:glm}, we 
   & - 2V_{il} \hat \E_{\theta^{(w)}}[ b_i^l | t_i, \delta_i, y_i]\Big) \nonumber \\
   & + \Tr\big(V_{il}^\top V_{il}\hat \E_{\theta^{(w)}}[ b_i^l {b_i^l}^\top | t_i, \delta_i, y_i]\big) \Big].
 \end{align}
+Appendix~\ref{sec:?} gives some details about the way we implement the equations and their computation in practice.
 
 \paragraph*{Initialization.}
 Our algorithm gives a local minimum, and it is clever to choose an initial value $\theta^{(0)}$ close to the final solution $\hat \theta$, so that the number of iterations required to reach convergence is reduced. We then give some details about the starting point $\theta^{(0)}$ of Algorithm~\ref{alg:QNMCEM}. 
-For all $k = 0, \ldots, K-1$, we first choose $\xi_k^{(0)} = \mathbf{0}_d$ and ${\gamma_{k,a}^l}^{(0)} = 0$ for all $l=1, \ldots, L$ and $a=1, \ldots, \cA$. Then, we initialize $\lambda_0^{(0)}$ and $\gamma_{k,0}^{(0)}$ like if there is no subgroup ($\gamma_{0,0}^{(0)} = \cdots = \gamma_{K-1,0}^{(0)}$) with a standard Cox proportional hazards regression with time-independent features using the \texttt{Python} library \texttt{tick}. Finally, the longitudinal submodels parameters $\beta_k^{(0)}$, $D^{(0)}$ and $\phi^{(0)}$ are initialized -- again like if there is no subgroup ($\beta_0^{(0)} = \cdots = \beta_{K-1}^{(0)}$) -- using a multivariate linear mixed model with an explicit EM algorithm (the details are given in Appendix~\ref{sec:MLMM}), being itself initialized with univariates fits using the \texttt{Python} package \texttt{statsmodels}.
+For all $k = 0, \ldots, K-1$, we first choose $\xi_k^{(0)} = \mathbf{0}_d$ and ${\gamma_{k,a}^l}^{(0)} = 0$ for all $l=1, \ldots, L$ and $a=1, \ldots, \cA$. Then, we initialize $\lambda_0^{(0)}$ and ${\gamma_k^0}^{(0)}$ like if there is no subgroup ($\gamma_{0,0}^{(0)} = \cdots = \gamma_{K-1,0}^{(0)}$) with a standard Cox proportional hazards regression with time-independent features using the \texttt{Python} library \texttt{tick}. Finally, the longitudinal submodels parameters $\beta_k^{(0)}$, $D^{(0)}$ and $\phi^{(0)}$ are initialized -- again like if there is no subgroup ($\beta_0^{(0)} = \cdots = \beta_{K-1}^{(0)}$) -- using a multivariate linear mixed model with an explicit EM algorithm (the details are given in Appendix~\ref{sec:MLMM}), being itself initialized with univariates fits using the \texttt{Python} package \texttt{statsmodels}.
 
 \paragraph*{The QNMCEM algorithm.}
 Algorithm~\ref{alg:QNMCEM} describes the main steps of the resulting QNMCEM algorithm to solve the optimization problem~\eqref{eq:optim-pb}. The $Condition$ in algorithm~\ref{alg:QNMCEM} is cv$(\Delta_{\text{rel}}^{(w+1)}) >$ cv$(\Delta_{\text{rel}}^{(w)})$, where cv$(\Delta_{\text{rel}}^{(w)})$ is coefficient of variation at the $(w + 1)$-th iteration computed as
@@ -609,8 +664,9 @@ Compute the starting parameters $\theta^{(0)} \in \R^\vartheta$ \\
   \tcc{Quasi-Newton M-step}
   Update $D^{(w+1)}$ using~\eqref{eq:update_D}\\
   Update $(\xi_k^{(w+1)})_{k=0,\ldots,K-1}$ by solving~\eqref{eq:sub-problem-xi_k} \\
-  Update $(\beta_k^{(w+1)})_{k=0,\ldots,K-1}$ by solving~\eqref{eq:sub-problem-beta_k} \\
-  Update $(\gamma_k^{(w+1)})_{k=0,\ldots,K-1}$ by solving~\eqref{eq:sub-problem-gamma_k} \\
+  Update $(\beta_k^{(w+1)})_{k=0,\ldots,K-1}$ by solving~\eqref{eq:beta-update} \\
+  Update $({\gamma_k^0}^{(w+1)})_{k=0,\ldots,K-1}$ by solving~\eqref{eq:sub-problem-gamma_k^0} \\
+  Update $(\gamma_k^{(w+1)})_{k=0,\ldots,K-1}$ by solving~\eqref{eq:gamma-update} \\
   Update $\lambda_0^{(w+1)}$ using~\eqref{eq:update_lambda_0}\\
   Update $\phi^{(w+1)}$ using~\eqref{eq:update_phi} \\
 }
@@ -780,7 +836,7 @@ To generate survival times, we choose a risk model of the form
 \lambda_i(t|G_i = k) = \lambda_0(t) \exp \Big\{ x_i^\top \xi + \sum_{l=1}^L &\gamma_{k,1}^l (\beta_{k,1}^l + \beta_{k,2}^l t + b_{i,1}^l + b_{i,2}^l t) \\
 &+ (\gamma_{k,2,1}^l b_{i,1}^l + \gamma_{k,2,2}^l b_{i,2}^l) + \gamma_{k,3}^l (\beta_{k,2}^l + b_{i,2}^l) \Big\},
 \end{align*}
-which corresponds to~\eqref{eq:intensity-model} taking $\gamma_{k,0} = \xi$ and the first three functionals described in Table~\ref{table:shared_associations} as shared associations. 
+which corresponds to~\eqref{eq:intensity-model} taking $\gamma_k^0 = \xi$ and the first three functionals described in Table~\ref{table:shared_associations} as shared associations. 
 Now, for the choice of the association parameters, we want to induce sparsity (similarly to~\eqref{eq:xi-sparse}), so we set 
 \[\cS_k=\Big\{ k \big\lfloor \dfrac{L r_s}{K} \big\rfloor + 1, \ldots,  (k + 1) \big\lfloor \dfrac{L r_s}{K} \big\rfloor \Big\}\] and
 \begin{equation}
@@ -897,6 +953,11 @@ All the methodology discussed in this paper is implemented in \texttt{Python}. T
 \LARGE \textbf{Appendices}
 \end{center}
 
+\section{Proof of Lemma~\ref{lemma:prox-sgl1}}
+\label{sec:proof-lemma-prox-sgl1}
+
+
+
 \section{Automatic cross-validation grid for $\xi$}
 \label{sec:auto-grid-cv}
 
@@ -908,7 +969,7 @@ with $\zeta_{j,k}^{\text{max}}$ the interval upper bound computed hereafter.
 
 Considering the convex minimization problem~\eqref{eq:minimization-xi_k} at a given step $w$,
 let us denote $\zeta_{1,k}^1 \leq \zeta_{1,k}^2 \leq \dots \leq \zeta_{1,k}^{\text{max}}$ the randomly chosen candidate values for $\zeta_{1,k}$, such that at $\zeta_{1,k}^{\text{max}}$, all coefficients $\hat \xi_{k, j}$ for all $j = 1, \dots, p$ are exactly zero.
-The KKT conditions \citep{boyd2004convex} claim that
+The KKT conditions~\citep{boyd2004convex} claim that
 \begin{center}
   $\left\{
       \begin{aligned}
