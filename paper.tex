@@ -592,18 +592,18 @@ The gradient is here given by
 Then, the update for $\gamma_k^{(w)}$ requires to solve the following minimization problem
 \begin{equation}
   \label{eq:minimization-gamma_k}
-  \gamma_k^{(w+1)} \in \argmin_{\gamma_k \in \R^{L\mathcal{A}}} Q^{(w)}_{n,k}({\gamma_k^0}^{(w)}, \gamma_k) + \zeta_{3,k} \norm{\gamma_k}_{\text{sg} l_1, \tilde{\eta}}.
+  \gamma_k^{(w+1)} \in \argmin_{\gamma_k \in \R^{L\mathcal{A}}} Q^{(w)}_{n,k}({\gamma_k^0}^{(w+1)}, \gamma_k) + \zeta_{3,k} \norm{\gamma_k}_{\text{sg} l_1, \tilde{\eta}}.
 \end{equation}
 We treat problem~\eqref{eq:minimization-gamma_k} in the same way as~\eqref{eq:minimization-beta_k}, that is
 \begin{equation}
   \label{eq:gamma-update}
-  \gamma_k^{(w+1)} = \text{ISTA}_{\text{sg} l_1}\big(\gamma_k^{(w)}, Q^{(w)}_{n,k}({\gamma_k^0}^{(w)}, \cdot), \tilde \eta, \zeta_{3,k}\big)
+  \gamma_k^{(w+1)} = \text{ISTA}_{\text{sg} l_1}\big(\gamma_k^{(w)}, Q^{(w)}_{n,k}({\gamma_k^0}^{(w+1)}, \cdot), \tilde \eta, \zeta_{3,k}\big)
 \end{equation}
 with the gradient being known since
 \begin{align}
   \label{eq:grad-Q-2}
-  \frac{\partial Q_{n,k}^{(w)}({\gamma_k^0}^{(w)}, \gamma_k)}{\partial \gamma_{k,a}^l} &= -n^{-1} \sum_{i=1}^n \hat \pi_{ik}^{\theta^{(w)}} \Big[ \delta_i  \hat \E_{\theta^{(w)}}[ \varphi_a(t_i, {\beta_k^l}^{(w+1)}, b_i^l) | t_i, \delta_i, y_i] \\ \nonumber
-   &- \sum_{j=1}^J \lambda_0^{(w)}(t_j) \hat \E_{\theta^{(w)}}[ \varphi_a(t_j, {\beta_k^l}^{(w+1)}, b_i^l) \tilde g_{i, t_j, {\gamma_k^0}^{(w)}, \gamma_k, \beta_k^{(w+1)}}^1(b_i) | t_i, \delta_i, y_i] \ind{\{t_j\leq t_i\}} \Big]
+  &\frac{\partial Q_{n,k}^{(w)}({\gamma_k^0}^{(w+1)}, \gamma_k)}{\partial \gamma_{k,a}^l} = -n^{-1} \sum_{i=1}^n \hat \pi_{ik}^{\theta^{(w)}} \Big[ \delta_i  \hat \E_{\theta^{(w)}}[ \varphi_a(t_i, {\beta_k^l}^{(w+1)}, b_i^l) | t_i, \delta_i, y_i] \\ \nonumber
+   &\qquad\qquad - \sum_{j=1}^J \lambda_0^{(w)}(t_j) \hat \E_{\theta^{(w)}}[ \varphi_a(t_j, {\beta_k^l}^{(w+1)}, b_i^l) \tilde g_{i, t_j, {\gamma_k^0}^{(w+1)}, \gamma_k, \beta_k^{(w+1)}}^1(b_i) | t_i, \delta_i, y_i] \ind{\{t_j\leq t_i\}} \Big]
 \end{align}
 for all $a = 1, \ldots, \mathcal{A}$ and $l = 1, \ldots, L$.
 
