@@ -401,10 +401,12 @@ In the case $g_i(b_i, G_i) = \tilde g_i(b_i)$, one has
   \E_{\theta^{(w)}}[ \tilde g_i(b_i) | t_i, \delta_i, y_i] = \int_{\R^r} \tilde g_i(b_i) f(b_i | t_i, \delta_i, y_i ; \theta^{(w)}) \dd b_i = \dfrac{ \sum_{k=0}^{K-1} \pi_{\xi_k^{(w)}}(x_i) \Lambda_{ik,\tilde g_i}^{\theta^{(w)}}}{\sum_{k=0}^{K-1} \pi_{\xi_k^{(w)}}(x_i) \Lambda_{ik,1}^{\theta^{(w)}}}
 \end{equation}
 with
-\begin{equation}
-  \label{eq:Lambda_ik-def}
-  \Lambda_{ik,\tilde g_i}^{\theta^{(w)}} = \int_{\R^r} \tilde g_i(b_i) f(t_i, \delta_i | b_i, G_i = k ; \theta^{(w)}) f(b_i | y_i, G_i = k; \theta^{(w)}) \dd b_i,
-\end{equation}
+\begin{align}
+  \label{eq:Lambda_ik-b_i|y_i}
+  \Lambda_{ik,\tilde g_i}^{\theta^{(w)}} &= \int_{\R^r} \tilde g_i(b_i) f(t_i, \delta_i, y_i | b_i, G_i = k ; \theta^{(w)}) f(b_i ; \theta^{(w)}) \dd b_i \\
+  \label{eq:Lambda_ik-b_i}
+  &= f(y_i | G_i = k) \int_{\R^r} \tilde g_i(b_i) f(t_i, \delta_i | b_i, G_i = k ; \theta^{(w)}) f(b_i | y_i, G_i = k; \theta^{(w)}) \dd b_i
+\end{align}
 and $\Lambda_{ik,1}^{\theta^{(w)}}$ obtained from $\Lambda_{ik,\tilde g_i}^{\theta^{(w)}}$ taking $\tilde g_i: b_i \mapsto 1$.
 
 in the Gaussian case used in practice, one can also sample from
@@ -426,7 +428,7 @@ The integral in~\eqref{eq:Lambda_ik-def} is not tractable analytically, and some
 \KwInput{$S_i^{(w)} = \varnothing$}
 \KwOutput{$S_i^{(w)}$ filled with $2N$ samples}
 Compute $C_i^{(w)} \in \R^{r \times r}$ such that 
-$C_i^{(w)}{C_i^{(w)}}^\top = \text{M}_i^{-1}$ \tcp{Cholesky decomposition} \nonumber
+$C_i^{(w)}{C_i^{(w)}}^\top = \text{M}_i$ \tcp{Cholesky decomposition} \nonumber
 \For{$\breve{n} = 1,\ldots,N$}    
 { 
   Sample $\Omega_{\breve{n}} \sim \cN(0, I_r)$ \\
@@ -438,9 +440,7 @@ $C_i^{(w)}{C_i^{(w)}}^\top = \text{M}_i^{-1}$ \tcp{Cholesky decomposition} \nonu
 
 \vspace{.5cm}
 
-$\text{M}_i= V_i^\top{\Sigma_i^{(w)}}^{-1}V_i + {D^{(w)}}^{-1}$ or $\text{M}_i= D^{(w)}$
-
-\texttt{@VT: weird that $D^{(w)}$ and ${D^{(w)}}^{-1}$ ?}
+$\text{M}_i= W_i$ or $\text{M}_i= D^{(w)}$
 
 \noindent The approximation of~\eqref{eq:def-E-g-tilde} is finally obtained by
 \begin{equation}
@@ -511,7 +511,7 @@ Now, for the update of $\beta_k^{(w)}$ for $k=0, \ldots, K-1$, we similarly deno
   & + (y_i \odot \Phi_i^{(w)})^\top \hat \E_{\theta^{(w)}}[ M_{ik} | t_i, \delta_i, y_i] \\
   & - \hat \E_{\theta^{(w)}}[ c_{\phi^{(w)}}(M_{ik}) | t_i, \delta_i, y_i] \Big] 
 \end{align*}
-based on the quantities involved in $\cQ_n(\theta, \theta^{(w)})$ depending on $\beta_k$, with $\tilde g_{i, t_j, \gamma_k^{(w)}, \beta_k}^1$ and $\tilde g_{t_i, \gamma_k^{(w)}, \beta_k}^2$ defined in~\eqref{eq:g-tilde-1-2}. The integration over the survival process has been replaced with a finite sum over the process evaluated at the distinct event times $(t_1, \ldots, t_J)$ with $J \in~\N_+$, since $\lambda_0^{(w)}$ defined in~\eqref{eq:update_lambda_0} is always zero except at observed event times.
+based on the quantities involved in $\cQ_n(\theta, \theta^{(w)})$ depending on $\beta_k$, with $\tilde g_{i, t_j, {\gamma_k^0}^{(w)}, \gamma_k^{(w)}, \beta_k}^1$ and $\tilde g_{t_i, \gamma_k^{(w)}, \beta_k}^2$ defined in~\eqref{eq:g-tilde-1-2}. The integration over the survival process has been replaced with a finite sum over the process evaluated at the distinct event times $(t_1, \ldots, t_J)$ with $J \in~\N_+$, since $\lambda_0^{(w)}$ defined in~\eqref{eq:update_lambda_0} is always zero except at observed event times.
 The update for $\beta_k^{(w)}$ therefore requires to solve the following convex minimization problem
 \begin{equation}
   \label{eq:minimization-beta_k}
@@ -530,18 +530,16 @@ The previous trick we used to handle the non-differentiability of the $\ell_1$ p
 Initialize $\flat^{(0)}=v$ \\
 \For{$\breve{w} = 0,\ldots,\breve{w}^{max}$}    
 { 
-  \vspace{-.8cm}
-  \begin{align*}
+  $\begin{aligned}
   \flat^{(\breve{w}+1)} \in &\argmin_u \Big\{\dfrac{1}{2\varrho_{\breve{w}}} \left\lVert u - \big(\flat^{(\breve{w})} - \varrho_{\breve{w}} \dfrac{\partial f(u)}{\partial u} \big)\right\rVert_2^2 + \zeta \norm{u}_{\text{sg} l_1, \tilde{\eta}} \Big\} \\
   &\coloneqq\text{prox}_{\text{sg} l_1, \tilde{\eta}, \zeta} \Big(\flat^{(\breve{w})} - \varrho_{\breve{w}} \dfrac{\partial f(u)}{\partial u} \Big)
-  \end{align*}
-  \vspace{-.3cm}
+  \end{aligned}$
 }
 \textbf{Return:} {$\flat^{\breve{w}^{max}}$}
 \end{algorithm}
 
 \vspace{.5cm}
-TODO w/ VT: note on $\breve{w}^{max}$. Lemma~\ref{lemma:prox-sgl1} bellow states that one can easily compute the proximal operator of the sparse group lasso defined in Algorithm~\ref{alg:ISTA}.
+TODO w/ VT: note on $\breve{w}^{max}$ and $\varrho_{\breve{w}}$. Lemma~\ref{lemma:prox-sgl1} bellow states that one can easily compute the proximal operator of the sparse group lasso defined in Algorithm~\ref{alg:ISTA}.
 \begin{lemma}
 \label{lemma:prox-sgl1}
 The proximal operator of the sparse group lasso can be expressed as the composition of the group lasso and the lasso proximal operators, that is
