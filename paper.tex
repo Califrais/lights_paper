@@ -531,8 +531,8 @@ Initialize $\flat^{(0)}=v$ \\
 \For{$\breve{w} = 0,\ldots,\breve{w}^{max}$}    
 { 
   $\begin{aligned}
-  \flat^{(\breve{w}+1)} \in &\argmin_u \Big\{\dfrac{1}{2\varrho_{\breve{w}}} \left\lVert u - \big(\flat^{(\breve{w})} - \varrho_{\breve{w}} \dfrac{\partial f(u)}{\partial u} \big)\right\rVert_2^2 + \zeta \norm{u}_{\text{sg} l_1, \tilde{\eta}} \Big\} \\
-  &\coloneqq\text{prox}_{\text{sg} l_1, \tilde{\eta}, \zeta} \Big(\flat^{(\breve{w})} - \varrho_{\breve{w}} \dfrac{\partial f(u)}{\partial u} \Big)
+  \flat^{(\breve{w}+1)} \in &\argmin_u \Big\{\dfrac{1}{2\varrho_{\breve{w}}} \left\lVert u - \big(\flat^{(\breve{w})} - \varrho_{\breve{w}} \dfrac{\partial f}{\partial u}(\flat^{(\breve{w})}) \big)\right\rVert_2^2 + \zeta \norm{u}_{\text{sg} l_1, \tilde{\eta}} \Big\} \\
+  &\coloneqq\text{prox}_{\text{sg} l_1, \tilde{\eta}, \zeta} \Big(\flat^{(\breve{w})} - \varrho_{\breve{w}} \dfrac{\partial f}{\partial u}(\flat^{(\breve{w})}) \Big)
   \end{aligned}$
 }
 \textbf{Return:} {$\flat^{\breve{w}^{max}}$}
