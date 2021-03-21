@@ -37,7 +37,7 @@
 \usepackage{caption}
 \usepackage{booktabs}
 \usepackage{subfigure}
-
+\usepackage{algpseudocode}
 \usepackage[linesnumbered,ruled,vlined]{algorithm2e}
 \newcommand\mycommfont[1]{\footnotesize\ttfamily\textcolor{orange}{#1}}
 \SetCommentSty{mycommfont}
@@ -525,15 +525,22 @@ The previous trick we used to handle the non-differentiability of the $\ell_1$ p
 \DontPrintSemicolon
 \caption{Proximal gradient descent ISTA$_{\text{sg} l_1}$($v$, $f$, $\tilde \eta$, $\zeta$)}
 \label{alg:ISTA}
-\KwInput{A vector $v$, a function $f$ (its gradient), hyper-parameters $\tilde \eta$ and $\zeta$}
+\KwInput{A vector $v$, a function $f$ (its gradient), hyper-parameters $\tilde \eta$, $tol$ and $\zeta$}
 \KwOutput{$\flat^{\breve{w}^{max}}$}
-Initialize $\flat^{(0)}=v$ \\
+Define $p_{\varrho}(y) = \argmin_u \Big\{\dfrac{1}{2\varrho} \left\lVert u - \big(y - \varrho \dfrac{\partial f}{\partial u}(y) \big)\right\rVert_2^2 + \zeta \norm{u}_{\text{sg} l_1, \tilde{\eta}} \Big\}$\\
+Initialize $\flat^{(0)}=v$, $\varrho_0 > 0$, some $\epsilon > 1$ \\
 \For{$\breve{w} = 0,\ldots,\breve{w}^{max}$}    
-{ 
+{   Find the smallest nonnegative integer $i^{\breve{w}}$ such that with $\tilde{\varrho}_{\breve{w}} = \epsilon^{i^{\breve{w}}}\varrho_{\breve{w}}$
+	$f(p_{\tilde{\varrho}_{\breve{w}}}(\flat^{(\breve{w})})) \leq f(\flat^{(\breve{w})}) + \big<\big(p_{\tilde{\varrho}_{\breve{w}}}(\flat^{(\breve{w})}) - \flat^{(\breve{w})}\big), \dfrac{\partial f}{\partial u}(\flat^{(\breve{w})})\big> + \dfrac{1}{2\tilde{\varrho}_{\breve{w}}}\norm{p_{\tilde{\varrho}_{\breve{w}}}(\flat^{(\breve{w})}) - \flat^{(\breve{w})}}_2^2$\\
+  Set $\varrho_{(\breve{w} + 1)} = \tilde{\epsilon}^{i^{\breve{w}}}  \varrho_{\breve{w}}$
   $\begin{aligned}
-  \flat^{(\breve{w}+1)} \in &\argmin_u \Big\{\dfrac{1}{2\varrho_{\breve{w}}} \left\lVert u - \big(\flat^{(\breve{w})} - \varrho_{\breve{w}} \dfrac{\partial f(u)}{\partial u} \big)\right\rVert_2^2 + \zeta \norm{u}_{\text{sg} l_1, \tilde{\eta}} \Big\} \\
-  &\coloneqq\text{prox}_{\text{sg} l_1, \tilde{\eta}, \zeta} \Big(\flat^{(\breve{w})} - \varrho_{\breve{w}} \dfrac{\partial f(u)}{\partial u} \Big)
+  \flat^{(\breve{w}+1)} \in &\argmin_u \Big\{\dfrac{1}{2\varrho_{(\breve{w} + 1)}} \left\lVert u - \big(\flat^{(\breve{w})} - \varrho_{(\breve{w} + 1)} \dfrac{\partial f}{\partial u}(\flat^{(\breve{w})}) \big)\right\rVert_2^2 + \zeta \norm{u}_{\text{sg} l_1, \tilde{\eta}} \Big\} \\
+  &\coloneqq\text{prox}_{\text{sg} l_1, \tilde{\eta}, \zeta} \Big(\flat^{(\breve{w})} - \varrho_{(\breve{w} + 1)} \dfrac{\partial f}{\partial u}(\flat^{(\breve{w})}) \Big)
   \end{aligned}$
+	\If{$\dfrac{\norm{\flat^{(\breve{w}+1)} - \flat^{(\breve{w})}}_2}{\varrho_{(\breve{w} + 1)}} < tol$}
+	{
+		Convergence
+	}
 }
 \textbf{Return:} {$\flat^{\breve{w}^{max}}$}
 \end{algorithm}
