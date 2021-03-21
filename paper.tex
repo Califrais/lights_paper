@@ -525,28 +525,25 @@ The previous trick we used to handle the non-differentiability of the $\ell_1$ p
 \DontPrintSemicolon
 \caption{Proximal gradient descent ISTA$_{\text{sg} l_1}$($v$, $f$, $\tilde \eta$, $\zeta$)}
 \label{alg:ISTA}
-\KwInput{A vector $v$, a function $f$ (its gradient), hyper-parameters $\tilde \eta$, $tol$ and $\zeta$}
+\KwInput{A vector $v$, a function $f$ (its gradient $\nabla f$), hyper-parameters $\tilde \eta$, $tol$ and $\zeta$}
 \KwOutput{$\flat^{\breve{w}^{max}}$}
-Define $p_{\varrho}(y) = \argmin_u \Big\{\dfrac{1}{2\varrho} \left\lVert u - \big(y - \varrho \dfrac{\partial f}{\partial u}(y) \big)\right\rVert_2^2 + \zeta \norm{u}_{\text{sg} l_1, \tilde{\eta}} \Big\}$\\
-Initialize $\flat^{(0)}=v$, $\varrho_0 > 0$, some $\epsilon > 1$ \\
-\For{$\breve{w} = 0,\ldots,\breve{w}^{max}$}    
-{   Find the smallest nonnegative integer $i^{\breve{w}}$ such that with $\tilde{\varrho}_{\breve{w}} = \epsilon^{i^{\breve{w}}}\varrho_{\breve{w}}$
-	$f(p_{\tilde{\varrho}_{\breve{w}}}(\flat^{(\breve{w})})) \leq f(\flat^{(\breve{w})}) + \big<\big(p_{\tilde{\varrho}_{\breve{w}}}(\flat^{(\breve{w})}) - \flat^{(\breve{w})}\big), \dfrac{\partial f}{\partial u}(\flat^{(\breve{w})})\big> + \dfrac{1}{2\tilde{\varrho}_{\breve{w}}}\norm{p_{\tilde{\varrho}_{\breve{w}}}(\flat^{(\breve{w})}) - \flat^{(\breve{w})}}_2^2$\\
-  Set $\varrho_{(\breve{w} + 1)} = \tilde{\epsilon}^{i^{\breve{w}}}  \varrho_{\breve{w}}$
-  $\begin{aligned}
-  \flat^{(\breve{w}+1)} \in &\argmin_u \Big\{\dfrac{1}{2\varrho_{(\breve{w} + 1)}} \left\lVert u - \big(\flat^{(\breve{w})} - \varrho_{(\breve{w} + 1)} \dfrac{\partial f}{\partial u}(\flat^{(\breve{w})}) \big)\right\rVert_2^2 + \zeta \norm{u}_{\text{sg} l_1, \tilde{\eta}} \Big\} \\
-  &\coloneqq\text{prox}_{\text{sg} l_1, \tilde{\eta}, \zeta} \Big(\flat^{(\breve{w})} - \varrho_{(\breve{w} + 1)} \dfrac{\partial f}{\partial u}(\flat^{(\breve{w})}) \Big)
-  \end{aligned}$
-	\If{$\dfrac{\norm{\flat^{(\breve{w}+1)} - \flat^{(\breve{w})}}_2}{\varrho_{(\breve{w} + 1)}} < tol$}
+Define $p_{\varrho}(y) = \argmin_u \Big\{\dfrac{1}{2\varrho} \left\lVert u - \big(y - \varrho  \nabla f(y) \big)\right\rVert_2^2 + \zeta \norm{u}_{\text{sg} l_1, \tilde{\eta}} \Big\}$\\
+Initialize $\flat^{(0)}=v$, $\varrho^0 > 0$, some $\epsilon > 1$ \\
+\For{$\breve{w} = 0,\ldots,$ until convergence}    
+{Backtracking line search : find the smallest nonnegative integer $i^{\breve{w}}$ such that
+$f\big(p_{\tilde{\varrho}_{\breve{w}}}(\flat^{(\breve{w})})\big) \leq f(\flat^{(\breve{w})}) + \big<\big(p_{\tilde{\varrho}_{\breve{w}}}(\flat^{(\breve{w})}) - \flat^{(\breve{w})}\big), \nabla f(\flat^{(\breve{w})})\big> + \dfrac{1}{2\tilde{\varrho}_{\breve{w}}}\norm{p_{\tilde{\varrho}_{\breve{w}}}(\flat^{(\breve{w})}) - \flat^{(\breve{w})}}_2^2$ 
+with $\tilde{\varrho}_{\breve{w}} = \epsilon^{i^{\breve{w}}}\varrho^{\breve{w}}$\\
+Set $\varrho^{(\breve{w} + 1)} = \tilde{\varrho}_{\breve{w}}$ \\
+$\flat^{(\breve{w}+1)} = p_{\varrho^{(\breve{w} + 1)}}(\flat^{(\breve{w})}) \coloneqq\text{prox}_{\text{sg} l_1, \tilde{\eta}, \zeta} \big(\flat^{(\breve{w})} - \varrho^{(\breve{w} + 1)} \nabla f(\flat^{(\breve{w})}) \big)$ \\
+\If{$\dfrac{\norm{\flat^{(\breve{w}+1)} - \flat^{(\breve{w})}}_2}{\varrho^{(\breve{w} + 1)}} < tol$}
 	{
-		Convergence
+    \textbf{Return:} {$\flat^{\breve{w}}$}
 	}
 }
-\textbf{Return:} {$\flat^{\breve{w}^{max}}$}
 \end{algorithm}
 
 \vspace{.5cm}
-TODO w/ VT: note on $\breve{w}^{max}$ and $\varrho_{\breve{w}}$. Lemma~\ref{lemma:prox-sgl1} bellow states that one can easily compute the proximal operator of the sparse group lasso defined in Algorithm~\ref{alg:ISTA}.
+Lemma~\ref{lemma:prox-sgl1} bellow states that one can easily compute the proximal operator of the sparse group lasso defined in Algorithm~\ref{alg:ISTA}.
 \begin{lemma}
 \label{lemma:prox-sgl1}
 The proximal operator of the sparse group lasso can be expressed as the composition of the group lasso and the lasso proximal operators, that is
