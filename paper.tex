@@ -428,19 +428,19 @@ The integral in~\eqref{eq:Lambda_ik-def} is not tractable analytically, and some
 \KwInput{$S_i^{(w)} = \varnothing$}
 \KwOutput{$S_i^{(w)}$ filled with $2N$ samples}
 Compute $C_i^{(w)} \in \R^{r \times r}$ such that 
-$C_i^{(w)}{C_i^{(w)}}^\top = \text{M}_i$ \tcp{Cholesky decomposition} \nonumber
+$C_i^{(w)}{C_i^{(w)}}^\top = \text{M}_i^1$ \tcp{Cholesky decomposition} \nonumber
 \For{$\breve{n} = 1,\ldots,N$}    
 { 
   Sample $\Omega_{\breve{n}} \sim \cN(0, I_r)$ \\
-  Compute $\breve{b}_{\breve{n}} = C_i^{(w)} \Omega_{\breve{n}} \in \R^r$ \\
-  Update $S_i^{(w)} \leftarrow S_i^{(w)} \cup \{\breve{b}_{\breve{n}}, -\breve{b}_{\breve{n}} \}$
+  Compute $\breve{b}_{\breve{n}}^\pm = \text{M}_{ik}^2 \pm C_i^{(w)} \Omega_{\breve{n}} \in \R^r$ \\
+  Update $S_i^{(w)} \leftarrow S_i^{(w)} \cup \{\breve{b}_{\breve{n}}^+, \breve{b}_{\breve{n}}^- \}$
 }
 \textbf{Return:} {$S_i^{(w)}$}
 \end{algorithm}
 
 \vspace{.5cm}
 
-$\text{M}_i= W_i$ or $\text{M}_i= D^{(w)}$
+$\text{M}_i^1 = W_i$ $\text{M}_{ik}^2 = W_iV_i^T\Sigma_i^{-1}(y_i - U_i\beta_k)$ or $\text{M}_i^1 = D^{(w)}$ $\text{M}_{ik}^2 = 0$
 
 \noindent The approximation of~\eqref{eq:def-E-g-tilde} is finally obtained by
 \begin{equation}
