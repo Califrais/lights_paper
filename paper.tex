@@ -517,7 +517,8 @@ The update for $\beta_k^{(w)}$ therefore requires to solve the following convex 
   \label{eq:minimization-beta_k}
   \beta_k^{(w+1)} \in \argmin_{\beta_k \in \R^q} R^{(w)}_{n,k}(\beta_k) + \zeta_{2,k} \norm{\beta_k}_{\text{sg} l_1, \tilde{\eta}}.
 \end{equation}
-The previous trick we used to handle the non-differentiability of the $\ell_1$ part in the elastic net is no longer sufficient for~\eqref{eq:minimization-beta_k}, since the $\ell_2$ norm in the sparse group lasso is not squared, leading to a non-differentiability at 0 (which is precisely the criterion exploited by the penalty to set some groups of coefficients to exactly 0~\citep{simon2013sparse}). Then, we choose to solve problem~\eqref{eq:minimization-beta_k} using the proximal gradient descent~\citep{boyd2004convex} described in Algorithm~\ref{alg:ISTA}.
+The previous trick we used to handle the non-differentiability of the $\ell_1$ part in the elastic net is no longer sufficient for~\eqref{eq:minimization-beta_k}, since the $\ell_2$ norm in the sparse group lasso is not squared, leading to a non-differentiability at 0 (which is precisely the criterion exploited by the penalty to set some groups of coefficients to exactly 0~\citep{simon2013sparse}). Then, we choose to solve problem~\eqref{eq:minimization-beta_k} using the proximal gradient descent~\citep{boyd2004convex} described in Algorithm~\ref{alg:ISTA}, where we first define
+\[p_{\varrho}(y) = \argmin_u \Big\{\dfrac{1}{2\varrho} \left\lVert u - \big(y - \varrho  \nabla f(y) \big)\right\rVert_2^2 + \zeta \norm{u}_{\text{sg} l_1, \tilde{\eta}} \Big\}.\]
 
 \vspace{.5cm}
 
@@ -527,7 +528,6 @@ The previous trick we used to handle the non-differentiability of the $\ell_1$ p
 \label{alg:ISTA}
 \KwInput{A vector $v$, a function $f$ (its gradient $\nabla f$), hyper-parameters $\tilde \eta$, $tol$ and $\zeta$}
 \KwOutput{$\flat^{\breve{w}^{max}}$}
-Define $p_{\varrho}(y) = \argmin_u \Big\{\dfrac{1}{2\varrho} \left\lVert u - \big(y - \varrho  \nabla f(y) \big)\right\rVert_2^2 + \zeta \norm{u}_{\text{sg} l_1, \tilde{\eta}} \Big\}$\\
 Initialize $\flat^{(0)}=v$, $\varrho^0 > 0$, some $\epsilon > 1$ \\
 \For{$\breve{w} = 0,\ldots,$ until convergence}    
 {Backtracking line search : find the smallest nonnegative integer $i^{\breve{w}}$ such that
