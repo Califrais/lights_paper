@@ -403,46 +403,42 @@ In the case $g_i(b_i, G_i) = \tilde g_i(b_i)$, one has
 with
 \begin{align}
   \label{eq:Lambda_ik-b_i|y_i}
-  \Lambda_{ik,\tilde g_i}^{\theta^{(w)}} &= \int_{\R^r} \tilde g_i(b_i) f(t_i, \delta_i, y_i | b_i, G_i = k ; \theta^{(w)}) f(b_i ; \theta^{(w)}) \dd b_i \\
+  \Lambda_{ik,\tilde g_i}^{\theta^{(w)}} &= f(y_i | G_i = k) \int_{\R^r} \tilde g_i(b_i) f(t_i, \delta_i | b_i, G_i = k ; \theta^{(w)}) f(b_i | y_i, G_i = k; \theta^{(w)}) \dd b_i \\
   \label{eq:Lambda_ik-b_i}
-  &= f(y_i | G_i = k) \int_{\R^r} \tilde g_i(b_i) f(t_i, \delta_i | b_i, G_i = k ; \theta^{(w)}) f(b_i | y_i, G_i = k; \theta^{(w)}) \dd b_i
+  &= \int_{\R^r} \tilde g_i(b_i) f(t_i, \delta_i, y_i | b_i, G_i = k ; \theta^{(w)}) f(b_i ; \theta^{(w)}) \dd b_i
 \end{align}
 and $\Lambda_{ik,1}^{\theta^{(w)}}$ obtained from $\Lambda_{ik,\tilde g_i}^{\theta^{(w)}}$ taking $\tilde g_i: b_i \mapsto 1$.
-
-in the Gaussian case used in practice, one can also sample from
-\begin{align*}
-  y_i | G_i = k &\sim \cN\big(U_i\beta_k, V_iDV_i^\top + \Sigma_i\big) \\
-  b_i | y_i, G_i=k &\sim \cN \big(W_iV_i^T\Sigma_i^{-1}(y_i - U_i\beta_k), W_i\big)  
-\end{align*}
-with $W_i = (V_i^\top\Sigma_i^{-1}V_i + D^{-1})^{-1}$
-
-
-The integral in~\eqref{eq:Lambda_ik-def} is not tractable analytically, and some form of approximation must be used in practice. Standard numerical integration techniques (such as Gaussian quadrature) are not well suited in our high-dimensional context. We then propose to use Monte Carlo approximation, which has already been applied for generalized linear mixed models~\citep{booth1999maximizing}, with antithetic normal variates method~\citep{hammersley1956new} to reduce variance of the simulation result. Algorithm~\ref{alg:construct-set-S} describes how to construct the set $S^{(w)}$ used for the approximation.
+The integral in~\eqref{eq:Lambda_ik-b_i|y_i} or~\eqref{eq:Lambda_ik-b_i} is not tractable analytically, and some form of approximation must be used in practice. Standard numerical integration techniques (such as Gaussian quadrature) are not well suited in our high-dimensional context. We then propose to use Monte Carlo approximation, which has already been applied for generalized linear mixed models~\citep{booth1999maximizing}, with antithetic normal variates method~\citep{hammersley1956new} to reduce variance of the simulation result. Algorithm~\ref{alg:construct-set-S} describes how to construct the set $S_{ik}^{(w)}$ used for the approximation.
 
 \vspace{.5cm}
 
 \begin{algorithm}[H]
 \DontPrintSemicolon
-\caption{Construction of the samples in $S_i^{(w)}$}
+\caption{Construction of the samples in $S_{ik}^{(w)}$}
 \label{alg:construct-set-S}
-\KwInput{$S_i^{(w)} = \varnothing$}
-\KwOutput{$S_i^{(w)}$ filled with $2N$ samples}
+\KwInput{$S_{ik}^{(w)} = \varnothing$}
+\KwOutput{$S_{ik}^{(w)}$ filled with $2N$ samples}
 Compute $C_i^{(w)} \in \R^{r \times r}$ such that 
 $C_i^{(w)}{C_i^{(w)}}^\top = \text{M}_i^1$ \tcp{Cholesky decomposition} \nonumber
 \For{$\breve{n} = 1,\ldots,N$}    
 { 
   Sample $\Omega_{\breve{n}} \sim \cN(0, I_r)$ \\
   Compute $\breve{b}_{\breve{n}}^\pm = \text{M}_{ik}^2 \pm C_i^{(w)} \Omega_{\breve{n}} \in \R^r$ \\
-  Update $S_i^{(w)} \leftarrow S_i^{(w)} \cup \{\breve{b}_{\breve{n}}^+, \breve{b}_{\breve{n}}^- \}$
+  Update $S_{ik}^{(w)} \leftarrow S_{ik}^{(w)} \cup \{\breve{b}_{\breve{n}}^+, \breve{b}_{\breve{n}}^- \}$
 }
-\textbf{Return:} {$S_i^{(w)}$}
+\textbf{Return:} {$S_{ik}^{(w)}$}
 \end{algorithm}
 
 \vspace{.5cm}
 
-$\text{M}_i^1 = W_i$ $\text{M}_{ik}^2 = W_iV_i^T\Sigma_i^{-1}(y_i - U_i\beta_k)$ or $\text{M}_i^1 = D^{(w)}$ $\text{M}_{ik}^2 = 0$
+\noindent One can either choose $\left\{ \begin{array}{ll} \text{M}_i^1 &= W_i \\ \text{M}_{ik}^2 &= W_iV_i^T\Sigma_i^{-1}(y_i - U_i\beta_k) \end{array} \right.$ based on~\eqref{eq:Lambda_ik-b_i|y_i}, where in the Gaussian case used in practice, one can sample from
+\begin{align*}
+  y_i | G_i = k &\sim \cN\big(U_i\beta_k, V_iDV_i^\top + \Sigma_i\big) \\
+  b_i | y_i, G_i=k &\sim \cN \big(W_iV_i^T\Sigma_i^{-1}(y_i - U_i\beta_k), W_i\big)  
+\end{align*}
+with $W_i = (V_i^\top\Sigma_i^{-1}V_i + D^{-1})^{-1}$, or one can choose $\left\{ \begin{array}{ll} \text{M}_i^1 &= D^{(w)} \\ \text{M}_{ik}^2 &= 0 \end{array} \right.$ based on~\eqref{eq:Lambda_ik-b_i} using a sampling $b_i \sim \cN(0, D^{(w)})$. The advantage of this second option is that $S_{ik}^{(w)}$ does not depend on $i$ nor $k$, which significantly improves computational performances, even though the variance is bigger than the first option (see Appendix~\ref{sec:?}). We then let the practitioner choose the option in our implementation, since the second one could be more appropriated for a cross-validation phase for instance.
 
-\noindent The approximation of~\eqref{eq:def-E-g-tilde} is finally obtained by
+The approximation of~\eqref{eq:def-E-g-tilde} is finally obtained by
 \begin{equation}
   \label{eq:def-hat-E-g-tilde}
   \hat \E_{\theta^{(w)}}[ \tilde g_i(b_i) | t_i, \delta_i, y_i] = \dfrac{ \sum_{k=0}^{K-1} \pi_{\xi_k^{(w)}}(x_i) \hat \Lambda_{ik,\tilde g_i}^{\theta^{(w)}}}{\sum_{k=0}^{K-1} \pi_{\xi_k^{(w)}}(x_i) \hat \Lambda_{ik,1}^{\theta^{(w)}}}
@@ -450,7 +446,7 @@ $\text{M}_i^1 = W_i$ $\text{M}_{ik}^2 = W_iV_i^T\Sigma_i^{-1}(y_i - U_i\beta_k)$
 with
 \begin{equation}
   \label{eq:hat_Lambda_ik}
-  \hat \Lambda_{ik,\tilde g_i}^{\theta^{(w)}} = \dfrac{1}{2N} \sum_{\breve{b} \in S_i^{(w)}} \tilde g_i(\breve{b}) f(t_i, \delta_i | \breve{b}, G_i = k ; \theta^{(w)}).
+  \hat \Lambda_{ik,\tilde g_i}^{\theta^{(w)}} = \dfrac{1}{2N} \sum_{\breve{b} \in S_{ik}^{(w)}} \tilde g_i(\breve{b}) f(t_i, \delta_i | \breve{b}, G_i = k ; \theta^{(w)}).
 \end{equation}
 
 It is common in Monte Carlo EM to increase $N$ with the iterations $w$~\citep{wei1990monte} since it is computationally inefficient to use a large $N$ in the early steps of the algorithm, when $\theta^{(w)}$ is far from $\hat \theta$. Multiple techniques have been proposed (see for instance~\citet{law2002joint} where a subjectively rule is followed, or~\citet{booth1999maximizing} that uses a rule based on confidence intervals for $\theta^{(w)}$ which requires additional variance estimation). We opt for a simple automated approach using relative differences of the objective function defined in~\eqref{eq:pen-log-lik} (see Algorithm~\ref{alg:QNMCEM}).
