@@ -501,12 +501,9 @@ where $\xi_k^\pm = (\xi_{k,1}^\pm, \ldots, \xi_{k,p}^\pm)^\top$. The L-BFGS-B so
 In practice, we use the \texttt{Python} solver \texttt{fmin\_l\_bfgs\_b} from \texttt{scipy.optimize}~\citep{virtanen2020scipy}. Similarly to the strategy of increasing $N$ with the iterations $w$ for computational reasons, it is not clever to use a too small solver tolerance in the early steps of the algorithm, where we call tolerance the value for which iterations stop when the stopping criterion is below it. We then decrease the L-BFGS-B tolerance (which we denote $tol$ in Algorithm~\ref{alg:QNMCEM}) with every increase of $N$.
 
 Now, for the update of $\beta_k^{(w)}$ for $k=0, \ldots, K-1$, we similarly denote
-\begin{align*}
-  R^{(w)}_{n,k}(\beta_k) = -n^{-1} \sum_{i=1}^n \hat \pi_{ik}^{\theta^{(w)}} \Big[ &\delta_i \hat \E_{\theta^{(w)}}[ \tilde g_{t_i, \gamma_k^{(w)}, \beta_k}^2(b_i) | t_i, \delta_i, y_i] \\
-  & - \sum_{j=1}^J \lambda_0^{(w)}(t_j) \hat \E_{\theta^{(w)}}[ \tilde g_{i, t_j, {\gamma_k^0}^{(w)}, \gamma_k^{(w)}, \beta_k}^1(b_i) | t_i, \delta_i, y_i] \ind{\{t_j\leq t_i\}} \\
-  & + (y_i \odot \Phi_i^{(w)})^\top \hat \E_{\theta^{(w)}}[ M_{ik} | t_i, \delta_i, y_i] \\
-  & - \hat \E_{\theta^{(w)}}[ c_{\phi^{(w)}}(M_{ik}) | t_i, \delta_i, y_i] \Big] 
-\end{align*}
+\begin{equation*}
+  R^{(w)}_{n,k}(\beta_k) = -n^{-1} \sum_{i=1}^n \hat \pi_{ik}^{\theta^{(w)}} \Big[ (y_i \odot \Phi_i^{(w)})^\top \hat \E_{\theta^{(w)}}[ M_{ik} | t_i, \delta_i, y_i] - \hat \E_{\theta^{(w)}}[ c_{\phi^{(w)}}(M_{ik}) | t_i, \delta_i, y_i] \Big]
+\end{equation*}
 based on the quantities involved in $\cQ_n(\theta, \theta^{(w)})$ depending on $\beta_k$, with $\tilde g_{i, t_j, {\gamma_k^0}^{(w)}, \gamma_k^{(w)}, \beta_k}^1$ and $\tilde g_{t_i, \gamma_k^{(w)}, \beta_k}^2$ defined in~\eqref{eq:g-tilde-1-2}. The integration over the survival process has been replaced with a finite sum over the process evaluated at the distinct event times $(t_1, \ldots, t_J)$ with $J \in~\N_+$, since $\lambda_0^{(w)}$ defined in~\eqref{eq:update_lambda_0} is always zero except at observed event times.
 The update for $\beta_k^{(w)}$ therefore requires to solve the following convex minimization problem
 \begin{equation}
@@ -559,9 +556,7 @@ Note that the warmstart initialization is left to the user's choice, as well as 
 The gradient of $R_{n,k}^{(w)}$ for the Gaussian case is here given by
 \begin{align}
   \label{eq:grad-beta_k}
-  \frac{\partial R_{n,k}^{(w)}(\beta_k)}{\partial \beta_k^l} = -n^{-1} &\sum_{i=1}^n \hat \pi_{ik}^{\theta^{(w)}} \Big[\sum_{a=1}^\mathcal{A} {\gamma_{k,a}^l}^{(w)} \Big( \delta_i  \hat \E_{\theta^{(w)}}[ \frac{\partial \varphi_a(t_i, \beta_k^l, b_i^l)}{\partial \beta_k^l} | t_i, \delta_i, y_i] \nonumber \\ 
-  &- \sum_{j=1}^J \lambda_0^{(w)}(t_j) \hat \E_{\theta^{(w)}}[ \frac{\partial \varphi_a(t_j, \beta_k^l, b_i^l)}{\partial \beta_k^l} \tilde g_{i, t_j, {\gamma_k^0}^{(w)}, \gamma_k^{(w)}, \beta_k}^1(b_i) | t_i, \delta_i, y_i] \ind{\{t_j\leq t_i\}} \Big) \nonumber \\
-  &+ U_{il}^\top {\phi_l^{(w)}}^{-1}I_{n_{il}} (y_i^l - U_{il}\beta_k^l - V_{il}\hat \E_{\theta^{(w)}}[ b_i | t_i, \delta_i, y_i])\Big]
+  \frac{\partial R_{n,k}^{(w)}(\beta_k)}{\partial \beta_k^l} = -n^{-1} &\sum_{i=1}^n \hat \pi_{ik}^{\theta^{(w)}} \Big[U_{il}^\top {\phi_l^{(w)}}^{-1}I_{n_{il}} (y_i^l - U_{il}\beta_k^l - V_{il}\hat \E_{\theta^{(w)}}[ b_i | t_i, \delta_i, y_i])\Big]
 \end{align}
 for all $l = 1, \ldots, L$. Note that the gradients of the considered $\varphi_a$ functions with respect to $\beta_k^l$ are given in Table~\ref{table:shared_associations}. 
 
