@@ -612,10 +612,10 @@ Hence, we update $\beta_k^{(w)}$ with the following step
 \end{equation}
 Note that the warmstart initialization is left to the user's choice, as well as the ISTA acceleration~\citep{beck2009fast}, since warmstart can diminish acceleration effectiveness~\citep{tibshirani2010proximal}.
 The gradient of $R_{n,k}^{(w)}$ for the Gaussian case is here given by
-\begin{align}
+\begin{equation}
   \label{eq:grad-beta_k}
-  \frac{\partial R_{n,k}^{(w)}(\beta_k)}{\partial \beta_k^l} = -n^{-1} &\sum_{i=1}^n \hat \pi_{ik}^{\theta^{(w)}} \Big[U_{il}^\top {\phi_l^{(w)}}^{-1}I_{n_{il}} (y_i^l - U_{il}\beta_k^l - V_{il}\hat \E_{\theta^{(w)}}[ b_i | t_i, \delta_i, y_i])\Big]
-\end{align}
+  \frac{\partial R_{n,k}^{(w)}(\beta_k)}{\partial \beta_k^l} = -n^{-1} \sum_{i=1}^n \hat \pi_{ik}^{\theta^{(w)}} \Big[U_{il}^\top {\phi_l^{(w)}}^{-1}I_{n_{il}} (y_i^l - U_{il}\beta_k^l - V_{il}\hat \E_{\theta^{(w)}}[ b_i | t_i, \delta_i, y_i])\Big]
+\end{equation}
 for all $l = 1, \ldots, L$. Note that the gradients of the considered $\varphi_a$ functions with respect to $\beta_k^l$ are given in Table~\ref{table:shared_associations}. 
 
 Concerning the update of ${\gamma_k^0}^{(w)}$ and $\gamma_k^{(w)}$ for $k=0, \ldots, K-1$, let us follow the same strategy by denoting
@@ -681,20 +681,11 @@ Our algorithm gives a local minimum, and it is clever to choose an initial value
 For all $k = 0, \ldots, K-1$, we first choose $\xi_k^{(0)} = \mathbf{0}_d$ and ${\gamma_{k,a}^l}^{(0)} = 0$ for all $l=1, \ldots, L$ and $a=1, \ldots, \cA$. Then, we initialize $\lambda_0^{(0)}$ and ${\gamma_k^0}^{(0)}$ like if there is no subgroup ($\gamma_{0,0}^{(0)} = \cdots = \gamma_{K-1,0}^{(0)}$) with a standard Cox proportional hazards regression with time-independent features using the \texttt{Python} library \texttt{tick}. Finally, the longitudinal submodels parameters $\beta_k^{(0)}$, $D^{(0)}$ and $\phi^{(0)}$ are initialized -- again like if there is no subgroup ($\beta_0^{(0)} = \cdots = \beta_{K-1}^{(0)}$) -- using a multivariate linear mixed model with an explicit EM algorithm (the details are given in Appendix~\ref{sec:MLMM}), being itself initialized with univariates fits using the \texttt{Python} package \texttt{statsmodels}.
 
 \paragraph*{The QNMCEM algorithm.}
-Algorithm~\ref{alg:QNMCEM} describes the main steps of the resulting QNMCEM algorithm to solve the optimization problem~\eqref{eq:optim-pb}. The $Condition$ in algorithm~\ref{alg:QNMCEM} is cv$(\Delta_{\text{rel}}^{(w+1)}) >$ cv$(\Delta_{\text{rel}}^{(w)})$, where cv$(\Delta_{\text{rel}}^{(w)})$ is coefficient of variation at the $(w + 1)$-th iteration computed as
-\begin{equation*}
-  \label{eq:coefficient_variation}
-  \text{cv}(\Delta_{\text{rel}}^{(w+1)})= \dfrac{\text{sd}(\Delta_{\text{rel}}^{(w-1)}, \Delta_{\text{rel}}^{(w)}, \Delta_{\text{rel}}^{(w+1)})}{\text{mean}(\Delta_{\text{rel}}^{(w-1)}, \Delta_{\text{rel}}^{(w)}, \Delta_{\text{rel}}^{(w+1)})},
-\end{equation*}
-where sd(.) and mean(.) are the sample standard deviation and mean functions respectively and relative difference $\Delta_{\text{rel}}^{(w+1)}$ is given by 
-\begin{equation*}
-  \label{eq:relative_difference}
-  \Delta_{\text{rel}}^{(w+1)} = \text{max} \Big\{\dfrac{|\theta^{(w+1)} - \theta^{(w)}|}{|\theta^{(w)}| + \epsilon } \Big\}
-\end{equation*}
+Algorithm~\ref{alg:QNMCEM} describes the main steps of the resulting QNMCEM algorithm to solve the optimization problem~\eqref{eq:optim-pb}. 
 
-\vspace{.5cm}
+% \vspace{.5cm}
 
-\begin{algorithm}[]
+\begin{algorithm}[!htb]
 \DontPrintSemicolon
 \caption{QNMCEM algorithm for the lights model inference}
 \label{alg:QNMCEM}
@@ -723,6 +714,15 @@ Compute the starting parameters $\theta^{(0)} \in \R^\vartheta$ \\
 }
 \textbf{Return:} {$\hat \theta$}
 \end{algorithm}
+The convergence condition in Algorithm~\ref{alg:QNMCEM} is cv$(\Delta_{\text{rel}}^{(w+1)}) >$ cv$(\Delta_{\text{rel}}^{(w)})$, where cv$(\Delta_{\text{rel}}^{(w+1)})$ represents the variation at the $(w + 1)$-th iteration computed as
+\begin{equation*}
+  \text{cv}(\Delta_{\text{rel}}^{(w+1)})= \dfrac{\text{sd}(\Delta_{\text{rel}}^{(w-1)}, \Delta_{\text{rel}}^{(w)}, \Delta_{\text{rel}}^{(w+1)})}{\text{mean}(\Delta_{\text{rel}}^{(w-1)}, \Delta_{\text{rel}}^{(w)}, \Delta_{\text{rel}}^{(w+1)})},
+\end{equation*}
+where sd(.) and mean(.) are the empirical standard deviation and mean functions respectively, and relative difference $\Delta_{\text{rel}}^{(w+1)}$ is given by 
+\begin{equation*}
+  \label{eq:relative_difference}
+  \Delta_{\text{rel}}^{(w+1)} = \text{max} \Big\{\dfrac{|\theta^{(w+1)} - \theta^{(w)}|}{|\theta^{(w)}| + \epsilon } \Big\}.
+\end{equation*}
 
 \subsection{The case $K=2$}
 \label{sec:K=2}
