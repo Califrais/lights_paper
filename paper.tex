@@ -196,7 +196,7 @@ In the sequel of the paper, our aim is to associate the true and unobserved valu
 To quantify the effect of the longitudinal outcomes on the risk for an event, we use a Cox~\citep{Cox1972JRSS} relative risk model of the form
 \begin{equation}
 	\label{eq:intensity-model}
-	\lambda(t|\cM_k(t), G = k) = \lambda_0(t) \exp \Big\{ x^\top \gamma_k^0 + \sum_{l=1}^L \sum_{a=1}^\cA {\gamma_{k,a}^l}^\top \varphi_a(t, \beta_k^l, b^l) \Big\},
+	\lambda(t|\cM_k(t), G = k) = \lambda_0(t) \exp \Big\{ x^\top \gamma_k^0 + \sum_{l=1}^L \sum_{a=1}^\cA {\gamma_{k,a}^l}^\top \varphi_a(t, b^l) \Big\},
 \end{equation}
 where $\lambda_0(\cdot)$ is an unspecified baseline hazard function and given that $G = k$, we denote 
 \[\cM_k(t) = \{m_k^l(u), 0 \leq u < t\}\] 
@@ -211,15 +211,15 @@ The association structure between the longitudinal and the time-to-event submode
 \centering
 \begin{tabular}{ccccc}
 \toprule
-Description & $\varphi_a(t, \beta_k^l, b^l)$ & $\frac{\partial \varphi_a(t, \beta_k^l, b^l)}{\partial \beta_k^l}$ & $\imath_a$ & Reference \\
+Description & $\varphi_a(t, \beta_k^l, b^l)$ & $\imath_a$ & Reference \\
 \midrule
-Linear predictor & $m_k^l(t)$ & $u^l(t)$ & 1 & \citet{chi2006joint} \\ [.15cm]
-Random effects & $b^l$ & $\mathbf{0}_{q_l}$ & $r_l$ & \citet{hatfield2011joint} \\ 
-Time-dependent slope & $\dfrac{\dd}{\dd t} m_k^l(t)$ & $\dfrac{\dd}{\dd t} u^l(t)$ & 1 & \citet{rizopoulos2011bayesian} \\ [.3cm]
-Cumulative effect & $\int_0^t m_k^l(s) \dd s$ & $\int_0^t u^l(s) \dd s$ & 1 & \citet{andrinopoulou2017combined} \\ [.1cm]
+Linear predictor & $m_k^l(t)$ & 1 & \citet{chi2006joint} \\ [.15cm]
+Random effects & $b^l$ & $r_l$ & \citet{hatfield2011joint} \\
+Time-dependent slope & $\dfrac{\dd}{\dd t} m_k^l(t)$ & 1 & \citet{rizopoulos2011bayesian} \\ [.3cm]
+Cumulative effect & $\int_0^t m_k^l(s) \dd s$ & 1 & \citet{andrinopoulou2017combined} \\ [.1cm]
  \bottomrule
 \end{tabular}
-\caption[]{Description of the shared associations included in the group-specific risk of event submodel~\eqref{eq:intensity-model}. The gradient with respect to $\beta_k^l$ is also given, which will be useful for inference in Section~\ref{sec:QNMCEM}.}
+\caption[]{Description of the shared associations included in the group-specific risk of event submodel~\eqref{eq:intensity-model}.}
 \label{table:shared_associations}
 \end{table}
  
@@ -373,8 +373,8 @@ It can be written
 \begin{align*}
   \ell_n^\text{comp}(\theta) &= \ell_n^\text{comp}(\theta ; \cD_n, \textbf{\textit{b}}, \textbf{\textit{G}}) \\ 
   &= - n^{-1} \sum_{i=1}^n -\dfrac12 (r \log 2\pi + \log|D| + b_i^\top D^{-1}b_i) + \sum_{k=0}^{K-1} \ind{\{G_i=k\}} \Big[ \log \pi_{\xi_k}(x_i) \\ 
-  & \quad + \delta_i \Big(\log \lambda_0(t_i) + x_i^\top \gamma_k^0 + \sum_{l=1}^L \sum_{a=1}^\cA {\gamma_{k,a}^l}^\top \varphi_a(t_i, \beta_k^l, b_i^l) \Big) \\
-  & \quad -\int_0^{t_i} \lambda_0(s) \exp \Big\{ x_i^\top \gamma_k^0 + \sum_{l=1}^L \sum_{a=1}^\cA {\gamma_{k,a}^l}^\top \varphi_a(s, \beta_k^l, b_i^l) \Big\} \dd s \\
+  & \quad + \delta_i \Big(\log \lambda_0(t_i) + x_i^\top \gamma_k^0 + \sum_{l=1}^L \sum_{a=1}^\cA {\gamma_{k,a}^l}^\top \varphi_a(t_i, b_i^l) \Big) \\
+  & \quad -\int_0^{t_i} \lambda_0(s) \exp \Big\{ x_i^\top \gamma_k^0 + \sum_{l=1}^L \sum_{a=1}^\cA {\gamma_{k,a}^l}^\top \varphi_a(s, b_i^l) \Big\} \dd s \\
   & \quad + (y_i \odot \Phi_i)^\top M_{ik} - c_\phi(M_{ik}) + d_\phi(y_i) \Big].
 \end{align*}
 Suppose that we are at step $w + 1$ of the algorithm, with current iterate denoted $\theta^{(w)}$. 
@@ -464,8 +464,8 @@ Let us introduce the following useful notations
   \label{eq:g-tilde-1-2}
   \left\{
     \begin{array}{ll}
-        \tilde g_{i, s, \gamma_k^0, \gamma_k, \beta_k}^1&: b_i \mapsto \exp \big\{ x_i^\top \gamma_k^0 + \tilde g_{s, \gamma_k, \beta_k}^2(b_i) \big\}, \\
-        \tilde g_{s, \gamma_k, \beta_k}^2&: b_i \mapsto \sum_{l=1}^L \sum_{a=1}^\cA {\gamma_{k,a}^l}^\top \varphi_a(s, \beta_k^l, b_i^l).
+        \tilde g_{i, s, \gamma_k^0, \gamma_k}^1&: b_i \mapsto \exp \big\{ x_i^\top \gamma_k^0 + \tilde g_{s, \gamma_k}^2(b_i) \big\}, \\
+        \tilde g_{s, \gamma_k}^2&: b_i \mapsto \sum_{l=1}^L \sum_{a=1}^\cA {\gamma_{k,a}^l}^\top \varphi_a(s, b_i^l).
     \end{array}
   \right. 
 \end{equation}
@@ -562,8 +562,8 @@ for all $l = 1, \ldots, L$. Note that the gradients of the considered $\varphi_a
 
 Concerning the update of ${\gamma_k^0}^{(w)}$ and $\gamma_k^{(w)}$ for $k=0, \ldots, K-1$, let us follow the same strategy by denoting
 \begin{align*}
-  Q^{(w)}_{n,k}(\gamma_k^0, \gamma_k) = -n^{-1} \sum_{i=1}^n \hat \pi_{ik}^{\theta^{(w)}} \Big[ &\delta_i \hat \E_{\theta^{(w)}}[ \log \circ \tilde g_{i, t_i, \gamma_k^0, \gamma_k, \beta_k^{(w+1)}}^1(b_i) | t_i, \delta_i, y_i] \\
-  & - \sum_{j=1}^J \lambda_0^{(w)}(t_j) \hat \E_{\theta^{(w)}}[ \tilde g_{i, t_j, \gamma_k^0, \gamma_k, \beta_k^{(w+1)}}^1(b_i) | t_i, \delta_i, y_i] \ind{\{t_j\leq t_i\}} \Big] 
+  Q^{(w)}_{n,k}(\gamma_k^0, \gamma_k) = -n^{-1} \sum_{i=1}^n \hat \pi_{ik}^{\theta^{(w)}} \Big[ &\delta_i \hat \E_{\theta^{(w)}}[ \log \circ \tilde g_{i, t_i, \gamma_k^0, \gamma_k}^1(b_i) | t_i, \delta_i, y_i] \\
+  & - \sum_{j=1}^J \lambda_0^{(w)}(t_j) \hat \E_{\theta^{(w)}}[ \tilde g_{i, t_j, \gamma_k^0, \gamma_k}^1(b_i) | t_i, \delta_i, y_i] \ind{\{t_j\leq t_i\}} \Big]
 \end{align*}
 based on the quantities involved in $\cQ_n(\theta, \theta^{(w)})$ that depend on $\gamma_k^0$ and $\gamma_k$, with $\tilde g_{i, t_j, \gamma_k^0, \gamma_k, \beta_k^{(w+1)}}^1$ defined in~\eqref{eq:g-tilde-1-2}. The update for ${\gamma_k^0}^{(w)}$ therefore requires to solve the following minimization problem
 \begin{equation}
@@ -582,7 +582,7 @@ The gradient is here given by
 \begin{align}
   \label{eq:grad-Q-1}
   \frac{\partial Q_{n,k}^{(w)}(\gamma_k^0, {\gamma_k}^{(w)})}{\partial \gamma_k^0} = -n^{-1} &\sum_{i=1}^n \hat \pi_{ik}^{\theta^{(w)}} \Big[ \delta_i - \sum_{j=1}^J \lambda_0^{(w)}(t_j) \nonumber \\
-  &\times \hat \E_{\theta^{(w)}}[ \tilde g_{i, t_j, \gamma_k^0, {\gamma_k}^{(w)}, \beta_k^{(w+1)}}^1(b_i) | t_i, \delta_i, y_i] \ind{\{t_j\leq t_i\}} \Big] x_i.
+  &\times \hat \E_{\theta^{(w)}}[ \tilde g_{i, t_j, \gamma_k^0, {\gamma_k}^{(w)}}^1(b_i) | t_i, \delta_i, y_i] \ind{\{t_j\leq t_i\}} \Big] x_i.
 \end{align}
 Then, the update for $\gamma_k^{(w)}$ requires to solve the following minimization problem
 \begin{equation}
@@ -597,15 +597,15 @@ We treat problem~\eqref{eq:minimization-gamma_k} in the same way as~\eqref{eq:mi
 with the gradient being known since
 \begin{align}
   \label{eq:grad-Q-2}
-  &\frac{\partial Q_{n,k}^{(w)}({\gamma_k^0}^{(w+1)}, \gamma_k)}{\partial \gamma_{k,a}^l} = -n^{-1} \sum_{i=1}^n \hat \pi_{ik}^{\theta^{(w)}} \Big[ \delta_i  \hat \E_{\theta^{(w)}}[ \varphi_a(t_i, {\beta_k^l}^{(w+1)}, b_i^l) | t_i, \delta_i, y_i] \\ \nonumber
-   &\qquad\qquad - \sum_{j=1}^J \lambda_0^{(w)}(t_j) \hat \E_{\theta^{(w)}}[ \varphi_a(t_j, {\beta_k^l}^{(w+1)}, b_i^l) \tilde g_{i, t_j, {\gamma_k^0}^{(w+1)}, \gamma_k, \beta_k^{(w+1)}}^1(b_i) | t_i, \delta_i, y_i] \ind{\{t_j\leq t_i\}} \Big]
+  &\frac{\partial Q_{n,k}^{(w)}({\gamma_k^0}^{(w+1)}, \gamma_k)}{\partial \gamma_{k,a}^l} = -n^{-1} \sum_{i=1}^n \hat \pi_{ik}^{\theta^{(w)}} \Big[ \delta_i  \hat \E_{\theta^{(w)}}[ \varphi_a(t_i, b_i^l) | t_i, \delta_i, y_i] \\ \nonumber
+   &\qquad\qquad - \sum_{j=1}^J \lambda_0^{(w)}(t_j) \hat \E_{\theta^{(w)}}[ \varphi_a(t_j, b_i^l) \tilde g_{i, t_j, {\gamma_k^0}^{(w+1)}, \gamma_k}^1(b_i) | t_i, \delta_i, y_i] \ind{\{t_j\leq t_i\}} \Big]
 \end{align}
 for all $a = 1, \ldots, \mathcal{A}$ and $l = 1, \ldots, L$.
 
 For the update of $\lambda_0^{(w)}$, we treat the jump size at the observed event times as parameters to be estimated~\citep{klein1992semiparametric}. The closed-form update is then given by
 \begin{equation}
   \label{eq:update_lambda_0}
-  \lambda_0^{(w+1)}(t)= \dfrac{\sum_{i=1}^n \delta_i \ind{\{t=t_i\}}}{\sum_{i=1}^n \sum_{k=0}^{K-1} \hat \pi_{ik}^{\theta^{(w)}} \hat \E_{\theta^{(w)}}\Big[ \tilde g_{i, t, \gamma_k^{(w+1)}, \beta_k^{(w+1)}}^1(b_i) | t_i, \delta_i, y_i \Big] \ind{\{t_i \geq t\}} },
+  \lambda_0^{(w+1)}(t)= \dfrac{\sum_{i=1}^n \delta_i \ind{\{t=t_i\}}}{\sum_{i=1}^n \sum_{k=0}^{K-1} \hat \pi_{ik}^{\theta^{(w)}} \hat \E_{\theta^{(w)}}\Big[ \tilde g_{i, t, \gamma_k^{(w+1)}}^1(b_i) | t_i, \delta_i, y_i \Big] \ind{\{t_i \geq t\}} },
 \end{equation}
 which is a Breslow like estimator~\citep{breslow1972contribution} adapted to our model. 
 
