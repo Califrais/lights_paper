@@ -37,6 +37,9 @@
 \usepackage{caption}
 \usepackage{booktabs}
 \usepackage{subfigure}
+\usepackage{bm}
+\usepackage{tikz}
+\usetikzlibrary{fit,shapes,shadows,arrows,positioning,graphs}
 \usepackage{algpseudocode}
 \usepackage[linesnumbered,ruled,vlined]{algorithm2e}
 \newcommand\mycommfont[1]{\footnotesize\ttfamily\textcolor{orange}{#1}}
@@ -222,6 +225,61 @@ Cumulative effect & $\int_0^t m_k^l(s) \dd s$ & $\int_0^t u^l(s) \dd s$ & 1 & \c
 \caption[]{Description of the shared associations included in the group-specific risk of event submodel~\eqref{eq:intensity-model}. The gradient with respect to $\beta_k^l$ is also given, which will be useful for inference in Section~\ref{sec:QNMCEM}.}
 \label{table:shared_associations}
 \end{table}
+
+\subsection{Graphical model for the lights}
+Figure~\ref{fig:graphical-model} below gives the graphical representation for the lights model to get a beter view of the dependence structure for the model.
+\begin{figure}[!htb]
+\centering
+\resizebox{.9\textwidth}{!}{
+\begin{tikzpicture}
+\hspace{3cm}
+\tikzstyle{main}=[circle, minimum size = 18mm, ultra thick, draw =black!80, node distance = 13mm,text centered]
+\tikzstyle{var}=[rectangle, minimum size = 16mm, ultra thick, draw =black!80, node distance = 13mm,text centered]
+\tikzstyle{connect}=[-latex, thick]
+\tikzstyle{box}=[rectangle, draw=black!100]
+  \node[var, fill = white!100] (beta) [] {\Large$\bm{\beta_k^l}$};
+  \node[var, fill = white!100] (xi) [below=4cm of beta] {\Large$\bm{\xi_k}$};
+  \node[var, fill = white!100] (gamma) [below=3cm of xi] {\Large$\bm{\gamma_k}$};
+  \node[main, fill = white!100] (G) [right=4cm of xi] {\Large$\bm{G_i}$};
+  \node[main, fill = white!100] (mu) [right=4cm of beta] {\Large$\bm{M_{ik}^l(t)}$};
+  \node[main, fill = black!30] (Y) [right=of mu] {\Large$\bm{Y_i^l(t)}$};
+  \node[main, fill = white!100] (b) [below=0.7cm of Y] {\Large$\bm{b_i^l}$};
+  \node[var, fill = white!100] (phi) [above=of Y] {\Large$\bm{\phi_l}$};
+  \node[var, fill = white!100] (Sigma) [right=of b] {\Large$\bm{D}$};
+  \node[main, fill = white!100] (W) [below=of b] {\Large$\bm{\varphi_i(t)}$};
+  \node[main, fill = white!100] (lambda) [right=4cm of gamma] {\Large$\bm{\lambda_i(t)}$};
+  \node[main, fill = black!30] (T) [right=of lambda] {\Large$\bm{T_i}$};
+  \node[main, fill = black!30] (X) at (3, -8.3) {\Large$\bm{X_i}$};
+  
+  \path [->,draw,ultra thick]
+        (beta) edge (mu)
+        (G) edge (mu)
+        (b) edge (mu)
+        (mu) edge (Y)
+        (Sigma) edge (b)
+        (phi) edge (Y)
+        (xi) edge (G)
+        (X) edge (G)
+        (gamma) edge (lambda)
+        (W) edge (lambda)
+        (G) edge (lambda)
+        (X) edge (lambda)
+        (lambda) edge (T)
+        ;
+
+  \node[rectangle, inner sep=8mm,draw=black!100, ultra thick, fit= (beta) (xi) (gamma),label={[anchor=west, yshift=-0.5cm, xshift=-10mm]{\Large$\bm{k = 1...K}$}}] at (0, -4.6) {};
+  \node[rectangle, inner sep=4mm,draw=black!100, ultra thick, fit= (beta) (mu) (b) (Y) (b) (Sigma) (phi)] {};
+  \node[rectangle, inner sep=4mm, fit= (beta) (mu) (b) (Y) (b) (Sigma) (phi),ultra thick] at (12, 3.5) {\Large$\bm{l = 1...L}$};
+  \node[rectangle, dashed, inner sep=3mm, draw=red!100, fit= (b) (W),ultra thick] {};
+  
+  \node[rectangle,inner sep=6mm, draw=black!100, label=center:\rotatebox{90}{\color{white}\Large{\textbf{Longitudinal}}}, minimum width=1cm, minimum height = 6cm, fill = black!50] at (-2.7,0.5) {};
+  
+  \node[rectangle,inner sep=6mm, draw=black!100,  label=center:\rotatebox{90}{\color{white}\Large{\textbf{Time-to-event}}}, minimum width=1cm, minimum height = 6cm, fill = black!50] at (-2.7,-8.2) {};
+  
+\end{tikzpicture}}
+\caption{Graphical representation of the lights model. Square boxes denote observed data while circles denote unobserved (including random) terms. The red-dashed box indicates that the association features and the random effects are correlated, which, in addition to the link with the latent group membership, gives rise to the joint model.}
+\label{fig:graphical-model}
+\end{figure}
  
 \subsection{Likelihood}
 
