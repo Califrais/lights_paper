@@ -37,6 +37,9 @@
 \usepackage{caption}
 \usepackage{booktabs}
 \usepackage{subfigure}
+\usepackage{bm}
+\usepackage{tikz}
+\usetikzlibrary{fit,shapes,shadows,arrows,positioning,graphs}
 \usepackage{algpseudocode}
 \usepackage[linesnumbered,ruled,vlined]{algorithm2e}
 \newcommand\mycommfont[1]{\footnotesize\ttfamily\textcolor{orange}{#1}}
@@ -222,6 +225,61 @@ Cumulative effect & $\int_0^t m_k^l(s) \dd s$ & 1 & \citet{andrinopoulou2017comb
 \caption[]{Description of the shared associations included in the group-specific risk of event submodel~\eqref{eq:intensity-model}.}
 \label{table:shared_associations}
 \end{table}
+
+\subsection{Graphical model for the lights}
+Figure~\ref{fig:graphical-model} below gives the graphical representation for the lights model to get a beter view of the dependence structure for the model.
+\begin{figure}[!htb]
+\centering
+\resizebox{.9\textwidth}{!}{
+\begin{tikzpicture}
+\hspace{3cm}
+\tikzstyle{main}=[circle, minimum size = 18mm, ultra thick, draw =black!80, node distance = 13mm,text centered]
+\tikzstyle{var}=[rectangle, minimum size = 16mm, ultra thick, draw =black!80, node distance = 13mm,text centered]
+\tikzstyle{connect}=[-latex, thick]
+\tikzstyle{box}=[rectangle, draw=black!100]
+  \node[var, fill = white!100] (beta) [] {\Large$\bm{\beta_k^l}$};
+  \node[var, fill = white!100] (xi) [below=4cm of beta] {\Large$\bm{\xi_k}$};
+  \node[var, fill = white!100] (gamma) [below=3cm of xi] {\Large$\bm{\gamma_k}$};
+  \node[main, fill = white!100] (G) [right=4cm of xi] {\Large$\bm{G_i}$};
+  \node[main, fill = white!100] (mu) [right=4cm of beta] {\Large$\bm{M_{ik}^l(t)}$};
+  \node[main, fill = black!30] (Y) [right=of mu] {\Large$\bm{Y_i^l(t)}$};
+  \node[main, fill = white!100] (b) [below=0.7cm of Y] {\Large$\bm{b_i^l}$};
+  \node[var, fill = white!100] (phi) [above=of Y] {\Large$\bm{\phi_l}$};
+  \node[var, fill = white!100] (Sigma) [right=of b] {\Large$\bm{D}$};
+  \node[main, fill = white!100] (W) [below=of b] {\Large$\bm{\varphi_i(t)}$};
+  \node[main, fill = white!100] (lambda) [right=4cm of gamma] {\Large$\bm{\lambda_i(t)}$};
+  \node[main, fill = black!30] (T) [right=of lambda] {\Large$\bm{T_i}$};
+  \node[main, fill = black!30] (X) at (3, -8.3) {\Large$\bm{X_i}$};
+  
+  \path [->,draw,ultra thick]
+        (beta) edge (mu)
+        (G) edge (mu)
+        (b) edge (mu)
+        (mu) edge (Y)
+        (Sigma) edge (b)
+        (phi) edge (Y)
+        (xi) edge (G)
+        (X) edge (G)
+        (gamma) edge (lambda)
+        (W) edge (lambda)
+        (G) edge (lambda)
+        (X) edge (lambda)
+        (lambda) edge (T)
+        ;
+
+  \node[rectangle, inner sep=8mm,draw=black!100, ultra thick, fit= (beta) (xi) (gamma),label={[anchor=west, yshift=-0.5cm, xshift=-10mm]{\Large$\bm{k = 1...K}$}}] at (0, -4.6) {};
+  \node[rectangle, inner sep=4mm,draw=black!100, ultra thick, fit= (beta) (mu) (b) (Y) (b) (Sigma) (phi)] {};
+  \node[rectangle, inner sep=4mm, fit= (beta) (mu) (b) (Y) (b) (Sigma) (phi),ultra thick] at (12, 3.5) {\Large$\bm{l = 1...L}$};
+  \node[rectangle, dashed, inner sep=3mm, draw=red!100, fit= (b) (W),ultra thick] {};
+  
+  \node[rectangle,inner sep=6mm, draw=black!100, label=center:\rotatebox{90}{\color{white}\Large{\textbf{Longitudinal}}}, minimum width=1cm, minimum height = 6cm, fill = black!50] at (-2.7,0.5) {};
+  
+  \node[rectangle,inner sep=6mm, draw=black!100,  label=center:\rotatebox{90}{\color{white}\Large{\textbf{Time-to-event}}}, minimum width=1cm, minimum height = 6cm, fill = black!50] at (-2.7,-8.2) {};
+  
+\end{tikzpicture}}
+\caption{Graphical representation of the lights model. Square boxes denote observed data while circles denote unobserved (including random) terms. The red-dashed box indicates that the association features and the random effects are correlated, which, in addition to the link with the latent group membership, gives rise to the joint model.}
+\label{fig:graphical-model}
+\end{figure}
  
 \subsection{Likelihood}
 
@@ -554,10 +612,10 @@ Hence, we update $\beta_k^{(w)}$ with the following step
 \end{equation}
 Note that the warmstart initialization is left to the user's choice, as well as the ISTA acceleration~\citep{beck2009fast}, since warmstart can diminish acceleration effectiveness~\citep{tibshirani2010proximal}.
 The gradient of $R_{n,k}^{(w)}$ for the Gaussian case is here given by
-\begin{align}
+\begin{equation}
   \label{eq:grad-beta_k}
-  \frac{\partial R_{n,k}^{(w)}(\beta_k)}{\partial \beta_k^l} = -n^{-1} &\sum_{i=1}^n \hat \pi_{ik}^{\theta^{(w)}} \Big[U_{il}^\top {\phi_l^{(w)}}^{-1}I_{n_{il}} (y_i^l - U_{il}\beta_k^l - V_{il}\hat \E_{\theta^{(w)}}[ b_i | t_i, \delta_i, y_i])\Big]
-\end{align}
+  \frac{\partial R_{n,k}^{(w)}(\beta_k)}{\partial \beta_k^l} = -n^{-1} \sum_{i=1}^n \hat \pi_{ik}^{\theta^{(w)}} \Big[U_{il}^\top {\phi_l^{(w)}}^{-1}I_{n_{il}} (y_i^l - U_{il}\beta_k^l - V_{il}\hat \E_{\theta^{(w)}}[ b_i | t_i, \delta_i, y_i])\Big]
+\end{equation}
 for all $l = 1, \ldots, L$. Note that the gradients of the considered $\varphi_a$ functions with respect to $\beta_k^l$ are given in Table~\ref{table:shared_associations}. 
 
 Concerning the update of ${\gamma_k^0}^{(w)}$ and $\gamma_k^{(w)}$ for $k=0, \ldots, K-1$, let us follow the same strategy by denoting
@@ -623,20 +681,11 @@ Our algorithm gives a local minimum, and it is clever to choose an initial value
 For all $k = 0, \ldots, K-1$, we first choose $\xi_k^{(0)} = \mathbf{0}_d$ and ${\gamma_{k,a}^l}^{(0)} = 0$ for all $l=1, \ldots, L$ and $a=1, \ldots, \cA$. Then, we initialize $\lambda_0^{(0)}$ and ${\gamma_k^0}^{(0)}$ like if there is no subgroup ($\gamma_{0,0}^{(0)} = \cdots = \gamma_{K-1,0}^{(0)}$) with a standard Cox proportional hazards regression with time-independent features using the \texttt{Python} library \texttt{tick}. Finally, the longitudinal submodels parameters $\beta_k^{(0)}$, $D^{(0)}$ and $\phi^{(0)}$ are initialized -- again like if there is no subgroup ($\beta_0^{(0)} = \cdots = \beta_{K-1}^{(0)}$) -- using a multivariate linear mixed model with an explicit EM algorithm (the details are given in Appendix~\ref{sec:MLMM}), being itself initialized with univariates fits using the \texttt{Python} package \texttt{statsmodels}.
 
 \paragraph*{The QNMCEM algorithm.}
-Algorithm~\ref{alg:QNMCEM} describes the main steps of the resulting QNMCEM algorithm to solve the optimization problem~\eqref{eq:optim-pb}. The $Condition$ in algorithm~\ref{alg:QNMCEM} is cv$(\Delta_{\text{rel}}^{(w+1)}) >$ cv$(\Delta_{\text{rel}}^{(w)})$, where cv$(\Delta_{\text{rel}}^{(w)})$ is coefficient of variation at the $(w + 1)$-th iteration computed as
-\begin{equation*}
-  \label{eq:coefficient_variation}
-  \text{cv}(\Delta_{\text{rel}}^{(w+1)})= \dfrac{\text{sd}(\Delta_{\text{rel}}^{(w-1)}, \Delta_{\text{rel}}^{(w)}, \Delta_{\text{rel}}^{(w+1)})}{\text{mean}(\Delta_{\text{rel}}^{(w-1)}, \Delta_{\text{rel}}^{(w)}, \Delta_{\text{rel}}^{(w+1)})},
-\end{equation*}
-where sd(.) and mean(.) are the sample standard deviation and mean functions respectively and relative difference $\Delta_{\text{rel}}^{(w+1)}$ is given by 
-\begin{equation*}
-  \label{eq:relative_difference}
-  \Delta_{\text{rel}}^{(w+1)} = \text{max} \Big\{\dfrac{|\theta^{(w+1)} - \theta^{(w)}|}{|\theta^{(w)}| + \epsilon } \Big\}
-\end{equation*}
+Algorithm~\ref{alg:QNMCEM} describes the main steps of the resulting QNMCEM algorithm to solve the optimization problem~\eqref{eq:optim-pb}. 
 
-\vspace{.5cm}
+% \vspace{.5cm}
 
-\begin{algorithm}[]
+\begin{algorithm}[!htb]
 \DontPrintSemicolon
 \caption{QNMCEM algorithm for the lights model inference}
 \label{alg:QNMCEM}
@@ -665,6 +714,15 @@ Compute the starting parameters $\theta^{(0)} \in \R^\vartheta$ \\
 }
 \textbf{Return:} {$\hat \theta$}
 \end{algorithm}
+The convergence condition in Algorithm~\ref{alg:QNMCEM} is cv$(\Delta_{\text{rel}}^{(w+1)}) >$ cv$(\Delta_{\text{rel}}^{(w)})$, where cv$(\Delta_{\text{rel}}^{(w+1)})$ represents the variation at the $(w + 1)$-th iteration computed as
+\begin{equation*}
+  \text{cv}(\Delta_{\text{rel}}^{(w+1)})= \dfrac{\text{sd}(\Delta_{\text{rel}}^{(w-1)}, \Delta_{\text{rel}}^{(w)}, \Delta_{\text{rel}}^{(w+1)})}{\text{mean}(\Delta_{\text{rel}}^{(w-1)}, \Delta_{\text{rel}}^{(w)}, \Delta_{\text{rel}}^{(w+1)})},
+\end{equation*}
+where sd(.) and mean(.) are the empirical standard deviation and mean functions respectively, and relative difference $\Delta_{\text{rel}}^{(w+1)}$ is given by 
+\begin{equation*}
+  \label{eq:relative_difference}
+  \Delta_{\text{rel}}^{(w+1)} = \text{max} \Big\{\dfrac{|\theta^{(w+1)} - \theta^{(w)}|}{|\theta^{(w)}| + \epsilon } \Big\}.
+\end{equation*}
 
 \subsection{The case $K=2$}
 \label{sec:K=2}
