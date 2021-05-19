@@ -714,15 +714,14 @@ Compute the starting parameters $\theta^{(0)} \in \R^\vartheta$ \\
 }
 \textbf{Return:} {$\hat \theta$}
 \end{algorithm}
-The convergence condition in Algorithm~\ref{alg:QNMCEM} is cv$(\Delta_{\text{rel}}^{(w+1)}) >$ cv$(\Delta_{\text{rel}}^{(w)})$, where cv$(\Delta_{\text{rel}}^{(w+1)})$ represents the variation at the $(w + 1)$-th iteration computed as
-\begin{equation*}
-  \text{cv}(\Delta_{\text{rel}}^{(w+1)})= \dfrac{\text{sd}(\Delta_{\text{rel}}^{(w-1)}, \Delta_{\text{rel}}^{(w)}, \Delta_{\text{rel}}^{(w+1)})}{\text{mean}(\Delta_{\text{rel}}^{(w-1)}, \Delta_{\text{rel}}^{(w)}, \Delta_{\text{rel}}^{(w+1)})},
-\end{equation*}
-where sd(.) and mean(.) are the empirical standard deviation and mean functions respectively, and relative difference $\Delta_{\text{rel}}^{(w+1)}$ is given by 
-\begin{equation*}
-  \label{eq:relative_difference}
-  \Delta_{\text{rel}}^{(w+1)} = \text{max} \Big\{\dfrac{|\theta^{(w+1)} - \theta^{(w)}|}{|\theta^{(w)}| + \epsilon } \Big\}.
-\end{equation*}
+Let us define the relative difference at step $(w+1)$ as
+\[\Delta_{\text{rel}}^{(w+1)} = \max_{j=1,\ldots,\vartheta} \Big\{\dfrac{|\theta^{(w+1)}_j - \theta^{(w)}_j|}{|\theta^{(w)}_j| + \epsilon_1 } \Big\}.\]
+Then in practice, the convergence for Algorithm~\ref{alg:QNMCEM} is declared when the condition
+\[\Delta_{\text{rel}}^{(w+1)} < \epsilon_2 \]
+is satisfied for 3 consecutive iterations, since the monotonicity property is lost due to the Monte Carlo approximations.
+
+
+  
 
 \subsection{The case $K=2$}
 \label{sec:K=2}
