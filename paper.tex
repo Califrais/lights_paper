@@ -577,7 +577,7 @@ for all $l = 1, \ldots, L$. The closed-form update is then given by
 
 \begin{equation}
   \label{eq:update_beta}
-  {\beta_k^l}^{(w+1)}= \dfrac{\hat \pi_{ik}^{\theta^{(w)}} \Big[U_{il}^\top I_{n_{il}} (y_i^l - V_{il}\hat \E_{\theta^{(w)}}[ b_i | t_i, \delta_i, y_i])\Big]}{\sum_{i=1}^n \hat \pi_{ik}^{\theta^{(w)}} \Big[U_{il}^\top I_{n_{il}} U_{il} \Big]}.
+  {\beta_k^l}^{(w+1)}= \dfrac{\sum_{i=1}^n\hat \pi_{ik}^{\theta^{(w)}} \Big[U_{il}^\top I_{n_{il}} (y_i^l - V_{il}\hat \E_{\theta^{(w)}}[ b_i | t_i, \delta_i, y_i])\Big]}{\sum_{i=1}^n \hat \pi_{ik}^{\theta^{(w)}} \Big[U_{il}^\top I_{n_{il}} U_{il} \Big]}.
 \end{equation}
 
 
@@ -688,7 +688,7 @@ Compute the starting parameters $\theta^{(0)} \in \R^\vartheta$ \\
   \tcc{Quasi-Newton M-step}
   Update $D^{(w+1)}$ using~\eqref{eq:update_D}\\
   Update $(\xi_k^{(w+1)})_{k=0,\ldots,K-1}$ by solving~\eqref{eq:sub-problem-xi_k} \\
-  Update $(\beta_k^{(w+1)})_{k=0,\ldots,K-1}$ by solving~\eqref{eq:beta-update} \\
+  Update $(\beta_k^{(w+1)})_{k=0,\ldots,K-1}$ by solving~\eqref{eq:update_beta} \\
   Update $(\gamma_k^{(w+1)})_{k=0,\ldots,K-1}$ by solving~\eqref{eq:gamma-update} \\
   Update $\lambda_0^{(w+1)}$ using~\eqref{eq:update_lambda_0}\\
   Update $\phi^{(w+1)}$ using~\eqref{eq:update_phi} \\
