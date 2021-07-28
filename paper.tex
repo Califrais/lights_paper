@@ -196,13 +196,13 @@ In the sequel of the paper, our aim is to associate the true and unobserved valu
 To quantify the effect of the longitudinal outcomes on the risk for an event, we use a Cox~\citep{Cox1972JRSS} relative risk model of the form
 \begin{equation}
 	\label{eq:intensity-model}
-	\lambda(t|\cM_k(t), G = k) = \lambda_0(t) \exp \Big\{ x^\top \gamma_k^0 + \sum_{l=1}^L \sum_{a=1}^\cA {\gamma_{k,a}^l}^\top \varphi_a(t, b^l) \Big\},
+	\lambda(t|\cM_k(t), G = k) = \lambda_0(t) \exp \Big\{\sum_{l=1}^L \sum_{a=1}^\cA {\gamma_{k,a}^l}^\top \varphi_a(t, b^l) \Big\},
 \end{equation}
 where $\lambda_0(\cdot)$ is an unspecified baseline hazard function and given that $G = k$, we denote 
 \[\cM_k(t) = \{m_k^l(u), 0 \leq u < t\}\] 
-the history of the true unobserved longitudinal process up to time $t$. We choose to incorporate $x$, also used in~\eqref{eq:pi}, with no \textit{a priori} on the choice of time-independent features involved in the definition of $\pi_{\xi_k}$ nor $\lambda$, since independent regularizations are used during inference, see~\eqref{eq:pen-log-lik}. Corresponding fixed effects are denoted $\gamma_k^0 \in \R^p$, and for each $l$-th longitudinal outcome, we consider $\cA \in \N_+$ known functionals $\varphi_a$ defining a shared association with $\gamma_{k,a}^l \in \R^{\imath_a}$ the corresponding joint association parameters, and $\imath_a \in \N_+$ the dimension of the corresponding $\text{Im}(\varphi_a)$. 
+the history of the true unobserved longitudinal process up to time $t$. We choose to incorporate $x$, also used in~\eqref{eq:pi}, with no \textit{a priori} on the choice of time-independent features involved in the definition of $\pi_{\xi_k}$ nor $\lambda$, since independent regularizations are used during inference, see~\eqref{eq:pen-log-lik}. Corresponding each $l$-th longitudinal outcome, we consider $\cA \in \N_+$ known functionals $\varphi_a$ defining a shared association with $\gamma_{k,a}^l \in \R^{\imath_a}$ the corresponding joint association parameters, and $\imath_a \in \N_+$ the dimension of the corresponding $\text{Im}(\varphi_a)$.
 This can be viewed as a generalization of SREMs~\citep{rizopoulos2010jm}. Let us finally denote
-\[({\gamma_k^0}^\top, \gamma_k^\top)^\top= ({\gamma_k^0}^\top, \gamma_{k,1}^1, \ldots, \gamma_{k,\cA}^1, \ldots, \gamma_{k,1}^L, \ldots, \gamma_{k,\cA}^L )^\top \in \R^{p+L\cA}. \]
+\[\gamma_k= (\gamma_{k,1}^1, \ldots, \gamma_{k,\cA}^1, \ldots, \gamma_{k,1}^L, \ldots, \gamma_{k,\cA}^L )^\top \in \R^{p+L\cA}. \]
 
 \paragraph{Specification of the functionals $(\varphi_a)_{a\in \cA}$.}
 
@@ -345,7 +345,7 @@ In this section, we describe the procedure for estimating the parameters of the 
 In order to avoid overfitting and improve the prediction power of our method, we propose to minimize the penalized objective
 \begin{equation}
   \label{eq:pen-log-lik}
-	\ell_n^\text{pen}(\theta) = - \ell_n(\theta) + \sum_{k=0}^{K-1} \zeta_{1,k} \big(\norm{\xi_k}_{\text{en}, \eta} + \norm{\gamma_k^0}_{\text{en}, \eta}\big) + \zeta_{2,k} \norm{\beta_k}_{\text{sg} l_1, \tilde{\eta}} + \zeta_{3,k} \norm{\gamma_k}_{\text{sg} l_1, \tilde{\eta}} 
+	\ell_n^\text{pen}(\theta) = - \ell_n(\theta) + \sum_{k=0}^{K-1} \zeta_{1,k} \norm{\xi_k}_{\text{en}, \eta} + \zeta_{2,k} \norm{\beta_k}_{\text{sg} l_1, \tilde{\eta}} + \zeta_{3,k} \norm{\gamma_k}_{\text{sg} l_1, \tilde{\eta}}
 \end{equation}
 where for all $k=0, \ldots, K-1$, we add an elastic net regularization~\citep{zou2005regularization} of the vector $\xi_k$ and a sparse group lasso regularization~\citep{simon2013sparse} of the vectors $\gamma_k$ and $\beta_k$, for tuning hyper-parameters $(\zeta_{1,k}, \zeta_{2,k}, \zeta_{3,k})^\top \in \R_+^3$. Here, $(\eta, \tilde{\eta}) \in [0, 1]^2$ are fixed and we denote
 \[ \norm{z}_{\text{en}, \eta} = (1-\eta)\norm{z}_1 + \dfrac\eta2 \norm{z}_2^2 \]
@@ -373,8 +373,8 @@ It can be written
 \begin{align*}
   \ell_n^\text{comp}(\theta) &= \ell_n^\text{comp}(\theta ; \cD_n, \textbf{\textit{b}}, \textbf{\textit{G}}) \\ 
   &= - n^{-1} \sum_{i=1}^n -\dfrac12 (r \log 2\pi + \log|D| + b_i^\top D^{-1}b_i) + \sum_{k=0}^{K-1} \ind{\{G_i=k\}} \Big[ \log \pi_{\xi_k}(x_i) \\ 
-  & \quad + \delta_i \Big(\log \lambda_0(t_i) + x_i^\top \gamma_k^0 + \sum_{l=1}^L \sum_{a=1}^\cA {\gamma_{k,a}^l}^\top \varphi_a(t_i, b_i^l) \Big) \\
-  & \quad -\int_0^{t_i} \lambda_0(s) \exp \Big\{ x_i^\top \gamma_k^0 + \sum_{l=1}^L \sum_{a=1}^\cA {\gamma_{k,a}^l}^\top \varphi_a(s, b_i^l) \Big\} \dd s \\
+  & \quad + \delta_i \Big(\log \lambda_0(t_i) + \sum_{l=1}^L \sum_{a=1}^\cA {\gamma_{k,a}^l}^\top \varphi_a(t_i, b_i^l) \Big) \\
+  & \quad -\int_0^{t_i} \lambda_0(s) \exp \Big\{ \sum_{l=1}^L \sum_{a=1}^\cA {\gamma_{k,a}^l}^\top \varphi_a(s, b_i^l) \Big\} \dd s \\
   & \quad + (y_i \odot \Phi_i)^\top M_{ik} - c_\phi(M_{ik}) + d_\phi(y_i) \Big].
 \end{align*}
 Suppose that we are at step $w + 1$ of the algorithm, with current iterate denoted $\theta^{(w)}$. 
@@ -458,13 +458,13 @@ Now in the case $g = g_k$, one has $\E_{\theta^{(w)}}[g_k(Gi) | t_i, \delta_i, y
 \end{equation}
 
 \paragraph*{Quasi-Newton M-step.}
-Here, we need to compute \[\theta^{(w+1)} \in \argmin_{\theta \in \R^\vartheta} \cQ_n(\theta, \theta^{(w)}) + \sum_{k=0}^{K-1} \zeta_{1,k} \big(\norm{\xi_k}_{\text{en}, \eta} + \norm{\gamma_k^0}_{\text{en}, \eta} \big) + \zeta_{2,k} \norm{\beta_k}_{\text{sg} l_1, \tilde{\eta}} + \zeta_{3,k} \norm{\gamma_k}_{\text{sg} l_1, \tilde{\eta}}.\]
+Here, we need to compute \[\theta^{(w+1)} \in \argmin_{\theta \in \R^\vartheta} \cQ_n(\theta, \theta^{(w)}) + \sum_{k=0}^{K-1} \zeta_{1,k} \norm{\xi_k}_{\text{en}, \eta} + \zeta_{2,k} \norm{\beta_k}_{\text{sg} l_1, \tilde{\eta}} + \zeta_{3,k} \norm{\gamma_k}_{\text{sg} l_1, \tilde{\eta}}.\]
 Let us introduce the following useful notations
 \begin{equation}
   \label{eq:g-tilde-1-2}
   \left\{
     \begin{array}{ll}
-        \tilde g_{i, s, \gamma_k^0, \gamma_k}^1&: b_i \mapsto \exp \big\{ x_i^\top \gamma_k^0 + \tilde g_{s, \gamma_k}^2(b_i) \big\}, \\
+        \tilde g_{i, s, \gamma_k}^1&: b_i \mapsto \exp \big\{\tilde g_{s, \gamma_k}^2(b_i) \big\}, \\
         \tilde g_{s, \gamma_k}^2&: b_i \mapsto \sum_{l=1}^L \sum_{a=1}^\cA {\gamma_{k,a}^l}^\top \varphi_a(s, b_i^l).
     \end{array}
   \right. 
@@ -504,7 +504,7 @@ Now, for the update of $\beta_k^{(w)}$ for $k=0, \ldots, K-1$, we similarly deno
 \begin{equation*}
   R^{(w)}_{n,k}(\beta_k) = -n^{-1} \sum_{i=1}^n \hat \pi_{ik}^{\theta^{(w)}} \Big[ (y_i \odot \Phi_i^{(w)})^\top \hat \E_{\theta^{(w)}}[ M_{ik} | t_i, \delta_i, y_i] - \hat \E_{\theta^{(w)}}[ c_{\phi^{(w)}}(M_{ik}) | t_i, \delta_i, y_i] \Big]
 \end{equation*}
-based on the quantities involved in $\cQ_n(\theta, \theta^{(w)})$ depending on $\beta_k$, with $\tilde g_{i, t_j, {\gamma_k^0}^{(w)}, \gamma_k^{(w)}, \beta_k}^1$ and $\tilde g_{t_i, \gamma_k^{(w)}, \beta_k}^2$ defined in~\eqref{eq:g-tilde-1-2}. The integration over the survival process has been replaced with a finite sum over the process evaluated at the distinct event times $(t_1, \ldots, t_J)$ with $J \in~\N_+$, since $\lambda_0^{(w)}$ defined in~\eqref{eq:update_lambda_0} is always zero except at observed event times.
+based on the quantities involved in $\cQ_n(\theta, \theta^{(w)})$ depending on $\beta_k$, with $\tilde g_{i, t_j, \gamma_k^{(w)}, \beta_k}^1$ and $\tilde g_{t_i, \gamma_k^{(w)}, \beta_k}^2$ defined in~\eqref{eq:g-tilde-1-2}. The integration over the survival process has been replaced with a finite sum over the process evaluated at the distinct event times $(t_1, \ldots, t_J)$ with $J \in~\N_+$, since $\lambda_0^{(w)}$ defined in~\eqref{eq:update_lambda_0} is always zero except at observed event times.
 The update for $\beta_k^{(w)}$ therefore requires to solve the following convex minimization problem
 \begin{equation}
   \label{eq:minimization-beta_k}
@@ -560,45 +560,26 @@ The gradient of $R_{n,k}^{(w)}$ for the Gaussian case is here given by
 \end{align}
 for all $l = 1, \ldots, L$. Note that the gradients of the considered $\varphi_a$ functions with respect to $\beta_k^l$ are given in Table~\ref{table:shared_associations}. 
 
-Concerning the update of ${\gamma_k^0}^{(w)}$ and $\gamma_k^{(w)}$ for $k=0, \ldots, K-1$, let us follow the same strategy by denoting
+Concerning the update of $\gamma_k^{(w)}$ for $k=0, \ldots, K-1$, let us follow the same strategy by denoting
 \begin{align*}
-  Q^{(w)}_{n,k}(\gamma_k^0, \gamma_k) = -n^{-1} \sum_{i=1}^n \hat \pi_{ik}^{\theta^{(w)}} \Big[ &\delta_i \hat \E_{\theta^{(w)}}[ \log \circ \tilde g_{i, t_i, \gamma_k^0, \gamma_k}^1(b_i) | t_i, \delta_i, y_i] \\
-  & - \sum_{j=1}^J \lambda_0^{(w)}(t_j) \hat \E_{\theta^{(w)}}[ \tilde g_{i, t_j, \gamma_k^0, \gamma_k}^1(b_i) | t_i, \delta_i, y_i] \ind{\{t_j\leq t_i\}} \Big]
+  Q^{(w)}_{n,k}(\gamma_k) = -n^{-1} \sum_{i=1}^n \hat \pi_{ik}^{\theta^{(w)}} \Big[ &\delta_i \hat \E_{\theta^{(w)}}[ \log \circ \tilde g_{i, t_i, \gamma_k}^1(b_i) | t_i, \delta_i, y_i] \\
+  & - \sum_{j=1}^J \lambda_0^{(w)}(t_j) \hat \E_{\theta^{(w)}}[ \tilde g_{i, t_j, \gamma_k}^1(b_i) | t_i, \delta_i, y_i] \ind{\{t_j\leq t_i\}} \Big]
 \end{align*}
-based on the quantities involved in $\cQ_n(\theta, \theta^{(w)})$ that depend on $\gamma_k^0$ and $\gamma_k$, with $\tilde g_{i, t_j, \gamma_k^0, \gamma_k, \beta_k^{(w+1)}}^1$ defined in~\eqref{eq:g-tilde-1-2}. The update for ${\gamma_k^0}^{(w)}$ therefore requires to solve the following minimization problem
-\begin{equation}
-  \label{eq:minimization-gamma_k^0}
-  {\gamma_k^0}^{(w+1)} \in \argmin_{\gamma_k^0 \in \R^p} Q^{(w)}_{n,k}(\gamma_k^0, {\gamma_k}^{(w)}) + \zeta_{1,k} \norm{\gamma_k^0}_{\text{en}, \eta}.
-\end{equation}
-We then rewrite problem~\eqref{eq:minimization-gamma_k^0} as the following differentiable problem with box constraints
-\begin{equation}
-  \label{eq:sub-problem-gamma_k^0}
-  \begin{split}
-    \text{minimize}& \quad \quad Q_{n, k}^{(w)}({\gamma_k^0}^+ - {\gamma_k^0}^-, {\gamma_k}^{(w)}) + \zeta_{1,k} \big((1 - \eta) \sum_{j=1}^p ({\gamma_{k,j}^0}^+ + {\gamma_{k,j}^0}^-) + \dfrac \eta 2 \norm{{\gamma_k^0}^+ - {\gamma_k^0}^-}_2^2 \big) \\
-    \text{subject to}& \quad \quad {\gamma_{k,j}^0}^+ \geq 0 \text{ and } {\gamma_{k,j}^0}^- \geq 0 \text{ for } j = 1, \ldots, p.
-  \end{split} 
-\end{equation}
-The gradient is here given by
-\begin{align}
-  \label{eq:grad-Q-1}
-  \frac{\partial Q_{n,k}^{(w)}(\gamma_k^0, {\gamma_k}^{(w)})}{\partial \gamma_k^0} = -n^{-1} &\sum_{i=1}^n \hat \pi_{ik}^{\theta^{(w)}} \Big[ \delta_i - \sum_{j=1}^J \lambda_0^{(w)}(t_j) \nonumber \\
-  &\times \hat \E_{\theta^{(w)}}[ \tilde g_{i, t_j, \gamma_k^0, {\gamma_k}^{(w)}}^1(b_i) | t_i, \delta_i, y_i] \ind{\{t_j\leq t_i\}} \Big] x_i.
-\end{align}
-Then, the update for $\gamma_k^{(w)}$ requires to solve the following minimization problem
+based on the quantities involved in $\cQ_n(\theta, \theta^{(w)})$ that depend on $\gamma_k$, with $\tilde g_{i, t_j, \gamma_k, \beta_k^{(w+1)}}^1$ defined in~\eqref{eq:g-tilde-1-2}. The update for $\gamma_k^{(w)}$ requires to solve the following minimization problem
 \begin{equation}
   \label{eq:minimization-gamma_k}
-  \gamma_k^{(w+1)} \in \argmin_{\gamma_k \in \R^{L\mathcal{A}}} Q^{(w)}_{n,k}({\gamma_k^0}^{(w+1)}, \gamma_k) + \zeta_{3,k} \norm{\gamma_k}_{\text{sg} l_1, \tilde{\eta}}.
+  \gamma_k^{(w+1)} \in \argmin_{\gamma_k \in \R^{L\mathcal{A}}} Q^{(w)}_{n,k}(\gamma_k) + \zeta_{3,k} \norm{\gamma_k}_{\text{sg} l_1, \tilde{\eta}}.
 \end{equation}
 We treat problem~\eqref{eq:minimization-gamma_k} in the same way as~\eqref{eq:minimization-beta_k}, that is
 \begin{equation}
   \label{eq:gamma-update}
-  \gamma_k^{(w+1)} = \text{ISTA}_{\text{sg} l_1}\big(\gamma_k^{(w)}, Q^{(w)}_{n,k}({\gamma_k^0}^{(w+1)}, \cdot), \tilde \eta, \zeta_{3,k}\big)
+  \gamma_k^{(w+1)} = \text{ISTA}_{\text{sg} l_1}\big(\gamma_k^{(w)}, Q^{(w)}_{n,k}(\cdot), \tilde \eta, \zeta_{3,k}\big)
 \end{equation}
 with the gradient being known since
 \begin{align}
   \label{eq:grad-Q-2}
-  &\frac{\partial Q_{n,k}^{(w)}({\gamma_k^0}^{(w+1)}, \gamma_k)}{\partial \gamma_{k,a}^l} = -n^{-1} \sum_{i=1}^n \hat \pi_{ik}^{\theta^{(w)}} \Big[ \delta_i  \hat \E_{\theta^{(w)}}[ \varphi_a(t_i, b_i^l) | t_i, \delta_i, y_i] \\ \nonumber
-   &\qquad\qquad - \sum_{j=1}^J \lambda_0^{(w)}(t_j) \hat \E_{\theta^{(w)}}[ \varphi_a(t_j, b_i^l) \tilde g_{i, t_j, {\gamma_k^0}^{(w+1)}, \gamma_k}^1(b_i) | t_i, \delta_i, y_i] \ind{\{t_j\leq t_i\}} \Big]
+  &\frac{\partial Q_{n,k}^{(w)}(\gamma_k)}{\partial \gamma_{k,a}^l} = -n^{-1} \sum_{i=1}^n \hat \pi_{ik}^{\theta^{(w)}} \Big[ \delta_i  \hat \E_{\theta^{(w)}}[ \varphi_a(t_i, b_i^l) | t_i, \delta_i, y_i] \\ \nonumber
+   &\qquad\qquad - \sum_{j=1}^J \lambda_0^{(w)}(t_j) \hat \E_{\theta^{(w)}}[ \varphi_a(t_j, b_i^l) \tilde g_{i, t_j, \gamma_k}^1(b_i) | t_i, \delta_i, y_i] \ind{\{t_j\leq t_i\}} \Big]
 \end{align}
 for all $a = 1, \ldots, \mathcal{A}$ and $l = 1, \ldots, L$.
 
@@ -620,7 +601,7 @@ Appendix~\ref{sec:?} gives some details about the way we implement the equations
 
 \paragraph*{Initialization.}
 Our algorithm gives a local minimum, and it is clever to choose an initial value $\theta^{(0)}$ close to the final solution $\hat \theta$, so that the number of iterations required to reach convergence is reduced. We then give some details about the starting point $\theta^{(0)}$ of Algorithm~\ref{alg:QNMCEM}. 
-For all $k = 0, \ldots, K-1$, we first choose $\xi_k^{(0)} = \mathbf{0}_d$ and ${\gamma_{k,a}^l}^{(0)} = 0$ for all $l=1, \ldots, L$ and $a=1, \ldots, \cA$. Then, we initialize $\lambda_0^{(0)}$ and ${\gamma_k^0}^{(0)}$ like if there is no subgroup ($\gamma_{0,0}^{(0)} = \cdots = \gamma_{K-1,0}^{(0)}$) with a standard Cox proportional hazards regression with time-independent features using the \texttt{Python} library \texttt{tick}. Finally, the longitudinal submodels parameters $\beta_k^{(0)}$, $D^{(0)}$ and $\phi^{(0)}$ are initialized -- again like if there is no subgroup ($\beta_0^{(0)} = \cdots = \beta_{K-1}^{(0)}$) -- using a multivariate linear mixed model with an explicit EM algorithm (the details are given in Appendix~\ref{sec:MLMM}), being itself initialized with univariates fits using the \texttt{Python} package \texttt{statsmodels}.
+For all $k = 0, \ldots, K-1$, we first choose $\xi_k^{(0)} = \mathbf{0}_d$ and ${\gamma_{k,a}^l}^{(0)} = 0$ for all $l=1, \ldots, L$ and $a=1, \ldots, \cA$. Then, we initialize $\lambda_0^{(0)}$ like if there is no subgroup ($\gamma_{0}^{(0)} = \cdots = \gamma_{K-1}^{(0)}$) with a standard Cox proportional hazards regression with time-independent features using the \texttt{Python} library \texttt{tick}. Finally, the longitudinal submodels parameters $\beta_k^{(0)}$, $D^{(0)}$ and $\phi^{(0)}$ are initialized -- again like if there is no subgroup ($\beta_0^{(0)} = \cdots = \beta_{K-1}^{(0)}$) -- using a multivariate linear mixed model with an explicit EM algorithm (the details are given in Appendix~\ref{sec:MLMM}), being itself initialized with univariates fits using the \texttt{Python} package \texttt{statsmodels}.
 
 \paragraph*{The QNMCEM algorithm.}
 Algorithm~\ref{alg:QNMCEM} describes the main steps of the resulting QNMCEM algorithm to solve the optimization problem~\eqref{eq:optim-pb}. The $Condition$ in algorithm~\ref{alg:QNMCEM} is cv$(\Delta_{\text{rel}}^{(w+1)}) >$ cv$(\Delta_{\text{rel}}^{(w)})$, where cv$(\Delta_{\text{rel}}^{(w)})$ is coefficient of variation at the $(w + 1)$-th iteration computed as
@@ -658,7 +639,6 @@ Compute the starting parameters $\theta^{(0)} \in \R^\vartheta$ \\
   Update $D^{(w+1)}$ using~\eqref{eq:update_D}\\
   Update $(\xi_k^{(w+1)})_{k=0,\ldots,K-1}$ by solving~\eqref{eq:sub-problem-xi_k} \\
   Update $(\beta_k^{(w+1)})_{k=0,\ldots,K-1}$ by solving~\eqref{eq:beta-update} \\
-  Update $({\gamma_k^0}^{(w+1)})_{k=0,\ldots,K-1}$ by solving~\eqref{eq:sub-problem-gamma_k^0} \\
   Update $(\gamma_k^{(w+1)})_{k=0,\ldots,K-1}$ by solving~\eqref{eq:gamma-update} \\
   Update $\lambda_0^{(w+1)}$ using~\eqref{eq:update_lambda_0}\\
   Update $\phi^{(w+1)}$ using~\eqref{eq:update_phi} \\
@@ -826,10 +806,10 @@ is achieved using the \texttt{tick} library~\citep{bacry2017tick}. An example of
 
 To generate survival times, we choose a risk model of the form
 \begin{align*}
-\lambda_i(t|G_i = k) = \lambda_0(t) \exp \Big\{ x_i^\top \xi + \sum_{l=1}^L &\gamma_{k,1}^l (\beta_{k,1}^l + \beta_{k,2}^l t + b_{i,1}^l + b_{i,2}^l t) \\
+\lambda_i(t|G_i = k) = \lambda_0(t) \exp \Big\{ \sum_{l=1}^L &\gamma_{k,1}^l (\beta_{k,1}^l + \beta_{k,2}^l t + b_{i,1}^l + b_{i,2}^l t) \\
 &+ (\gamma_{k,2,1}^l b_{i,1}^l + \gamma_{k,2,2}^l b_{i,2}^l) + \gamma_{k,3}^l (\beta_{k,2}^l + b_{i,2}^l) \Big\},
 \end{align*}
-which corresponds to~\eqref{eq:intensity-model} taking $\gamma_k^0 = \xi$ and the first three functionals described in Table~\ref{table:shared_associations} as shared associations. 
+which corresponds to~\eqref{eq:intensity-model} taking the first three functionals described in Table~\ref{table:shared_associations} as shared associations.
 Now, for the choice of the association parameters, we want to induce sparsity (similarly to~\eqref{eq:xi-sparse}), so we set 
 \[\cS_k=\Big\{ k \big\lfloor \dfrac{L r_s}{K} \big\rfloor + 1, \ldots,  (k + 1) \big\lfloor \dfrac{L r_s}{K} \big\rfloor \Big\}\] and
 \begin{equation}
