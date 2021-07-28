@@ -403,7 +403,7 @@ In this section, we describe the procedure for estimating the parameters of the 
 In order to avoid overfitting and improve the prediction power of our method, we propose to minimize the penalized objective
 \begin{equation}
   \label{eq:pen-log-lik}
-	\ell_n^\text{pen}(\theta) = - \ell_n(\theta) + \sum_{k=0}^{K-1} \zeta_{1,k} \norm{\xi_k}_{\text{en}, \eta} + zeta_{3,k} \norm{\gamma_k}_{\text{sg} l_1, \tilde{\eta}}
+	\ell_n^\text{pen}(\theta) = - \ell_n(\theta) + \sum_{k=0}^{K-1} \zeta_{1,k} \norm{\xi_k}_{\text{en}, \eta} + \zeta_{3,k} \norm{\gamma_k}_{\text{sg} l_1, \tilde{\eta}}
 \end{equation}
 where for all $k=0, \ldots, K-1$, we add an elastic net regularization~\citep{zou2005regularization} of the vector $\xi_k$ and a sparse group lasso regularization~\citep{simon2013sparse} of the vectors $\gamma_k$, for tuning hyper-parameters $(\zeta_{1,k}, \zeta_{3,k})^\top \in \R_+^3$. Here, $(\eta, \tilde{\eta}) \in [0, 1]^2$ are fixed and we denote
 \[ \norm{z}_{\text{en}, \eta} = (1-\eta)\norm{z}_1 + \dfrac\eta2 \norm{z}_2^2 \]
