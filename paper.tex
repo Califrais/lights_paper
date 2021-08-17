@@ -62,6 +62,7 @@
 \newcommand{\cG}{\mathcal G}
 \newcommand{\cN}{\mathcal N}
 \newcommand{\cA}{\mathcal A}
+\newcommand{\sA}{\mathscr A}
 \newcommand{\cQ}{\mathcal Q}
 \newcommand{\cU}{\mathcal U}
 \newcommand{\cR}{\mathcal R}
@@ -205,7 +206,12 @@ where $\lambda_0(\cdot)$ is an unspecified baseline hazard function and given th
 \[\cM_k(t) = \{m_k^l(u), 0 \leq u < t\}\] 
 the history of the true unobserved longitudinal process up to time $t$. For each $l$-th longitudinal outcome, we consider $\cA \in \N_+$ known functionals $\varphi_a$ defining a shared association with $\gamma_{k,a}^l \in \R^{\imath_a}$ the corresponding joint association parameters, and $\imath_a \in \N_+$ the dimension of the corresponding $\text{Im}(\varphi_a)$.
 This can be viewed as a generalization of SREMs~\citep{rizopoulos2010jm}. Let us finally denote
-\[\gamma_k= (\gamma_{k,1}^1, \ldots, \gamma_{k,\cA}^1, \ldots, \gamma_{k,1}^L, \ldots, \gamma_{k,\cA}^L )^\top \in \R^{L\cA}. \]
+\[\gamma_k= (\gamma_{k,1}^1, \ldots, \gamma_{k,\cA}^1, \ldots, \gamma_{k,1}^L, \ldots, \gamma_{k,\cA}^L )^\top \in \R^{L\sA}, \] with $\sA = \sum_{a=1}^\cA \imath_a$ and so that
+\begin{equation}
+  \label{eq:def-asso-features}
+  \lambda(t|\cM_k(t), G = k) = \lambda_0(t) \exp \big\{\gamma_k^\top \Psi(t) \big\},
+\end{equation}
+where $\Psi(t) \in \R^{L\sA}$ denotes the association features vector at time $t$.
 
 \paragraph{Specification of the functionals $(\varphi_a)_{a\in \cA}$.}
 
@@ -430,8 +436,7 @@ It can be written
 \begin{align*}
   \ell_n^\text{comp}(\theta) &= \ell_n^\text{comp}(\theta ; \cD_n, \textbf{\textit{b}}, \textbf{\textit{G}}) \\ 
   &= - n^{-1} \sum_{i=1}^n -\dfrac12 (r \log 2\pi + \log|D| + b_i^\top D^{-1}b_i) + \sum_{k=0}^{K-1} \ind{\{G_i=k\}} \Big[ \log \pi_{\xi_k}(x_i) \\ 
-  & \quad + \delta_i \Big(\log \lambda_0(t_i) + \sum_{l=1}^L \sum_{a=1}^\cA {\gamma_{k,a}^l}^\top \varphi_a(t_i, b_i^l) \Big) \\
-  & \quad -\int_0^{t_i} \lambda_0(s) \exp \Big\{ \sum_{l=1}^L \sum_{a=1}^\cA {\gamma_{k,a}^l}^\top \varphi_a(s, b_i^l) \Big\} \dd s \\
+  & \quad + \delta_i \Big(\log \lambda_0(t_i) + \gamma_k^\top \Psi_i(t_i) \Big) - \int_0^{t_i} \lambda_0(s) \exp \big\{ \gamma_k^\top \Psi_i(s) \big\} \dd s \\
   & \quad + (y_i \odot \Phi_i)^\top M_{ik} - c_\phi(M_{ik}) + d_\phi(y_i) \Big].
 \end{align*}
 Suppose that we are at step $w + 1$ of the algorithm, with current iterate denoted $\theta^{(w)}$. 
@@ -443,28 +448,28 @@ We need to compute the expected negative log-likelihood of the complete data con
   \cQ_n(\theta, \theta^{(w)}) = \E_{\theta^{(w)}}[\ell_n^\text{comp}(\theta) | \cD_n].
 \end{equation*}
 Given Assumption~\ref{assumption1}, the previous expression requires to compute expectations of the form
-\[ \E_{\theta^{(w)}}[ g_i(b_i, G_i) | t_i, \delta_i, y_i] = \sum_{k=0}^{K-1} \pi_{ik}^{\theta^{(w)}} \int_{\R^r} g(b_i, G_i) f(b_i | t_i, \delta_i, y_i ; \theta^{(w)}) \dd b_i \]
-for different functions $g_i$, where we denote 
+\[ \E_{\theta^{(w)}}[ g(b_i, G_i) | t_i, \delta_i, y_i] = \sum_{k=0}^{K-1} \pi_{ik}^{\theta^{(w)}} \int_{\R^r} g(b_i, G_i) f(b_i | t_i, \delta_i, y_i ; \theta^{(w)}) \dd b_i \]
+for different functions $g$, where we denote 
 \begin{equation}
   \label{eq:pi_ik-def}
   \pi_{ik}^{\theta^{(w)}} = \P_{\theta^{(w)}}[G_i = k | t_i, \delta_i, y_i] 
 \end{equation}
 the posterior probability of the latent class membership using parameters $\theta^{(w)}$. 
-Then, either $g_i(b_i, G_i) = \tilde g_i(b_i)$ (for instance $\tilde g_i: b_i \mapsto b_i^\top D^{-1}b_i$), or $g_i(b_i, G_i) = g_k(G_i)$ with $g_k~:~G_i \mapsto \ind{\{G_i=k\}}$.
+Then, either $g(b_i, G_i) = \tilde g(b_i)$ (for instance $\tilde g: b_i \mapsto b_i^\top D^{-1}b_i$), or $g(b_i, G_i) = g_k(G_i)$ with $g_k~:~G_i \mapsto \ind{\{G_i=k\}}$.
 
-In the case $g_i(b_i, G_i) = \tilde g_i(b_i)$, one has
+In the case $g(b_i, G_i) = \tilde g(b_i)$, one has
 \begin{equation}
   \label{eq:def-E-g-tilde}
-  \E_{\theta^{(w)}}[ \tilde g_i(b_i) | t_i, \delta_i, y_i] = \int_{\R^r} \tilde g_i(b_i) f(b_i | t_i, \delta_i, y_i ; \theta^{(w)}) \dd b_i = \dfrac{ \sum_{k=0}^{K-1} \pi_{\xi_k^{(w)}}(x_i) \Lambda_{ik,\tilde g_i}^{\theta^{(w)}}}{\sum_{k=0}^{K-1} \pi_{\xi_k^{(w)}}(x_i) \Lambda_{ik,1}^{\theta^{(w)}}}
+  \E_{\theta^{(w)}}[ \tilde g(b_i) | t_i, \delta_i, y_i] = \int_{\R^r} \tilde g(b_i) f(b_i | t_i, \delta_i, y_i ; \theta^{(w)}) \dd b_i = \dfrac{ \sum_{k=0}^{K-1} \pi_{\xi_k^{(w)}}(x_i) \Lambda_{ik,\tilde g}^{\theta^{(w)}}}{\sum_{k=0}^{K-1} \pi_{\xi_k^{(w)}}(x_i) \Lambda_{ik,1}^{\theta^{(w)}}}
 \end{equation}
 with
 \begin{align}
   \label{eq:Lambda_ik-b_i|y_i}
-  \Lambda_{ik,\tilde g_i}^{\theta^{(w)}} &= f(y_i | G_i = k) \int_{\R^r} \tilde g_i(b_i) f(t_i, \delta_i | b_i, G_i = k ; \theta^{(w)}) f(b_i | y_i, G_i = k; \theta^{(w)}) \dd b_i \\
+  \Lambda_{ik,\tilde g}^{\theta^{(w)}} &= f(y_i | G_i = k) \int_{\R^r} \tilde g(b_i) f(t_i, \delta_i | b_i, G_i = k ; \theta^{(w)}) f(b_i | y_i, G_i = k; \theta^{(w)}) \dd b_i \\
   \label{eq:Lambda_ik-b_i}
-  &= \int_{\R^r} \tilde g_i(b_i) f(t_i, \delta_i, y_i | b_i, G_i = k ; \theta^{(w)}) f(b_i ; \theta^{(w)}) \dd b_i
+  &= \int_{\R^r} \tilde g(b_i) f(t_i, \delta_i, y_i | b_i, G_i = k ; \theta^{(w)}) f(b_i ; \theta^{(w)}) \dd b_i
 \end{align}
-and $\Lambda_{ik,1}^{\theta^{(w)}}$ obtained from $\Lambda_{ik,\tilde g_i}^{\theta^{(w)}}$ taking $\tilde g_i: b_i \mapsto 1$.
+and $\Lambda_{ik,1}^{\theta^{(w)}}$ obtained from $\Lambda_{ik,\tilde g}^{\theta^{(w)}}$ taking $\tilde g: b_i \mapsto 1$.
 The integral in~\eqref{eq:Lambda_ik-b_i|y_i} or~\eqref{eq:Lambda_ik-b_i} is not tractable analytically, and some form of approximation must be used in practice. Standard numerical integration techniques (such as Gaussian quadrature) are not well suited in our high-dimensional context. We then propose to use Monte Carlo approximation, which has already been applied for generalized linear mixed models~\citep{booth1999maximizing}, with antithetic normal variates method~\citep{hammersley1956new} to reduce variance of the simulation result. Algorithm~\ref{alg:construct-set-S} describes how to construct the set $S_{ik}^{(w)}$ used for the approximation.
 
 \vspace{.5cm}
@@ -488,6 +493,8 @@ $C_i^{(w)}{C_i^{(w)}}^\top = \text{M}_i^1$ \tcp{Cholesky decomposition} \nonumbe
 
 \vspace{.5cm}
 
+\texttt{define $\Sigma_i$}
+
 \noindent One can either choose $\left\{ \begin{array}{ll} \text{M}_i^1 &= W_i \\ \text{M}_{ik}^2 &= W_iV_i^T\Sigma_i^{-1}(y_i - U_i\beta_k) \end{array} \right.$ based on~\eqref{eq:Lambda_ik-b_i|y_i}, where in the Gaussian case used in practice, one can sample from
 \begin{align*}
   y_i | G_i = k &\sim \cN\big(U_i\beta_k, V_iDV_i^\top + \Sigma_i\big) \\
@@ -498,12 +505,12 @@ with $W_i = (V_i^\top\Sigma_i^{-1}V_i + D^{-1})^{-1}$, or one can choose $\left\
 The approximation of~\eqref{eq:def-E-g-tilde} is finally obtained by
 \begin{equation}
   \label{eq:def-hat-E-g-tilde}
-  \hat \E_{\theta^{(w)}}[ \tilde g_i(b_i) | t_i, \delta_i, y_i] = \dfrac{ \sum_{k=0}^{K-1} \pi_{\xi_k^{(w)}}(x_i) \hat \Lambda_{ik,\tilde g_i}^{\theta^{(w)}}}{\sum_{k=0}^{K-1} \pi_{\xi_k^{(w)}}(x_i) \hat \Lambda_{ik,1}^{\theta^{(w)}}}
+  \hat \E_{\theta^{(w)}}[ \tilde g(b_i) | t_i, \delta_i, y_i] = \dfrac{ \sum_{k=0}^{K-1} \pi_{\xi_k^{(w)}}(x_i) \hat \Lambda_{ik,\tilde g}^{\theta^{(w)}}}{\sum_{k=0}^{K-1} \pi_{\xi_k^{(w)}}(x_i) \hat \Lambda_{ik,1}^{\theta^{(w)}}}
 \end{equation}
 with
 \begin{equation}
   \label{eq:hat_Lambda_ik}
-  \hat \Lambda_{ik,\tilde g_i}^{\theta^{(w)}} = \dfrac{1}{2N} \sum_{\breve{b} \in S_{ik}^{(w)}} \tilde g_i(\breve{b}) f(t_i, \delta_i | \breve{b}, G_i = k ; \theta^{(w)}).
+  \hat \Lambda_{ik,\tilde g}^{\theta^{(w)}} = \dfrac{1}{2N} \sum_{\breve{b} \in S_{ik}^{(w)}} \tilde g(\breve{b}) f(t_i, \delta_i | \breve{b}, G_i = k ; \theta^{(w)}).
 \end{equation}
 
 It is common in Monte Carlo EM to increase $N$ with the iterations $w$~\citep{wei1990monte} since it is computationally inefficient to use a large $N$ in the early steps of the algorithm, when $\theta^{(w)}$ is far from $\hat \theta$. Multiple techniques have been proposed (see for instance~\citet{law2002joint} where a subjectively rule is followed, or~\citet{booth1999maximizing} that uses a rule based on confidence intervals for $\theta^{(w)}$ which requires additional variance estimation). We opt for a simple automated approach using relative differences of the objective function defined in~\eqref{eq:pen-log-lik} (see Algorithm~\ref{alg:QNMCEM}).
@@ -516,16 +523,6 @@ Now in the case $g = g_k$, one has $\E_{\theta^{(w)}}[g_k(Gi) | t_i, \delta_i, y
 
 \paragraph*{Quasi-Newton M-step.}
 Here, we need to compute \[\theta^{(w+1)} \in \argmin_{\theta \in \R^\vartheta} \cQ_n(\theta, \theta^{(w)}) + \sum_{k=0}^{K-1} \zeta_{1,k} \norm{\xi_k}_{\text{en}, \eta} + \zeta_{2,k} \norm{\gamma_k}_{\text{sg} l_1, \tilde{\eta}}.\]
-Let us introduce the following useful notations
-\begin{equation}
-  \label{eq:g-tilde-1-2}
-  \left\{
-    \begin{array}{ll}
-        \tilde g_{i, s, \gamma_k}^1&: b_i \mapsto \exp \big\{\tilde g_{s, \gamma_k}^2(b_i) \big\}, \\
-        \tilde g_{s, \gamma_k}^2&: b_i \mapsto \sum_{l=1}^L \sum_{a=1}^\cA {\gamma_{k,a}^l}^\top \varphi_a(s, b_i^l).
-    \end{array}
-  \right. 
-\end{equation}
 We then present the parameters updates in the order given in Algorithm~\ref{alg:QNMCEM}.
 First, the update of $D^{(w)}$ is naturally given in closed-form by
 \begin{equation}
@@ -567,25 +564,25 @@ based on the quantities involved in $\cQ_n(\theta, \theta^{(w)})$ depending on $
   \beta_k^{(w+1)} \in \argmin_{\beta_k \in \R^q} R^{(w)}_{n,k}(\beta_k).
 \end{equation}
 The gradient of $R_{n,k}^{(w)}$ for the Gaussian case is here given by
-\begin{align}
+\begin{equation}
   \label{eq:grad-beta_k}
-  \frac{\partial R_{n,k}^{(w)}(\beta_k)}{\partial \beta_k^l} = -n^{-1} &\sum_{i=1}^n \hat \pi_{ik}^{\theta^{(w)}} \Big[U_{il}^\top {\phi_l^{(w)}}^{-1}I_{n_{il}} (y_i^l - U_{il}\beta_k^l - V_{il}\hat \E_{\theta^{(w)}}[ b_i | t_i, \delta_i, y_i])\Big]
-\end{align}
-for all $l = 1, \ldots, L$. The closed-form update is then given by
+  \frac{\partial R_{n,k}^{(w)}(\beta_k)}{\partial \beta_k} = -n^{-1} \sum_{i=1}^n \hat \pi_{ik}^{\theta^{(w)}} \Big[ U_{i}^\top \Sigma_i^{(w)} I_{n_{i}} (y_i - U_{i}\beta_k - V_{i}\hat \E_{\theta^{(w)}}[ b_i | t_i, \delta_i, y_i])\Big].
+\end{equation}
+The closed-form update is then given by
 
 \begin{equation}
   \label{eq:update_beta}
-  {\beta_k^l}^{(w+1)}= \dfrac{\sum_{i=1}^n\hat \pi_{ik}^{\theta^{(w)}} \Big[U_{il}^\top I_{n_{il}} (y_i^l - V_{il}\hat \E_{\theta^{(w)}}[ b_i | t_i, \delta_i, y_i])\Big]}{\sum_{i=1}^n \hat \pi_{ik}^{\theta^{(w)}} \Big[U_{il}^\top I_{n_{il}} U_{il} \Big]}.
+  {\beta_k}^{(w+1)}= \dfrac{\sum_{i=1}^n\hat \pi_{ik}^{\theta^{(w)}} \Big[U_i^\top I_{n_i} (y_i - V_i\hat \E_{\theta^{(w)}}[ b_i | t_i, \delta_i, y_i])\Big]}{\sum_{i=1}^n \hat \pi_{ik}^{\theta^{(w)}} U_i^\top I_{n_i} U_i}.
 \end{equation}
 Now, for the update of $\gamma_k^{(w)}$ for $k=0, \ldots, K-1$, we denote
 \begin{align*}
-  Q^{(w)}_{n,k}(\gamma_k) = -n^{-1} \sum_{i=1}^n \hat \pi_{ik}^{\theta^{(w)}} \Big[ &\delta_i \hat \E_{\theta^{(w)}}[ \log \circ \tilde g_{i, t_i, \gamma_k}^1(b_i) | t_i, \delta_i, y_i] \\
-  & - \sum_{j=1}^J \lambda_0^{(w)}(t_j) \hat \E_{\theta^{(w)}}[ \tilde g_{i, t_j, \gamma_k}^1(b_i) | t_i, \delta_i, y_i] \ind{\{t_j\leq t_i\}} \Big]
+  Q^{(w)}_{n,k}(\gamma_k) = -n^{-1} \sum_{i=1}^n \hat \pi_{ik}^{\theta^{(w)}} \Big[ &\delta_i \hat \E_{\theta^{(w)}}[ \gamma_k^\top \Psi_i(t_i) | t_i, \delta_i, y_i] \\
+  & - \sum_{j=1}^J \lambda_0^{(w)}(t_j) \hat \E_{\theta^{(w)}}[\exp \big\{\gamma_k^\top \Psi_i(t_j)\big\} | t_i, \delta_i, y_i] \ind{\{t_j\leq t_i\}} \Big]
 \end{align*}
-based on the quantities involved in $\cQ_n(\theta, \theta^{(w)})$ that depend on $\gamma_k$, with $\tilde g_{i, t_j, \gamma_k}^1$ defined in~\eqref{eq:g-tilde-1-2}. The integration over the survival process has been replaced with a finite sum over the process evaluated at the distinct event times $(t_1, \ldots, t_J)$ with $J \in~\N_+$, since $\lambda_0^{(w)}$ defined in~\eqref{eq:update_lambda_0} is always zero except at observed event times. The update for $\gamma_k^{(w)}$ requires to solve the following minimization problem
+based on the quantities involved in $\cQ_n(\theta, \theta^{(w)})$ that depend on $\gamma_k$. The integration over the survival process has been replaced with a finite sum over the process evaluated at the distinct event times $(t_1, \ldots, t_J)$ with $J \in~\N_+$, since $\lambda_0^{(w)}$ defined in~\eqref{eq:update_lambda_0} is always zero except at observed event times. The update for $\gamma_k^{(w)}$ requires to solve the following minimization problem
 \begin{equation}
   \label{eq:minimization-gamma_k}
-  \gamma_k^{(w+1)} \in \argmin_{\gamma_k \in \R^{L\mathcal{A}}} Q^{(w)}_{n,k}(\gamma_k) + \zeta_{2,k} \norm{\gamma_k}_{\text{sg} l_1, \tilde{\eta}}.
+  \gamma_k^{(w+1)} \in \argmin_{\gamma_k \in \R^{L\sA}} Q^{(w)}_{n,k}(\gamma_k) + \zeta_{2,k} \norm{\gamma_k}_{\text{sg} l_1, \tilde{\eta}}.
 \end{equation}
 
 The previous trick we used to handle the non-differentiability of the $\ell_1$ part in the elastic net is no longer sufficient for~\eqref{eq:minimization-beta_k}, since the $\ell_2$ norm in the sparse group lasso is not squared, leading to a non-differentiability at 0 (which is precisely the criterion exploited by the penalty to set some groups of coefficients to exactly 0~\citep{simon2013sparse}). Then, we choose to solve problem~\eqref{eq:minimization-beta_k} using the proximal gradient descent~\citep{boyd2004convex} described in Algorithm~\ref{alg:ISTA}, where we first define
@@ -634,14 +631,14 @@ Note that the warmstart initialization is left to the user's choice, as well as 
 \begin{align}
   \label{eq:grad-Q-2}
   &\frac{\partial Q_{n,k}^{(w)}(\gamma_k)}{\partial \gamma_{k,a}^l} = -n^{-1} \sum_{i=1}^n \hat \pi_{ik}^{\theta^{(w)}} \Big[ \delta_i  \hat \E_{\theta^{(w)}}[ \varphi_a(t_i, b_i^l) | t_i, \delta_i, y_i] \\ \nonumber
-   &\qquad\qquad - \sum_{j=1}^J \lambda_0^{(w)}(t_j) \hat \E_{\theta^{(w)}}[ \varphi_a(t_j, b_i^l) \tilde g_{i, t_j, \gamma_k}^1(b_i) | t_i, \delta_i, y_i] \ind{\{t_j\leq t_i\}} \Big]
+   &\qquad\qquad - \sum_{j=1}^J \lambda_0^{(w)}(t_j) \hat \E_{\theta^{(w)}}[ \varphi_a(t_j, b_i^l) \tilde g^1_{t_j, \gamma_k}(b_i) | t_i, \delta_i, y_i] \ind{\{t_j\leq t_i\}} \Big]
 \end{align}
 for all $a = 1, \ldots, \mathcal{A}$ and $l = 1, \ldots, L$.
 
 For the update of $\lambda_0^{(w)}$, we treat the jump size at the observed event times as parameters to be estimated~\citep{klein1992semiparametric}. The closed-form update is then given by
 \begin{equation}
   \label{eq:update_lambda_0}
-  \lambda_0^{(w+1)}(t)= \dfrac{\sum_{i=1}^n \delta_i \ind{\{t=t_i\}}}{\sum_{i=1}^n \sum_{k=0}^{K-1} \hat \pi_{ik}^{\theta^{(w)}} \hat \E_{\theta^{(w)}}\Big[ \tilde g_{i, t, \gamma_k^{(w+1)}}^1(b_i) | t_i, \delta_i, y_i \Big] \ind{\{t_i \geq t\}} },
+  \lambda_0^{(w+1)}(t)= \dfrac{\sum_{i=1}^n \delta_i \ind{\{t=t_i\}}}{\sum_{i=1}^n \sum_{k=0}^{K-1} \hat \pi_{ik}^{\theta^{(w)}} \hat \E_{\theta^{(w)}}\Big[ \tilde g^1_{t, \gamma_k^{(w+1)}}(b_i) | t_i, \delta_i, y_i \Big] \ind{\{t_i \geq t\}} },
 \end{equation}
 which is a Breslow like estimator~\citep{breslow1972contribution} adapted to our model. 
 
@@ -674,7 +671,7 @@ Compute the starting parameters $\theta^{(0)} \in \R^\vartheta$ \\
 \For{$w = 1,\ldots,$ until convergence}    
 { 
   \tcc{Monte Carlo E-step}
-  Compute $\hat \Lambda_{ik,\tilde g_i}^{\theta^{(w)}}$ using~\eqref{eq:hat_Lambda_ik} for the required functions $\tilde g_i$\\
+  Compute $\hat \Lambda_{ik,\tilde g}^{\theta^{(w)}}$ using~\eqref{eq:hat_Lambda_ik} for the required functions $\tilde g$\\
   Compute $\hat \pi_{ik}^{\theta^{(w)}}$ using~\eqref{eq:hat_pi_ik-def}\\
   \If{Condition}
   {
@@ -1109,6 +1106,24 @@ And finally for the $\phi$ update, one has
 \phi_l^{(w+1)} = n_l^{-1} \big[&(y^l - U^l{\beta_l^{(w+1)})}^\top \big(y^l - U^l\beta_l^{(w+1)} - 2 V^l (\tilde\mu^l)^{(w)}\big) \\
 &+ \text{Tr}\big\{{V^l}^\top V^l \big({\Omega^l}^{(w)} + (\tilde\mu^l)^{(w)} {(\tilde\mu^l)^{(w)}}^\top\big)\big\} \big].
 \end{align*}
+
+\subsection{\texttt{QNMCEM class}}
+
+Let us introduce the following useful notations
+\begin{equation}
+  \label{eq:g-tilde}
+  \left\{
+    \begin{array}{ll}
+    \tilde g^1&: b_i \mapsto b_i,\\
+    \tilde g^2&: b_i \mapsto b_ib_i^\top, \\
+    \tilde g^3_{s}&: b_i \mapsto \Psi_i(s), \\
+    \tilde g^4_{s, \gamma_k}&: b_i \mapsto \exp \big\{\gamma_k^\top g^3_{s}(b_i) \big\}, \\
+    \tilde g^5_{s, \gamma_k}&: b_i \mapsto b_i g^4_{s, \gamma_k}(b_i), \\
+    \tilde g^6_{s, \gamma_k}&: b_i \mapsto g^3_{s}(b_i)^\top g^4_{s}(b_i).
+    \end{array}
+  \right. 
+\end{equation}
+
 
 \bibliography{biblio}
 \bibliographystyle{plainnat}{}
