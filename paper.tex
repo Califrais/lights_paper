@@ -410,10 +410,10 @@ In order to avoid overfitting and improve the prediction power of our method, we
   \label{eq:pen-log-lik}
 	\ell_n^\text{pen}(\theta) = - \ell_n(\theta) + \sum_{k=0}^{K-1} \zeta_{1,k} \norm{\xi_k}_{\text{en}, \eta} + \zeta_{2,k} \norm{\gamma_k}_{\text{sg} l_1, \tilde{\eta}}
 \end{equation}
-where for all $k=0, \ldots, K-1$, we add an elastic net regularization~\citep{zou2005regularization} of the vector $\xi_k$ and a sparse group lasso regularization~\citep{simon2013sparse} of the vectors $\gamma_k$, for tuning hyper-parameters $(\zeta_{1,k}, \zeta_{2,k})^\top \in \R_+^2$. Here, $(\eta, \tilde{\eta}) \in [0, 1]^2$ are fixed and we denote
+where for all $k=0, \ldots, K-1$, we add an elastic net regularization~\citep{zou2005regularization} of the vector $\xi_k$ and a sparse group lasso regularization~\citep{simon2013sparse} of the vector $\gamma_k$, for tuning hyper-parameters $(\zeta_{1,k}, \zeta_{2,k})^\top \in \R_+^2$. Here, $(\eta, \tilde{\eta}) \in [0, 1]^2$ are fixed and we denote
 \[ \norm{z}_{\text{en}, \eta} = (1-\eta)\norm{z}_1 + \dfrac\eta2 \norm{z}_2^2 \]
-for any vector $z$, that is a linear combination of the lasso ($\ell_1$) and ridge (squared $\ell_2$) penalties, and
-\[ \norm{z}_{\text{sg} l_1, \tilde{\eta}} = (1-\tilde{\eta})\norm{z}_1 + \tilde{\eta} \sum_{l=1}^L\norm{z}_{2,l} \] for the sparse group lasso penalty with $\norm{z}_{2,l}=\norm{z^l}_2$, for which we do not have to account for group sizes since they all have the same one. 
+for the elastic net penalty of any vector $z$, that is a linear combination of the lasso ($\ell_1$) and ridge (squared $\ell_2$) penalties, and
+\[ \norm{z}_{\text{sg} l_1, \tilde{\eta}} = (1-\tilde{\eta})\norm{z}_1 + \tilde{\eta} \sum_{l=1}^L\norm{z}_{2,l} \] for the sparse group lasso penalty of any vector $z$, with $\norm{z}_{2,l}=\norm{z^l}_2$, and for which we do not have to account for group sizes since they all have the same one. 
 Hence, the resulting optimization problem is written
 \begin{equation}
   \label{eq:optim-pb}
@@ -574,7 +574,7 @@ The closed-form update is then given by
   \label{eq:update_beta}
   {\beta_k}^{(w+1)}= \dfrac{\sum_{i=1}^n\hat \pi_{ik}^{\theta^{(w)}} \Big[U_i^\top I_{n_i} (y_i - V_i\hat \E_{\theta^{(w)}}[ b_i | t_i, \delta_i, y_i])\Big]}{\sum_{i=1}^n \hat \pi_{ik}^{\theta^{(w)}} U_i^\top I_{n_i} U_i}.
 \end{equation}
-Now, for the update of $\gamma_k^{(w)}$ for $k=0, \ldots, K-1$, we denote
+Now, for the update of $\gamma_k^{(w)}$ for $k=0, \ldots, K-1$, we similarly denote
 \begin{align*}
   Q^{(w)}_{n,k}(\gamma_k) = -n^{-1} \sum_{i=1}^n \hat \pi_{ik}^{\theta^{(w)}} \Big[ &\delta_i \hat \E_{\theta^{(w)}}[ \gamma_k^\top \Psi_i(t_i) | t_i, \delta_i, y_i] \\
   & - \sum_{j=1}^J \lambda_0^{(w)}(t_j) \hat \E_{\theta^{(w)}}[\exp \big\{\gamma_k^\top \Psi_i(t_j)\big\} | t_i, \delta_i, y_i] \ind{\{t_j\leq t_i\}} \Big]
@@ -649,11 +649,11 @@ Finally, for the update of $\phi^{(w)}$ and regarding Table~\ref{table:glm}, we 
   & - 2V_{il} \hat \E_{\theta^{(w)}}[ b_i^l | t_i, \delta_i, y_i]\Big) \nonumber \\
   & + \Tr\big(V_{il}^\top V_{il}\hat \E_{\theta^{(w)}}[ b_i^l {b_i^l}^\top | t_i, \delta_i, y_i]\big) \Big].
 \end{align}
-Appendix~\ref{sec:?} gives some details about the way we implement the equations and their computation in practice.
+Appendix~\ref{sec:QNMCEM class} gives some details about the way we implement the equations and their computation in practice.
 
 \paragraph*{Initialization.}
 Our algorithm gives a local minimum, and it is clever to choose an initial value $\theta^{(0)}$ close to the final solution $\hat \theta$, so that the number of iterations required to reach convergence is reduced. We then give some details about the starting point $\theta^{(0)}$ of Algorithm~\ref{alg:QNMCEM}. 
-For all $k = 0, \ldots, K-1$, we first choose $\xi_k^{(0)} = \mathbf{0}_d$ and ${\gamma_{k,a}^l}^{(0)} = 0$ for all $l=1, \ldots, L$ and $a=1, \ldots, \cA$. Then, we initialize $\lambda_0^{(0)}$ like if there is no subgroup ($\gamma_{0}^{(0)} = \cdots = \gamma_{K-1}^{(0)}$) with a standard Cox proportional hazards regression with time-independent features using the \texttt{Python} library \texttt{tick}. Finally, the longitudinal submodels parameters $\beta_k^{(0)}$, $D^{(0)}$ and $\phi^{(0)}$ are initialized -- again like if there is no subgroup ($\beta_0^{(0)} = \cdots = \beta_{K-1}^{(0)}$) -- using a multivariate linear mixed model with an explicit EM algorithm (the details are given in Appendix~\ref{sec:MLMM}), being itself initialized with univariates fits using the \texttt{Python} package \texttt{statsmodels}.
+For all $k = 0, \ldots, K-1$, we first choose $\xi_k^{(0)} = \mathbf{0}_d$ and ${\gamma_{k,a}^l}^{(0)} = 0$ for all $l=1, \ldots, L$ and $a=1, \ldots, \cA$. Then, we initialize $\lambda_0^{(0)}$ like if there is no subgroup ($\gamma_{0}^{(0)} = \cdots = \gamma_{K-1}^{(0)}$) with a standard Cox proportional hazards regression with time-independent features using the \texttt{Python} library \texttt{tick}. Finally, the longitudinal submodels parameters $\beta_k^{(0)}$, $D^{(0)}$ and $\phi^{(0)}$ are initialized -- again like if there is no subgroup ($\beta_0^{(0)} = \cdots = \beta_{K-1}^{(0)}$) -- using a multivariate linear mixed model with an explicit EM algorithm (details on the algorithm are given in Appendix~\ref{sec:MLMM}, and details on the implementation in Appendix~\ref{sec:MLMM class}), being itself initialized with univariates fits using the \texttt{Python} package \texttt{statsmodels}.
 
 \paragraph*{The QNMCEM algorithm.}
 Algorithm~\ref{alg:QNMCEM} describes the main steps of the resulting QNMCEM algorithm to solve the optimization problem~\eqref{eq:optim-pb}. 
@@ -1075,6 +1075,7 @@ and \[D^{(w+1)} = n^{-1} \sum_{i=1}^n \E_{\theta^{(w)}}[ b_i {b_i}^\top | y_i].\
 \label{sec:package}
 
 \subsection{\texttt{MLMM class}}
+\label{sec:MLMM class}
 
 This class implements an EM algorithm for fitting a multivariate linear mixed model used to initialize the MCQNEM algorithm.
 Let us introduce the list $\Omega^{(w)} = [\Omega_1^{(w)}, \ldots, \Omega_n^{(w)}]$, the matrices $\mu = [\mu_1, \ldots, \mu_n] \in \R^{r \times n}$, $U^l = [{U_{1l}}^\top \cdots {U_{nl}}^\top]^\top \in \R^{n_l \times q_l}$, $U = [U_1^\top \cdots U_n^\top]^\top \in \R^{\cN \times q}$,
@@ -1108,6 +1109,7 @@ And finally for the $\phi$ update, one has
 \end{align*}
 
 \subsection{\texttt{QNMCEM class}}
+\label{sec:QNMCEM class}
 
 Let us introduce the following useful notations
 \begin{equation}
