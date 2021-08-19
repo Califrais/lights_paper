@@ -577,9 +577,9 @@ The closed-form update is then given by
 Now, for the update of $\gamma_k^{(w)}$ for $k=0, \ldots, K-1$, we similarly denote
 \begin{align*}
   Q^{(w)}_{n,k}(\gamma_k) = -n^{-1} \sum_{i=1}^n \hat \pi_{ik}^{\theta^{(w)}} \Big[ &\delta_i \hat \E_{\theta^{(w)}}[ \gamma_k^\top \Psi_i(t_i) | t_i, \delta_i, y_i] \\
-  & - \sum_{j=1}^J \lambda_0^{(w)}(t_j) \hat \E_{\theta^{(w)}}[\exp \big\{\gamma_k^\top \Psi_i(t_j)\big\} | t_i, \delta_i, y_i] \ind{\{t_j\leq t_i\}} \Big]
+  & - \sum_{j=1}^{J-1} (t_{j+1}-t_j) \lambda_0^{(w)}(t_j) \hat \E_{\theta^{(w)}}[\exp \big\{\gamma_k^\top \Psi_i(t_j)\big\} | t_i, \delta_i, y_i] \ind{\{t_j < t_i\}} \Big]
 \end{align*}
-based on the quantities involved in $\cQ_n(\theta, \theta^{(w)})$ that depend on $\gamma_k$. The integration over the survival process has been replaced with a finite sum over the process evaluated at the distinct event times $(t_1, \ldots, t_J)$ with $J \in~\N_+$, since $\lambda_0^{(w)}$ defined in~\eqref{eq:update_lambda_0} is always zero except at observed event times. The update for $\gamma_k^{(w)}$ requires to solve the following minimization problem
+based on the quantities involved in $\cQ_n(\theta, \theta^{(w)})$ that depend on $\gamma_k$. The integration over the survival process has been replaced with a finite sum over the process evaluated at the distinct event times $(t_1, \ldots, t_J)$ with $J \in~\N_+$, since $\lambda_0^{(w)}$ defined in~\eqref{eq:update_lambda_0} is piecewise-constant with jumps at observed event times. The update for $\gamma_k^{(w)}$ requires to solve the following minimization problem
 \begin{equation}
   \label{eq:minimization-gamma_k}
   \gamma_k^{(w+1)} \in \argmin_{\gamma_k \in \R^{L\sA}} Q^{(w)}_{n,k}(\gamma_k) + \zeta_{2,k} \norm{\gamma_k}_{\text{sg} l_1, \tilde{\eta}}.
@@ -631,16 +631,16 @@ Note that the warmstart initialization is left to the user's choice, as well as 
 \begin{align}
   \label{eq:grad-Q-2}
   &\frac{\partial Q_{n,k}^{(w)}(\gamma_k)}{\partial \gamma_{k,a}^l} = -n^{-1} \sum_{i=1}^n \hat \pi_{ik}^{\theta^{(w)}} \Big[ \delta_i  \hat \E_{\theta^{(w)}}[ \varphi_a(t_i, b_i^l) | t_i, \delta_i, y_i] \\ \nonumber
-   &\qquad\qquad - \sum_{j=1}^J \lambda_0^{(w)}(t_j) \hat \E_{\theta^{(w)}}[ \varphi_a(t_j, b_i^l) \exp \big\{\gamma_k^\top \Psi_i(t_j)\big\} | t_i, \delta_i, y_i] \ind{\{t_j\leq t_i\}} \Big]
+   &\qquad\qquad - \sum_{j=1}^{J-1} (t_{j+1}-t_j) \lambda_0^{(w)}(t_j) \hat \E_{\theta^{(w)}}[ \varphi_a(t_j, b_i^l) \exp \big\{\gamma_k^\top \Psi_i(t_j)\big\} | t_i, \delta_i, y_i] \ind{\{t_j < t_i\}} \Big]
 \end{align}
 for all $a = 1, \ldots, \mathcal{A}$ and $l = 1, \ldots, L$.
 
-For the update of $\lambda_0^{(w)}$, we treat the jump size at the observed event times as parameters to be estimated~\citep{klein1992semiparametric}. The closed-form update is then given by
+Then we consider a piecewise-constant estimator $\lambda_0^{(w)}$ for the baseline hazard with jumps at each uncensored observed event times. Hence, we treat the jump size as parameters to be estimated~\citep{klein1992semiparametric}, and the closed-form update obtained by cancelling the gradient is given by
 \begin{equation}
   \label{eq:update_lambda_0}
-  \lambda_0^{(w+1)}(t)= \dfrac{\sum_{i=1}^n \delta_i \ind{\{t=t_i\}}}{\sum_{i=1}^n \sum_{k=0}^{K-1} \hat \pi_{ik}^{\theta^{(w)}} \hat \E_{\theta^{(w)}}\Big[\exp \big\{{\gamma_k^{(w+1)}}^\top \Psi_i(t)\big\} | t_i, \delta_i, y_i \Big] \ind{\{t_i \geq t\}} },
+  \lambda_0^{(w+1)}(t_j)= \dfrac{\sum_{i=1}^n \delta_i \ind{\{t_j=t_i\}}}{\sum_{i=1}^n \sum_{k=0}^{K-1} \hat \pi_{ik}^{\theta^{(w)}} \hat \E_{\theta^{(w)}}\Big[\exp \big\{{\gamma_k^{(w+1)}}^\top \Psi_i(t_j)\big\} | t_i, \delta_i, y_i \Big] \ind{\{t_i \geq t_j\}} },
 \end{equation}
-which is a Breslow like estimator~\citep{breslow1972contribution} adapted to our model. 
+for all $j=1, \ldots, n$, which is a Breslow like estimator~\citep{breslow1972contribution} adapted to our model. 
 
 Finally, for the update of $\phi^{(w)}$ and regarding Table~\ref{table:glm}, we focus on the Gaussian case being particularly useful in practice. It is obtained in closed-form by
 \begin{align}
