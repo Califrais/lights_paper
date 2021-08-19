@@ -631,14 +631,14 @@ Note that the warmstart initialization is left to the user's choice, as well as 
 \begin{align}
   \label{eq:grad-Q-2}
   &\frac{\partial Q_{n,k}^{(w)}(\gamma_k)}{\partial \gamma_{k,a}^l} = -n^{-1} \sum_{i=1}^n \hat \pi_{ik}^{\theta^{(w)}} \Big[ \delta_i  \hat \E_{\theta^{(w)}}[ \varphi_a(t_i, b_i^l) | t_i, \delta_i, y_i] \\ \nonumber
-   &\qquad\qquad - \sum_{j=1}^J \lambda_0^{(w)}(t_j) \hat \E_{\theta^{(w)}}[ \varphi_a(t_j, b_i^l) \tilde g^1_{t_j, \gamma_k}(b_i) | t_i, \delta_i, y_i] \ind{\{t_j\leq t_i\}} \Big]
+   &\qquad\qquad - \sum_{j=1}^J \lambda_0^{(w)}(t_j) \hat \E_{\theta^{(w)}}[ \varphi_a(t_j, b_i^l) \exp \big\{\gamma_k^\top \Psi_i(t_j)\big\} | t_i, \delta_i, y_i] \ind{\{t_j\leq t_i\}} \Big]
 \end{align}
 for all $a = 1, \ldots, \mathcal{A}$ and $l = 1, \ldots, L$.
 
 For the update of $\lambda_0^{(w)}$, we treat the jump size at the observed event times as parameters to be estimated~\citep{klein1992semiparametric}. The closed-form update is then given by
 \begin{equation}
   \label{eq:update_lambda_0}
-  \lambda_0^{(w+1)}(t)= \dfrac{\sum_{i=1}^n \delta_i \ind{\{t=t_i\}}}{\sum_{i=1}^n \sum_{k=0}^{K-1} \hat \pi_{ik}^{\theta^{(w)}} \hat \E_{\theta^{(w)}}\Big[ \tilde g^1_{t, \gamma_k^{(w+1)}}(b_i) | t_i, \delta_i, y_i \Big] \ind{\{t_i \geq t\}} },
+  \lambda_0^{(w+1)}(t)= \dfrac{\sum_{i=1}^n \delta_i \ind{\{t=t_i\}}}{\sum_{i=1}^n \sum_{k=0}^{K-1} \hat \pi_{ik}^{\theta^{(w)}} \hat \E_{\theta^{(w)}}\Big[\exp \big\{{\gamma_k^{(w+1)}}^\top \Psi_i(t)\big\} | t_i, \delta_i, y_i \Big] \ind{\{t_i \geq t\}} },
 \end{equation}
 which is a Breslow like estimator~\citep{breslow1972contribution} adapted to our model. 
 
@@ -1118,8 +1118,7 @@ Let us introduce the following useful notations
     \tilde g^2&: b_i \mapsto b_ib_i^\top, \\
     \tilde g^3_{s}&: b_i \mapsto \Psi_i(s), \\
     \tilde g^4_{s, \gamma_k}&: b_i \mapsto \exp \big\{\gamma_k^\top g^3_{s}(b_i) \big\}, \\
-    \tilde g^5_{s, \gamma_k}&: b_i \mapsto b_i g^4_{s, \gamma_k}(b_i), \\
-    \tilde g^6_{s, \gamma_k}&: b_i \mapsto g^3_{s}(b_i)^\top g^4_{s}(b_i).
+    \tilde g^5_{s, \gamma_k}&: b_i \mapsto g^3_{s}(b_i)^\top g^4_{s}(b_i).
     \end{array}
   \right. 
 \end{equation}
