@@ -69,6 +69,7 @@
 \newcommand{\cH}{\mathcal H}
 \newcommand{\cB}{\mathcal B}
 \newcommand{\cS}{\mathcal S}
+\newcommand{\cI}{\mathcal I}
 \newcommand{\R}{\mathds R}
 \newcommand{\N}{\mathds N}
 \newcommand{\E}{\mathds E}
@@ -492,7 +493,7 @@ $C_i^{(w)}{C_i^{(w)}}^\top = \text{M}_i^1$ \tcp{Cholesky decomposition} \nonumbe
 
 \vspace{.5cm}
 
-\texttt{define $\Sigma_i$}
+\texttt{TODO Van Tuan : define $\Sigma_i$}
 
 \noindent One can either choose $\left\{ \begin{array}{ll} \text{M}_i^1 &= W_i \\ \text{M}_{ik}^2 &= W_iV_i^T\Sigma_i^{-1}(y_i - U_i\beta_k) \end{array} \right.$ based on~\eqref{eq:Lambda_ik-b_i|y_i}, where in the Gaussian case used in practice, one can sample from
 \begin{align*}
@@ -975,7 +976,81 @@ All the methodology discussed in this paper is implemented in \texttt{Python}. T
 \section{Proof of Lemma~\ref{lemma:prox-sgl1}}
 \label{sec:proof-lemma-prox-sgl1}
 
+\texttt{TODO Simon : rewrite the proof properly}
 
+The proximal operator for any function $f : R^p \to R$ is defined by
+\begin{equation}
+    \label{eq:prox-def}
+    \text{prox}_{f}(u) = \argmin_{x \in \R^p} \{\frac{1}{2}\norm{x - u}_2^2 + f(x)\}.
+\end{equation}
+\begin{lemma} 
+The following holds
+\begin{equation*}
+    \text{prox}_{\lambda_1 \norm{\cdot}_1 + \lambda_2 \sum_{l=1}^L  \norm{\cdot}_{2,l}}
+    = \text{prox}_{\lambda_2 \sum_{l=1}^L \norm{\cdot}_{2,l}} \circ \text{prox}_{\lambda_1 \norm{\cdot}_1}
+\end{equation*}
+where $prox_{\lambda_1 \norm{\cdot}_1 + \lambda_2 \sum_{l=1}^L \norm{\cdot}_2}$ is the proximal operator for the sparse group lasso regulariser, $prox_{\lambda_2 \sum_{l=1}^L \norm{\cdot}_2}$ is the proximal operator for the group lasso regulariser and $prox_{\lambda_1 \norm{\cdot}_1}$ is the proximal operator for the lasso regulariser. $\lambda_1 > 0$, $\lambda_2 > 0$ are regularization parameters, $\norm{\cdot}_{2,l}$ denotes the Euclidean norm on features in l-th group.
+\end{lemma}
+
+\begin{proof}
+Denote 
+\begin{equation*}
+    k(x) =  \frac{1}{2}\norm{ x - \text{prox}_{\lambda_1 \norm{\cdot}_1}(\beta)}_2^2 + \lambda_2 \sum_{l=1}^L \norm{x}_{2,l}
+\end{equation*}
+then we have the proximal operator (see~\eqref{eq:prox-def}) for the group lasso regulariser with $u = \text{prox}_{\lambda_1 \norm{\cdot}_1}(\beta)$ is given by
+\begin{equation*}
+    \text{prox}_{\lambda_2 \sum_{l=1}^L \norm{\cdot}}\big(\text{prox}_{\lambda_1 \norm{\cdot}_1}(\beta)\big) = \argmin_x k(x).
+\end{equation*}
+The sub-differential \texttt{[REF]} of $k(\cdot)$ at $x$ is given by
+\begin{equation*}
+    \partial k(x) = x - \text{prox}_{\lambda_1 \norm{\cdot}_1}(\beta) + \partial( \lambda_2 \sum_{l=1}^L \norm{x}_{2,l} )
+\end{equation*}
+It is clear that $k(\cdot)$ is convex function. Denote the unique minimizer of $k(\cdot)$ is $x^\star$. The sufficient and necessary condition for the optimality of $x^\star$ is 
+\begin{equation}
+    \label{eq:opt_gl}
+    0 \in x^* - \text{prox}_{\lambda_1 \norm{\cdot}_1}(\beta) + \partial( \lambda_2 \sum_{l=1}^L \norm{x^\star}_{2,l} ).
+\end{equation}
+\texttt{[REF]}.
+Denote $y = \text{prox}_{\lambda_1\norm{\cdot}_1}(\beta)$. From Lemma 1 in ~\citet{yuan2011efficient}, one has that $\text{SGN}(y) \subseteq \text{SGN}(x^*)$\\
+where \[\text{SGN}(x) = 
+\left\{
+  \begin{array}{ll}
+    \{1\} &\text{if } x > 0, \\ 
+    $[-1, 1]$ &\text{if } x = 0, \\ 
+    \{-1\} &\text{if } x < 0. 
+  \end{array}
+\right. \]
+which is the sub-differential of the l1 norm. \texttt{[REF]} \\
+\noindent Denote 
+\begin{equation*}
+    h(x) =  \frac{1}{2}\norm{x - \beta}_2^2 + \lambda_1 \norm{x}_1 + \lambda_2 \sum_{l=1}^L \norm{x}_{2,l}
+\end{equation*}
+then we have the  proximal  operator  for  the  sparse  group  lasso  regulariser is given by
+\begin{equation*}
+    \text{prox}_{\lambda_1 \norm{\cdot}_1 + \lambda_2 \sum_{l=1}^L \norm{\cdot}}(\beta) = \argmin_{x} \{ h(x)\}.
+\end{equation*}
+Denote the sub-differential of $h(\cdot)$ at $x$ is given by
+\begin{align*}
+    \partial(h(x)) &= x - \beta + \partial(\lambda_1 \norm{x}_1) + \partial( \lambda_2 \sum_{l=1}^L \norm{x}_{2, l} ) \\
+    &= x - \beta + \lambda_1 \text{SGN}(x) + \partial( \lambda_2 \sum_{l=1}^L \norm{x}_{2, l} )
+\end{align*}
+
+\noindent We need to prove that $0 \in \partial\big(h(x^\star)\big)$. We can easily prove that 
+\begin{equation*}
+    y = \text{prox}_{\lambda_1 \norm{\cdot}_1}(\beta) 
+    = \argmin_{u} \{\norm{u - \beta}_2^2 + \lambda_1 \norm{u}_1\} 
+    = \beta - \lambda_1 \text{SGN}(y) \in \beta - \lambda_1 \text{SGN}(x^*).
+\end{equation*}
+Hence
+\begin{equation}
+    \label{eq:opt_gl_in_sgl}
+    x^\star - \text{prox}_{\lambda_1 \norm{\cdot}_1}(\beta) + \partial( \lambda_2 \sum_{l=1}^L \norm{x^\star}_{2, l} ) \in x^\star- \beta + \lambda_1 \text{SGN}(x^\star) + \partial( \lambda_2 \sum_{l=1}^L \norm{x^\star}_{2, l} )
+\end{equation}
+It follows from ~\eqref{eq:opt_gl}- ~\eqref{eq:opt_gl_in_sgl} that $0 \in \partial(h(x^\star))$. Hence
+\begin{equation*}
+    \text{prox}_{\lambda_1 \norm{\cdot}_1 + \lambda_2 \sum_{l=1}^L \norm{\cdot}} = \text{prox}_{\lambda_2 \sum_{l=1}^L \norm{\cdot}} \circ \text{prox}_{\lambda_1 \norm{\cdot}_1}
+\end{equation*}
+\end{proof}
 
 \section{Automatic cross-validation grid for $\xi$}
 \label{sec:auto-grid-cv}
@@ -1122,6 +1197,29 @@ Let us introduce the following useful notations
     \end{array}
   \right. 
 \end{equation}
+We also denote 
+\[ \cI_1 = 
+\begin{bmatrix}
+  \ind{\{t_{1} = t_1^u\}}  & \cdots & \ind{\{t_{1} = t_J^u\}}\\
+  \vdots &  \ddots & \vdots \\
+  \ind{\{t_{n} = t_1^u\}} & \cdots & \ind{\{t_{n} = t_J^u\}}
+\end{bmatrix}
+\in \R^{n \times J}
+\quad \text{and} \quad 
+\cI_2 = 
+\begin{bmatrix}
+  \ind{\{t_{1} \leq t_1^u\}} & \cdots & \ind{\{t_{1} \leq t_J^u\}}\\
+  \vdots &  \ddots & \vdots \\
+  \ind{\{t_{n} \leq t_1^u\}} & \cdots & \ind{\{t_{n} \leq t_J^u\}}
+\end{bmatrix}
+\in \R^{n \times J} \]
+some matrices to compare each event times with the vector of distinct event times. Those matrices are widely used in practice to replace indicators. For instance
+\begin{align*}
+f(t_i, \delta_i| b_i, G_i = k ; \theta) &= \Big( \sum_{j=1}^J \lambda_0(t_j) \tilde g_{i, t_j, \gamma_k^, \beta_k}^1 \ind{\{t_j = t_i\}} \Big)^{\delta_i} \exp \Big( - \sum_{j=1}^J \lambda_0(t_j) \tilde g_{i, t_j, \gamma_k, \beta_k}^1 \ind{\{t_j \leq t_i\}} \Big) \\
+& = \Big( \text{sum}(\mathbf{\lambda_0} \tilde g_{\gamma_k, \beta_k}^1 \cI_1) \Big)^{\delta_i} \exp \Big( - \text{sum} (\mathbf{\lambda_0} \tilde g_{\gamma_k, \beta_k}^1\cI_2) \Big)
+\end{align*}
+
+\texttt{TODO Van Tuan : rewrite the two previous lines addind the $^{(w)}$ (else it's not true ! since it's only ok for the estimator) + the rigth $\tilde g$ + introduce undefined notations.}
 
 
 \bibliography{biblio}
