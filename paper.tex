@@ -269,7 +269,6 @@ Figure~\ref{fig:graphical-model} below gives the graphical representation for th
         (gamma) edge (lambda)
         (W) edge (lambda)
         (G) edge (lambda)
-        (X) edge (lambda)
         (lambda) edge (T)
         ;
 
@@ -576,7 +575,7 @@ The closed-form update is then given by
 \end{equation}
 Now, for the update of $\gamma_k^{(w)}$ for $k=0, \ldots, K-1$, we similarly denote
 \begin{align*}
-  Q^{(w)}_{n,k}(\gamma_k) = -n^{-1} \sum_{i=1}^n \hat \pi_{ik}^{\theta^{(w)}} \Big[ &\delta_i \hat \E_{\theta^{(w)}}[ \gamma_k^\top \Psi_i(t_i) | t_i, \delta_i, y_i] \\
+  Q^{(w)}_{n,k}(\gamma_k) = -n^{-1} \sum_{i=1}^n &\hat\pi_{ik}^{\theta^{(w)}} \Big[\delta_i \hat \E_{\theta^{(w)}}[ \gamma_k^\top \Psi_i(t_i) | t_i, \delta_i, y_i] \\
   & - \sum_{j=1}^{J-1} (t_{j+1}-t_j) \lambda_0^{(w)}(t_j) \hat \E_{\theta^{(w)}}[\exp \big\{\gamma_k^\top \Psi_i(t_j)\big\} | t_i, \delta_i, y_i] \ind{\{t_j < t_i\}} \Big]
 \end{align*}
 based on the quantities involved in $\cQ_n(\theta, \theta^{(w)})$ that depend on $\gamma_k$. The integration over the survival process has been replaced with a finite sum over the process evaluated at the distinct event times $(t_1, \ldots, t_J)$ with $J \in~\N_+$, since $\lambda_0^{(w)}$ defined in~\eqref{eq:update_lambda_0} is piecewise-constant with jumps at observed event times. The update for $\gamma_k^{(w)}$ requires to solve the following minimization problem
@@ -645,9 +644,8 @@ for all $j=1, \ldots, n$, which is a Breslow like estimator~\citep{breslow1972co
 Finally, for the update of $\phi^{(w)}$ and regarding Table~\ref{table:glm}, we focus on the Gaussian case being particularly useful in practice. It is obtained in closed-form by
 \begin{align}
   \label{eq:update_phi}
-  \phi_l^{(w+1)} = \big(\sum_{i=1}^n n_i^l \big)^{-1} \sum_{i=1}^n \sum_{k=0}^{K-1} \hat \pi_{ik}^{\theta^{(w)}} \Big[ &\big(y_i^l - U_{il} {\beta_k^l}^{(w+1)}\big)^\top \Big(y_i^l - U_{il} {\beta_k^l}^{(w+1)} \nonumber \\
-  & - 2V_{il} \hat \E_{\theta^{(w)}}[ b_i^l | t_i, \delta_i, y_i]\Big) \nonumber \\
-  & + \Tr\big(V_{il}^\top V_{il}\hat \E_{\theta^{(w)}}[ b_i^l {b_i^l}^\top | t_i, \delta_i, y_i]\big) \Big].
+  \phi_l^{(w+1)} = \big(\sum_{i=1}^n n_i^l \big)^{-1} &\sum_{i=1}^n \sum_{k=0}^{K-1} \hat \pi_{ik}^{\theta^{(w)}} \Big[ \big(y_i^l - U_{il} {\beta_k^l}^{(w+1)}\big)^\top \Big(y_i^l - U_{il} {\beta_k^l}^{(w+1)} \nonumber \\
+  & - 2V_{il} \hat \E_{\theta^{(w)}}[ b_i^l | t_i, \delta_i, y_i]\Big) + \Tr\big(V_{il}^\top V_{il}\hat \E_{\theta^{(w)}}[ b_i^l {b_i^l}^\top | t_i, \delta_i, y_i]\big) \Big].
 \end{align}
 Appendix~\ref{sec:QNMCEM class} gives some details about the way we implement the equations and their computation in practice.
 
