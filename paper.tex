@@ -577,9 +577,9 @@ The closed-form update is then given by
 Now, for the update of $\gamma_k^{(w)}$ for $k=0, \ldots, K-1$, we similarly denote
 \begin{align*}
   Q^{(w)}_{n,k}(\gamma_k) = -n^{-1} \sum_{i=1}^n &\hat\pi_{ik}^{\theta^{(w)}} \Big[\delta_i \hat \E_{\theta^{(w)}}[ \gamma_k^\top \Psi_i(t_i) | t_i, \delta_i, y_i] \\
-  & - \sum_{j=1}^{J-1} (t_{j+1}-t_j) \lambda_0^{(w)}(t_j) \hat \E_{\theta^{(w)}}[\exp \big\{\gamma_k^\top \Psi_i(t_j)\big\} | t_i, \delta_i, y_i] \ind{\{t_j < t_i\}} \Big]
+  & - \sum_{j=1}^{J-1} (t_{j+1}^u-t_j^u) \lambda_0^{(w)}(t_j^u) \hat \E_{\theta^{(w)}}[\exp \big\{\gamma_k^\top \Psi_i(t_j^u)\big\} | t_i, \delta_i, y_i] \ind{\{t_j^u < t_i\}} \Big]
 \end{align*}
-based on the quantities involved in $\cQ_n(\theta, \theta^{(w)})$ that depend on $\gamma_k$. The integration over the survival process has been replaced with a finite sum over the process evaluated at the distinct event times $(t_1, \ldots, t_J)$ with $J \in~\N_+$, since $\lambda_0^{(w)}$ defined in~\eqref{eq:update_lambda_0} is piecewise-constant with jumps at observed event times. The update for $\gamma_k^{(w)}$ requires to solve the following minimization problem
+based on the quantities involved in $\cQ_n(\theta, \theta^{(w)})$ that depend on $\gamma_k$. The integration over the survival process has been replaced with a finite sum over the process evaluated at the distinct event times $(t_1^u, \ldots, t_J^u)$ with $J \in~\N_+$, since $\lambda_0^{(w)}$ defined in~\eqref{eq:update_lambda_0} is piecewise-constant with jumps at observed event times. The update for $\gamma_k^{(w)}$ requires to solve the following minimization problem
 \begin{equation}
   \label{eq:minimization-gamma_k}
   \gamma_k^{(w+1)} \in \argmin_{\gamma_k \in \R^{L\sA}} Q^{(w)}_{n,k}(\gamma_k) + \zeta_{2,k} \norm{\gamma_k}_{\text{sg} l_1, \tilde{\eta}}.
@@ -631,7 +631,7 @@ Note that the warmstart initialization is left to the user's choice, as well as 
 \begin{align}
   \label{eq:grad-Q-2}
   &\frac{\partial Q_{n,k}^{(w)}(\gamma_k)}{\partial \gamma_{k,a}^l} = -n^{-1} \sum_{i=1}^n \hat \pi_{ik}^{\theta^{(w)}} \Big[ \delta_i  \hat \E_{\theta^{(w)}}[ \varphi_a(t_i, b_i^l) | t_i, \delta_i, y_i] \\ \nonumber
-   &\qquad\qquad - \sum_{j=1}^{J-1} (t_{j+1}-t_j) \lambda_0^{(w)}(t_j) \hat \E_{\theta^{(w)}}[ \varphi_a(t_j, b_i^l) \exp \big\{\gamma_k^\top \Psi_i(t_j)\big\} | t_i, \delta_i, y_i] \ind{\{t_j < t_i\}} \Big]
+   &\qquad\qquad - \sum_{j=1}^{J-1} (t_{j+1}^u-t_j^u) \lambda_0^{(w)}(t_j^u) \hat \E_{\theta^{(w)}}[ \varphi_a(t_j, b_i^l) \exp \big\{\gamma_k^\top \Psi_i(t_j^u)\big\} | t_i, \delta_i, y_i] \ind{\{t_j^u < t_i\}} \Big]
 \end{align}
 for all $a = 1, \ldots, \mathcal{A}$ and $l = 1, \ldots, L$.
 
