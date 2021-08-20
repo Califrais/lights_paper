@@ -629,7 +629,7 @@ Hence, we update $\gamma_k^{(w)}$ with the following step
 \end{equation}
 Note that the warmstart initialization is left to the user's choice, as well as the ISTA acceleration~\citep{beck2009fast}, since warmstart can diminish acceleration effectiveness~\citep{tibshirani2010proximal}. The gradient of $Q_{n,k}^{(w)}$ is here given by
 \begin{align}
-  \label{eq:grad-Q-2}
+  \label{eq:grad-Q}
   &\frac{\partial Q_{n,k}^{(w)}(\gamma_k)}{\partial \gamma_{k,a}^l} = -n^{-1} \sum_{i=1}^n \hat \pi_{ik}^{\theta^{(w)}} \Big[ \delta_i  \hat \E_{\theta^{(w)}}[ \varphi_a(t_i, b_i^l) | t_i, \delta_i, y_i] \\ \nonumber
    &\qquad\qquad - \sum_{j=1}^{J-1} (t_{j+1}^u-t_j^u) \lambda_0^{(w)}(t_j^u) \hat \E_{\theta^{(w)}}[ \varphi_a(t_j, b_i^l) \exp \big\{\gamma_k^\top \Psi_i(t_j^u)\big\} | t_i, \delta_i, y_i] \ind{\{t_j^u < t_i\}} \Big]
 \end{align}
@@ -1081,7 +1081,7 @@ Hence, we choose the following upper bound for the randomly chosen candidate int
 \begin{equation*}
 \zeta_{1,k}^{\text{max}} = \frac{1}{n(1-\eta)} \underset{j = 1, \dots, p}{\text{max}} \sum_{i=1}^n |x_{ij}|.
 \end{equation*}
-Similar strategy to automatically compute $\zeta_{2,k}^{\text{max}}$ is not easy since without additionnal hypothesis, the gradients~\ref{eq:grad-beta_k},~\ref{eq:grad-Q-1} and~\ref{eq:grad-Q-2} are not upper bounded by a quantity that depends only on the data and not on the current iteration parameters estimates. We then choose those interval upper bounds empirically.
+Similar strategy to automatically compute $\zeta_{2,k}^{\text{max}}$ is not easy since without additionnal hypothesis, the gradients~\ref{eq:grad-beta_k} and~\ref{eq:grad-Q} are not upper bounded by a quantity that depends only on the data and not on the current iteration parameters estimates. We then choose those interval upper bounds empirically.
 
 \section{Event time simulation}
 \label{sec:event-time-simu}
