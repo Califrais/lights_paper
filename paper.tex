@@ -638,7 +638,7 @@ for all $a = 1, \ldots, \mathcal{A}$ and $l = 1, \ldots, L$.
 Then we consider a piecewise-constant estimator $\lambda_0^{(w)}$ for the baseline hazard with jumps at each uncensored observed event times. Hence, we treat the jump size as parameters to be estimated~\citep{klein1992semiparametric}, and the closed-form update obtained by cancelling the gradient is given by
 \begin{equation}
   \label{eq:update_lambda_0}
-  \lambda_0^{(w+1)}(t_j)= \dfrac{\sum_{i=1}^n \delta_i \ind{\{t_j=t_i\}}}{\sum_{i=1}^n \sum_{k=0}^{K-1} \hat \pi_{ik}^{\theta^{(w)}} \hat \E_{\theta^{(w)}}\Big[\exp \big\{{\gamma_k^{(w+1)}}^\top \Psi_i(t_j)\big\} | t_i, \delta_i, y_i \Big] \ind{\{t_i \geq t_j\}} },
+  \lambda_0^{(w+1)}(t_j)= \dfrac{\sum_{i=1}^n \delta_i \ind{\{t_j=t_i\}}}{\sum_{i=1}^n \sum_{k=0}^{K-1} \hat \pi_{ik}^{\theta^{(w)}} (t_{j+1}^u-t_j^u) \hat \E_{\theta^{(w)}}\Big[\exp \big\{{\gamma_k^{(w+1)}}^\top \Psi_i(t_j)\big\} | t_i, \delta_i, y_i \Big] \ind{\{t_i \geq t_j\}} },
 \end{equation}
 for all $j=1, \ldots, n$, which is a Breslow like estimator~\citep{breslow1972contribution} adapted to our model. 
 
