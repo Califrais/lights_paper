@@ -1216,10 +1216,10 @@ We also denote
 some matrices to compare each event times with the vector of distinct event times. Those matrices are widely used in practice to replace indicators. For instance
 \begin{align*}
 f(t_i, \delta_i| b_i, G_i = k ; \theta^{(w)}) &= \big[\lambda_0^{(w)}(t_i) \exp \big\{{\gamma_k^{(w)}}^\top\Psi_i(t_i) \big\} \big]^{\delta_i} \exp \Big( - \sum_{j=1}^{J-1} (t_{j+1}^u-t_j^u) \lambda_0^{(w)}(t_j^u) \exp \big\{{\gamma_k^{(w)}}^\top \Psi_i(t_j^u)\big\} \ind{\{t_j^u < t_i\}} \Big) \\
-& = \big[\lambda_0^{(w)}(t_i) g^4_{t_i, \gamma_k}(b_i) \big]^{\delta_i} \exp \Big( - \sum_{j=1}^{J-1} (t_{j+1}^u-t_j^u) \lambda_0^{(w)}(t_j^u) g^4_{t_j^u, \gamma_k}(b_i) \ind{\{t_j^u < t_i\}} \Big)
+& = \big[\lambda_0^{(w)}(t_i) g^4_{t_i, \gamma_k}(b_i) \big]^{\delta_i} \exp \Big( - \sum_{j=1}^{J-1} (t_{j+1}^u-t_j^u) \lambda_0^{(w)}(t_j^u) g^4_{t_j^u, \gamma_k}(b_i) \ind{\{t_j^u < t_i\}} \Big) \\
+f(T, \Delta| S^{(w)}, G = k ; \theta^{(w)}) &= \big\{ \underset{J}{\text{sum }} \big[g^4_{\gamma_k} \lambda_0^{(w)} \cI_1 \big] \big\}^{\Delta} \exp \Big( - \underset{J}{\text{sum }} \big[g^4_{\gamma_k} \lambda_0^{(w)} \Delta T\cI_2 \big] \Big)
 \end{align*}
-
-\texttt{TODO Van Tuan : update matrix formulation.}
+where $\Delta T = (t^u_2 - t^u_1  \cdots t^u_J - t^u_{J - 1}) \in \R^{J - 1}$.
 
 
 \bibliography{biblio}
