@@ -347,7 +347,10 @@ The conditional distribution of $y_i|b_i, G_i=k$ is then assumed to be from a di
 	f(y_i|b_i, G_i=k) = \exp \big\{(y_i \odot \Phi_i)^\top M_{ik} - c_\phi(M_{ik}) + d_\phi(y_i) \big\},
 \end{equation}
 with 
-\[ \Phi_i = (\phi_1^{-1} {\textbf{1}_{n_i^1}}^\top \cdots \phi_L^{-1} {\textbf{1}_{n_i^L}}^\top)^\top \in \R^{n_i} \] 
+\begin{equation}
+  \label{eq:def-Phi_i} 
+  \Phi_i = (\phi_1^{-1} {\textbf{1}_{n_i^1}}^\top \cdots \phi_L^{-1} {\textbf{1}_{n_i^L}}^\top)^\top \in \R^{n_i}
+\end{equation} 
 and $\phi = (\phi_1, \ldots, \phi_L)^\top \in \R^L$.
 The density described in~\eqref{eq:exp-family-density} encompasses several distributions, see Table~\ref{table:glm}. The functions $c_\phi(\cdot)$ and $d_\phi(\cdot)$ are known as well as the dispersion parameters $\phi_l$, while parameters $\beta_k$ have to be estimated. Note that $d_\phi(\cdot)$ is related to the normalizing constant.
 \begin{table}[htb]
@@ -493,14 +496,12 @@ $C_i^{(w)}{C_i^{(w)}}^\top = \text{M}_i^1$ \tcp{Cholesky decomposition} \nonumbe
 
 \vspace{.5cm}
 
-\noindent where $\Sigma_i$ is a diagonal matrix whose diagonal is $\Phi_i$.
-
-\noindent One can either choose $\left\{ \begin{array}{ll} \text{M}_i^1 &= W_i \\ \text{M}_{ik}^2 &= W_iV_i^T\Sigma_i^{-1}(y_i - U_i\beta_k) \end{array} \right.$ based on~\eqref{eq:Lambda_ik-b_i|y_i}, where in the Gaussian case used in practice, one can sample from
+\noindent One can either choose $\left\{ \begin{array}{ll} \text{M}_i^1 &= W_i \\ \text{M}_{ik}^2 &= W_iV_i^T\Sigma_i^{-1}(y_i - U_i\beta_k) \end{array} \right.$ based on~\eqref{eq:Lambda_ik-b_i|y_i} and where $\Sigma_i$ is the diagonal matrix whose diagonal is $\Phi_i$ (defined in~\eqref{eq:def-Phi_i}), where in the Gaussian case used in practice, one can sample from
 \begin{align*}
   y_i | G_i = k &\sim \cN\big(U_i\beta_k, V_iDV_i^\top + \Sigma_i\big) \\
   b_i | y_i, G_i=k &\sim \cN \big(W_iV_i^T\Sigma_i^{-1}(y_i - U_i\beta_k), W_i\big)  
 \end{align*}
-with $W_i = (V_i^\top\Sigma_i^{-1}V_i + D^{-1})^{-1}$, or one can choose $\left\{ \begin{array}{ll} \text{M}_i^1 &= D^{(w)} \\ \text{M}_{ik}^2 &= 0 \end{array} \right.$ based on~\eqref{eq:Lambda_ik-b_i} using a sampling $b_i \sim \cN(0, D^{(w)})$. The advantage of this second option is that $S_{ik}^{(w)}$ does not depend on $i$ nor $k$, which significantly improves computational performances, even though the variance is bigger than the first option (see Appendix~\ref{sec:?}). We then let the practitioner choose the option in our implementation, since the second one could be more appropriated for a cross-validation phase for instance.
+with $W_i = (V_i^\top\Sigma_i^{-1}V_i + D^{-1})^{-1}$, or one can choose $\left\{ \begin{array}{ll} \text{M}_i^1 &= D^{(w)} \\ \text{M}_{ik}^2 &= 0 \end{array} \right.$ based on~\eqref{eq:Lambda_ik-b_i} using a sampling $b_i \sim \cN(0, D^{(w)})$. The advantage of this second option is that $S_{ik}^{(w)}$ does not depend on $i$ nor $k$, which significantly improves computational performances. We then implement this option in practice, being more appropriated in our high-dimensional context.
 
 The approximation of~\eqref{eq:def-E-g-tilde} is finally obtained by
 \begin{equation}
