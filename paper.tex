@@ -1220,17 +1220,22 @@ f(t_i, \delta_i| b_i, G_i = k ; \theta^{(w)}) = &\big(\lambda_0^{(w)}(t_i) g^4_{
 \end{align*}
 so that one can compute the tensor
 \[ \underset{J}{\text{sum}} \big( \boldsymbol{g^4_{\gamma_k}} \boldsymbol{\lambda_0^{(w)}} \cI_1 \big)^{\boldsymbol{\delta}} \exp \big\{- \underset{J}{\text{sum}} \big(\boldsymbol{g^4_{\gamma_k}} \boldsymbol{\lambda_0^{(w)}} \cI_2 \big) \big\} \in \R^{n \times 2N} \]
+or the updated baseline hazard function~\eqref{eq:update_lambda_0} can be rewrote as
+\begin{equation*}
+  \label{eq:update_lambda_0_matrix}
+  \lambda_0^{(w+1)}(t)= \dfrac{\underset{n}{\text{sum }} \boldsymbol{\delta} \cI_1 }{\underset{n}{\text{sum }} \underset{K = 2}{\text{sum }} \hat \E_{\theta^{(w)}}[\boldsymbol{g^4}] \cI_2 \boldsymbol{\hat \pi^{\theta^{(w)}}}  },
+\end{equation*}
 where 
 \begin{equation*}
   \left\{
     \begin{array}{ll}
     \boldsymbol{g^4_{\gamma_k}} \in \R^{2N \times J} \text{ with } \big[\boldsymbol{g^4_{\gamma_k}}\big]_{i, j} = g^4_{t_j^u, \gamma_k^{(w)}}(\breve{b}_i) , \\
     \boldsymbol{\lambda_0^{(w)}} = \big(\lambda_0^{(w)}(t_1^u), \ldots, \lambda_0^{(w)}(t_J^u) \big)^\top \in \R^J, \\
-    \boldsymbol{\delta} = (\delta_1, \ldots, \delta_n)^\top \in \R^n.
+    \boldsymbol{\delta} = (\delta_1, \ldots, \delta_n)^\top \in \R^n, \\
+    \boldsymbol{\hat \pi^{\theta^{(w)}}} \in \R^{2 \times n} \text{ with }  \boldsymbol{\hat \pi_1^{\theta^{(w)}}}= (\hat \pi_{11}^{\theta^{(w)}}, \ldots, \hat \pi_{n1}^{\theta^{(w)}})^\top \in \R^n \text{ and } \boldsymbol{\hat\pi_0^{\theta^{(w)}}} = 1 - \boldsymbol{\hat\pi_1^{\theta^{(w)}}}.
     \end{array}
   \right. 
 \end{equation*}
-
 
 \bibliography{biblio}
 \bibliographystyle{plainnat}{}
