@@ -370,8 +370,8 @@ The density described in~\eqref{eq:exp-family-density} encompasses several distr
 \end{table}
 
 Let us denote 
-\[ \theta = \big(\xi_0^\top \cdots \xi_{K-1}^\top, \beta_0^\top \cdots \beta_{K-1}^\top, \phi^\top, \text{vech}(D), \lambda_0, \gamma_0^\top \cdots \gamma_{K-1}^\top\big)^\top \in \R^\vartheta \]
-the collection of the $\vartheta \in \N_+$ unknown parameters to estimate. Note that for ease of notations, we include $\lambda_0$ in $\theta$ although it is a function.
+\[ \theta = \big(\xi_0^\top \cdots \xi_{K-1}^\top, \beta_0^\top \cdots \beta_{K-1}^\top, \phi^\top, \text{vech}(D), \lambda_0^\top, \gamma_0^\top \cdots \gamma_{K-1}^\top\big)^\top \in \R^\vartheta \]
+the collection of the $\vartheta \in \N_+$ unknown parameters to estimate. Note that we include $\lambda_0$ in $\theta$. Indeed, we will estimate the baseline using nonparametric maximum likelihood, as a function taking mass at each failure time. So in $\theta$, $\lambda_0$ represents the vector of these baseline hazard quantities, with a dimension equal to the number of unique failure times (denoted $J$ thereafter).
 To write the log-likelihood $\ell_n(\theta)$ (rescaled by $n^{-1}$)  for samples in $\cD_n$, corresponding to the joint distribution of the time-to-event and longitudinal outcomes, let us make the following hypothesis.
 \begin{assumption}
 \label{indep-hyp-3}
@@ -578,9 +578,9 @@ The closed-form update is then given by
 Now, for the update of $\gamma_k^{(w)}$ for $k=0, \ldots, K-1$, we similarly denote
 \begin{align*}
   Q^{(w)}_{n,k}(\gamma_k) = -n^{-1} \sum_{i=1}^n &\hat\pi_{ik}^{\theta^{(w)}} \Big[\delta_i \hat \E_{\theta^{(w)}}[ \gamma_k^\top \Psi_i(t_i) | t_i, \delta_i, y_i] \\
-  & - \sum_{j=1}^{J-1} (t_{j+1}^u-t_j^u) \lambda_0^{(w)}(t_j^u) \hat \E_{\theta^{(w)}}[\exp \big\{\gamma_k^\top \Psi_i(t_j^u)\big\} | t_i, \delta_i, y_i] \ind{\{t_j^u < t_i\}} \Big]
+  & - \sum_{j=1}^J \lambda_0^{(w)}(t_j^u) \hat \E_{\theta^{(w)}}[\exp \big\{\gamma_k^\top \Psi_i(t_j^u)\big\} | t_i, \delta_i, y_i] \ind{\{t_j^u \leq t_i\}} \Big]
 \end{align*}
-based on the quantities involved in $\cQ_n(\theta, \theta^{(w)})$ that depend on $\gamma_k$. The integration over the survival process has been replaced with a finite sum over the process evaluated at the distinct event times $(t_1^u, \ldots, t_J^u)$ with $J \in~\N_+$, since $\lambda_0^{(w)}$ defined in~\eqref{eq:update_lambda_0} is piecewise-constant with jumps at observed event times. The update for $\gamma_k^{(w)}$ requires to solve the following minimization problem
+based on the quantities involved in $\cQ_n(\theta, \theta^{(w)})$ that depend on $\gamma_k$. The integration over the survival process has been replaced with a finite sum over the process evaluated at the distinct event times $(t_1^u, \ldots, t_J^u)$ with $J \in~\N_+$, since $\lambda_0^{(w)}$ defined in~\eqref{eq:update_lambda_0} is always zero except at observed event times. The update for $\gamma_k^{(w)}$ requires to solve the following minimization problem
 \begin{equation}
   \label{eq:minimization-gamma_k}
   \gamma_k^{(w+1)} \in \argmin_{\gamma_k \in \R^{L\sA}} Q^{(w)}_{n,k}(\gamma_k) + \zeta_{2,k} \norm{\gamma_k}_{\text{sg} l_1, \tilde{\eta}}.
@@ -632,16 +632,16 @@ Note that the warmstart initialization is left to the user's choice, as well as 
 \begin{align}
   \label{eq:grad-Q}
   &\frac{\partial Q_{n,k}^{(w)}(\gamma_k)}{\partial \gamma_{k,a}^l} = -n^{-1} \sum_{i=1}^n \hat \pi_{ik}^{\theta^{(w)}} \Big[ \delta_i  \hat \E_{\theta^{(w)}}[ \varphi_a(t_i, b_i^l) | t_i, \delta_i, y_i] \\ \nonumber
-   &\qquad\qquad - \sum_{j=1}^{J-1} (t_{j+1}^u-t_j^u) \lambda_0^{(w)}(t_j^u) \hat \E_{\theta^{(w)}}[ \varphi_a(t_j^u, b_i^l) \exp \big\{\gamma_k^\top \Psi_i(t_j^u)\big\} | t_i, \delta_i, y_i] \ind{\{t_j^u < t_i\}} \Big]
+   &\qquad\qquad - \sum_{j=1}^J \lambda_0^{(w)}(t_j^u) \hat \E_{\theta^{(w)}}[ \varphi_a(t_j^u, b_i^l) \exp \big\{\gamma_k^\top \Psi_i(t_j^u)\big\} | t_i, \delta_i, y_i] \ind{\{t_j^u \leq t_i\}} \Big]
 \end{align}
 for all $a = 1, \ldots, \mathcal{A}$ and $l = 1, \ldots, L$.
 
-Then we consider a piecewise-constant estimator $\lambda_0^{(w)}$ for the baseline hazard with jumps at each uncensored observed event times. Hence, we treat the jump size as parameters to be estimated~\citep{klein1992semiparametric}, and the closed-form update obtained by cancelling the gradient is given by
+For the update of $\lambda_0^{(w)}$, we treat the jump size at each uncensored observed event times as parameters to be estimated~\citep{klein1992semiparametric}, and the closed-form update obtained by cancelling the gradient is given by
 \begin{equation}
   \label{eq:update_lambda_0}
-  \lambda_0^{(w+1)}(t_j)= \dfrac{\sum_{i=1}^n \delta_i \ind{\{t_j=t_i\}}}{\sum_{i=1}^n \sum_{k=0}^{K-1} \hat \pi_{ik}^{\theta^{(w)}} (t_{j+1}^u-t_j^u) \hat \E_{\theta^{(w)}}\Big[\exp \big\{{\gamma_k^{(w+1)}}^\top \Psi_i(t_j)\big\} | t_i, \delta_i, y_i \Big] \ind{\{t_i \geq t_j\}} },
+  \lambda_0^{(w+1)}(t)= \dfrac{\sum_{i=1}^n \delta_i \ind{\{t=t_i\}}}{\sum_{i=1}^n \sum_{k=0}^{K-1} \hat \pi_{ik}^{\theta^{(w)}} \hat \E_{\theta^{(w)}}\Big[\exp \big\{{\gamma_k^{(w+1)}}^\top \Psi_i(t)\big\} | t_i, \delta_i, y_i \Big] \ind{\{t_i \geq t\}} },
 \end{equation}
-for all $j=1, \ldots, n$, which is a Breslow like estimator~\citep{breslow1972contribution} adapted to our model. 
+for all $t \geq 0$, which is a Breslow like estimator~\citep{breslow1972contribution} adapted to our model. 
 
 Finally, for the update of $\phi^{(w)}$ and regarding Table~\ref{table:glm}, we focus on the Gaussian case being particularly useful in practice. It is obtained in closed-form by
 \begin{align}
@@ -1186,8 +1186,7 @@ And finally for the $\phi$ update, one has
 \label{sec:QNMCEM class}
 
 Let us introduce the following useful notations
-\begin{equation}
-  \label{eq:g-tilde}
+\begin{equation*}
   \left\{
     \begin{array}{ll}
     \tilde g^1&: b_i \mapsto b_i,\\
@@ -1197,7 +1196,7 @@ Let us introduce the following useful notations
     \tilde g^5_{s, \gamma_k}&: b_i \mapsto g^3_{s}(b_i)^\top g^4_{s}(b_i).
     \end{array}
   \right. 
-\end{equation}
+\end{equation*}
 We also denote 
 \[ \cI_1 = 
 \begin{bmatrix}
@@ -1217,19 +1216,17 @@ We also denote
 some matrices to compare each event times with the vector of distinct event times. Those matrices are widely used in practice to replace indicators. For instance
 \begin{align*}
 f(t_i, \delta_i| b_i, G_i = k ; \theta^{(w)}) = &\big(\lambda_0^{(w)}(t_i) g^4_{t_i, \gamma_k^{(w)}}(b_i) \big)^{\delta_i} \\ 
-&\times \exp \Big\{ - \sum_{j=1}^{J-1} (t_{j+1}^u-t_j^u) \lambda_0^{(w)}(t_j^u) g^4_{t_j^u, \gamma_k^{(w)}}(b_i) \ind{\{t_j^u < t_i\}} \Big\}
+&\times \exp \Big\{ - \sum_{j=1}^J \lambda_0^{(w)}(t_j^u) g^4_{t_j^u, \gamma_k^{(w)}}(b_i) \ind{\{t_j^u \leq t_i\}} \Big\}
 \end{align*}
 so that one can compute the tensor
-\[ \underset{J}{\text{sum}} \big( \boldsymbol{g^4_{\gamma_k}} \boldsymbol{\lambda_0^{(w)}} \cI_1 \big)^{\boldsymbol{\delta}} \exp \big\{- \underset{J}{\text{sum}} \big(\boldsymbol{g^4_{\gamma_k}} \boldsymbol{\lambda_0^{(w)}} \boldsymbol{t^u} \cI_2 \big) \big\} \in \R^{??} \]
+\[ \underset{J}{\text{sum}} \big( \boldsymbol{g^4_{\gamma_k}} \boldsymbol{\lambda_0^{(w)}} \cI_1 \big)^{\boldsymbol{\delta}} \exp \big\{- \underset{J}{\text{sum}} \big(\boldsymbol{g^4_{\gamma_k}} \boldsymbol{\lambda_0^{(w)}} \cI_2 \big) \big\} \in \R^{n \times 2N} \]
 where 
 \begin{equation*}
-  \label{eq:g-tilde}
   \left\{
     \begin{array}{ll}
     \boldsymbol{g^4_{\gamma_k}} \in \R^{2N \times J} \text{ with } \big[\boldsymbol{g^4_{\gamma_k}}\big]_{i, j} = g^4_{t_j^u, \gamma_k^{(w)}}(\breve{b}_i) , \\
-    \boldsymbol{\lambda_0^{(w)}} = \big(\lambda_0^{(w)}(t_1^u), \ldots, \lambda_0^{(w)}(t_{J-1}^u) \big)^\top \in \R^{J - 1}, \\
-    \boldsymbol{\delta} = (\delta_1, \ldots, \delta_n)^\top \in \R^n , \\
-    \boldsymbol{t^u} = (t^u_2 - t^u_1, \ldots, t^u_J - t^u_{J - 1})^\top \in \R^{J - 1}.
+    \boldsymbol{\lambda_0^{(w)}} = \big(\lambda_0^{(w)}(t_1^u), \ldots, \lambda_0^{(w)}(t_J^u) \big)^\top \in \R^J, \\
+    \boldsymbol{\delta} = (\delta_1, \ldots, \delta_n)^\top \in \R^n.
     \end{array}
   \right. 
 \end{equation*}
