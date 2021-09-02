@@ -841,14 +841,7 @@ where $t \geq 0$, the error term $\epsilon_i^l(t) \sim \cN(0, \sigma_l^2)$, the 
 \end{bmatrix} 
 \Big) \]
 for $k \in \{0, 1\}$ and with correlation $\rho_3 \in (0, 1)$, so that $\beta_k^l$ coefficients are both positive for high-risk subjects ($G_i=1$), which favours increasing trajectories with positive values, and negative otherwise ($G_i=0$), which favours decreasing trajectories with negative values. This choice makes sens regarding that for simplicity, we take joint association parameters being all positive, see~\eqref{eq:gamma-sparse}.
-
-Most joint modeling simulation studies use fixed time points~\citep{hickey2018joinerml}, that is $n_i^l = n_i^{l'}$ and $t_{ij}^l = t_{ij}^{l'}$ for all $(l, l') \in \{1, \ldots, L\}^2$ and $j = 1, \ldots, n_i^l$ for a given subject $i$, but it does not reflect actual behavior in practice, since data measurements of the different longitudinal processes are barely done simultaneously. For this reason, the simulation of realistic longitudinal features is not trivial and we use Hawkes processes~\citep{hawkes1974cluster} with exponential kernels to generate measurement times, which is a family of counting process with an autoregressive intensity. 
-Hawkes processes model self-exciting behavior, that is in our case, when the measurement of one longitudinal process makes future measurements of the process -- as well as those of others processes, in a multivariate way -- more likely to happen.
-Namely, for a subject $i$, times $\{t_{ij}^l\}_{j \geq 1}$ for processes $l=1, \ldots, L$ are simulated using a multivariate Hawkes process $N_{it} = [N_{it}^1 \cdots N_{it}^L]$ with $t \geq 0$ and $N_{it}^l = \sum_{j \geq 1} \ind{\{t_{ij}^l \leq t\}}$. The process $N_{it}$ is a multivariate counting process, whose components $N_{it}^l$ have intensities
-\[ \lambda_i^l(t) = \Upsilon_{l} + \sum_{l'=1}^L \sum_{j \geq 1} A_{ll'} \upsilon \exp\big(-\upsilon(t - t_{ij}^{l'}) \big) \]
-for $l=1, \ldots, L$. $\Upsilon_{l} \geq 0$ is called baseline intensity, and corresponds to the exogenous probability of having a measurement for process $l$. We sample $\Upsilon_{l} \sim \cU\big([0.1,1]\big)$ ] which produces unbalanced baselines, where $\cU\big([a,b]\big)$ stands for the uniform distribution on a segment $[a,b]$.
-The matrix $A = [A_{ll'}]_{1 \leq l,l' \leq L}$ is the adjacency matrix such that $A_{ll'} \geq 0$ quantifies the impact of past measurement time of process $l'$ on the measurement time of process $l$, and $\upsilon \geq 0$ is a memory parameter. We sample $A_{ll'} \sim \cU\big([0.1,0.2]\big)$, but then enforce $A$ to be sparse (with a chosen density of $0.3$) by randomly zeroing non-diagonal coefficients. Simulation of the Hawkes processes
-is achieved using the \texttt{tick} library~\citep{bacry2017tick}. An example of simulated longitudinal features for an individual is displayed in Figure~\ref{fig:example-data} below. 
+We simulate measurement times using a regular grid, and an example of simulated longitudinal features for an individual is displayed in Figure~\ref{fig:example-data} below. 
 
 To generate survival times, we choose a risk model of the form
 \begin{align*}
