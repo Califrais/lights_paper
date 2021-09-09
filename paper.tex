@@ -529,8 +529,10 @@ First, the update of $D^{(w)}$ is naturally given in closed-form by
   D^{(w+1)} = n^{-1} \sum_{i=1}^n \hat \E_{\theta^{(w)}}[ b_i b_i^\top | t_i, \delta_i, y_i].
 \end{equation}
 Then, let us focus on the update of $\xi_k^{(w)}$ for $k=0, \ldots, K-1$. We denote
-\[ P^{(w)}_{n,k}(\xi_k) = -n^{-1} \sum_{i=1}^n \hat \pi_{ik}^{\theta^{(w)}} \log \pi_{\xi_k}(x_i) \]
-based on the quantities involved in $\cQ_n(\theta, \theta^{(w)})$ that depend on $\xi_k$. The update for $\xi_k^{(w)}$ therefore requires to solve the following convex minimization problem
+\[ P^{(w)}_{n}(\xi_0, \ldots, \xi_K) = -n^{-1} \sum_{i=1}^n \sum_{k=0}^{K-1} \hat \pi_{ik}^{\theta^{(w)}} \log \pi_{\xi_k}(x_i) \]
+based on the quantities involved in $\cQ_n(\theta, \theta^{(w)})$ that depend on all of $\xi_k$ for $k=0, \ldots, K-1$. Then we can also write
+\[ P^{(w)}_{n, k}(\xi_k) = -n^{-1} \sum_{i=1}^n \Big[\hat \pi_{ik}^{\theta^{(w)}} x_i^\top \xi_k - \log \sum_{k^{\prime}=0}^{K-1} e^{x_i^\top\xi_{k^{\prime}}}\Big] \]
+based on the quantities involved in $P^{(w)}_{n}(\xi_0, \ldots, \xi_K)$ that depend on only one $\xi_k$. The update for each $\xi_k^{(w)}$ therefore requires to solve the following convex minimization problem
 \begin{equation}
   \label{eq:minimization-xi_k}
   \xi_k^{(w+1)} \in \argmin_{\xi_k \in \R^p} P^{(w)}_{n,k}(\xi_k) + \zeta_{1,k} \norm{\xi_k}_{\text{en}, \eta}.
@@ -549,7 +551,7 @@ Namely, we rewrite the minimization problem~\eqref{eq:minimization-xi_k} as the 
 where $\xi_k^\pm = (\xi_{k,1}^\pm, \ldots, \xi_{k,p}^\pm)^\top$. The L-BFGS-B solver requires the exact value of the gradient, which is easily given by
 \begin{equation}
   \label{eq:grad-xi_k}
-  \frac{\partial P_{n,k}^{(w)}(\xi_k)}{\partial \xi_k} = -n^{-1} \sum_{i=1}^n \hat \pi_{ik}^{\theta^{(w)}} \big( 1 - \pi_{\xi_k}(x_i) \big) x_i.
+  \frac{\partial P_{n,k}^{(w)}(\xi_k)}{\partial \xi_k} = -n^{-1} \sum_{i=1}^n  \big( \hat \pi_{ik}^{\theta^{(w)}} - \pi_{\xi_k}(x_i) \big) x_i.
 \end{equation}
 In practice, we use the \texttt{Python} solver \texttt{fmin\_l\_bfgs\_b} from \texttt{scipy.optimize}~\citep{virtanen2020scipy}. Similarly to the strategy of increasing $N$ with the iterations $w$ for computational reasons, it is not clever to use a too small solver tolerance in the early steps of the algorithm, where we call tolerance the value for which iterations stop when the stopping criterion is below it. We then decrease the L-BFGS-B tolerance (which we denote $tol$ in Algorithm~\ref{alg:prox-QNMCEM}) with every increase of $N$.
 
@@ -1219,7 +1221,7 @@ where
     \boldsymbol{\lambda_0^{(w)}} = \big(\lambda_0^{(w)}(t_1^u), \ldots, \lambda_0^{(w)}(t_J^u) \big)^\top \in \R^J, \\
     \boldsymbol{\delta} = (\delta_1, \ldots, \delta_n)^\top \in \R^n.
     \end{array}
-  \right. 
+  \right.
 \end{equation*}
 Another example is the update of the baseline hazard~\eqref{eq:update_lambda_0} as
 \[\boldsymbol{\lambda_0^{(w+1)}} = \underset{n}{\text{sum}}( \boldsymbol{\delta} \cI_1) / \underset{n}{\text{sum }} \underset{K}{\text{sum }} (\boldsymbol{g^4_{\gamma_k}} \cI_2 \boldsymbol{\hat \pi^{(w)}})\]
