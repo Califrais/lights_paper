@@ -509,7 +509,7 @@ The approximation of~\eqref{eq:def-E-g-tilde} is finally obtained by
 with
 \begin{equation}
   \label{eq:hat_Lambda_ik}
-  \hat \Lambda_{ik,\tilde g}^{\theta^{(w)}} = \dfrac{1}{2N} \sum_{\breve{b} \in S_{ik}^{(w)}} \tilde g(\breve{b}) f(t_i, \delta_i | \breve{b}, G_i = k ; \theta^{(w)}).
+  \hat \Lambda_{ik,\tilde g}^{\theta^{(w)}} = \dfrac{1}{2N} \sum_{\breve{b} \in S_{ik}^{(w)}} \tilde g(\breve{b}) f(t_i, \delta_i, y_i | \breve{b}, G_i = k ; \theta^{(w)}).
 \end{equation}
 
 It is common in Monte Carlo EM to increase $N$ with the iterations $w$~\citep{wei1990monte} since it is computationally inefficient to use a large $N$ in the early steps of the algorithm, when $\theta^{(w)}$ is far from $\hat \theta$. Multiple techniques have been proposed (see for instance~\citet{law2002joint} where a subjectively rule is followed, or~\citet{booth1999maximizing} that uses a rule based on confidence intervals for $\theta^{(w)}$ which requires additional variance estimation). We opt for a simple automated approach using relative differences of the objective function defined in~\eqref{eq:pen-log-lik} (see Algorithm~\ref{alg:prox-QNMCEM}).
@@ -1204,25 +1204,25 @@ We also denote
   \ind{\{t_{n} \leq t_1^u\}} & \cdots & \ind{\{t_{n} \leq t_J^u\}}
 \end{bmatrix}
 \in \R^{n \times J} \]
-some matrices to compare each event times with the vector of distinct event times. Those matrices are widely used in practice to replace indicators. For instance
+some matrices to compare each event times with the vector of distinct event times. Those matrices are widely used in practice to replace indicators. For instance, the quantities
 \begin{align*}
-f(t_i, \delta_i| b_i, G_i = k ; \theta^{(w)}) = &\big(\lambda_0^{(w)}(t_i) g^4_{t_i, \gamma_k^{(w)}}(b_i) \big)^{\delta_i} \\ 
-&\times \exp \Big\{ - \sum_{j=1}^J \lambda_0^{(w)}(t_j^u) g^4_{t_j^u, \gamma_k^{(w)}}(b_i) \ind{\{t_j^u \leq t_i\}} \Big\}
+f(t_i, \delta_i| \breve{b}, G_i = k ; \theta^{(w)}) = &\big(\lambda_0^{(w)}(t_i) g^4_{t_i, \gamma_k^{(w)}}(\breve{b}) \big)^{\delta_i} \\ 
+&\times \exp \Big\{ - \sum_{j=1}^J \lambda_0^{(w)}(t_j^u) g^4_{t_j^u, \gamma_k^{(w)}}(\breve{b}) \ind{\{t_j^u \leq t_i\}} \Big\}
 \end{align*}
-so that one can compute the tensor
+for $i = 1, \ldots, n$ and $\breve{b} \in S^{(w)}$ can be represented in the following matrix 
 \[ \underset{J}{\text{sum}} \big( \boldsymbol{g^4_{\gamma_k}} \boldsymbol{\lambda_0^{(w)}} \cI_1 \big)^{\boldsymbol{\delta}} \exp \big\{- \underset{J}{\text{sum}} \big(\boldsymbol{g^4_{\gamma_k}} \boldsymbol{\lambda_0^{(w)}} \cI_2 \big) \big\} \in \R^{n \times 2N} \]
 where 
 \begin{equation*}
   \left\{
     \begin{array}{ll}
-    \boldsymbol{g^4_{\gamma_k}} \in \R^{2N \times J} \text{ with } \big[\boldsymbol{g^4_{\gamma_k}}\big]_{i, j} = g^4_{t_j^u, \gamma_k^{(w)}}(\breve{b}_i) , \\
+    \boldsymbol{g^4_{\gamma_k}} \in \R^{2N \times J} \text{ with } \big[\boldsymbol{g^4_{\gamma_k}}\big]_{i, j} = \tilde g^4_{t_j^u, \gamma_k^{(w)}}(\breve{b}_i) , \\
     \boldsymbol{\lambda_0^{(w)}} = \big(\lambda_0^{(w)}(t_1^u), \ldots, \lambda_0^{(w)}(t_J^u) \big)^\top \in \R^J, \\
     \boldsymbol{\delta} = (\delta_1, \ldots, \delta_n)^\top \in \R^n.
     \end{array}
   \right. 
 \end{equation*}
 Another example is the update of the baseline hazard~\eqref{eq:update_lambda_0} as
-\[\boldsymbol{\lambda_0^{(w+1)}} = \underset{n}{\text{sum}}( \boldsymbol{\delta} \cI_1) / \underset{n}{\text{sum }} \underset{K}{\text{sum }} (\boldsymbol{g^4_{\gamma_k}} \cI_2 \boldsymbol{\hat \pi^{(w)}})\]
+\[\boldsymbol{\lambda_0^{(w+1)}} = \underset{n}{\text{sum}}( \boldsymbol{\delta} \cI_1) / \underset{n}{\text{sum }} \underset{k}{\text{sum }} (\boldsymbol{g^4_{\gamma_k}} \cI_2 \boldsymbol{\hat \pi^{(w)}})\]
 with $\boldsymbol{\hat \pi^{(w)}} \in \R^{2 \times n} \text{ and }  \left\{
     \begin{array}{ll}
     \boldsymbol{\hat \pi_{1,\bullet}^{(w)}}= (\hat \pi_{11}^{\theta^{(w)}}, \ldots, \hat \pi_{n1}^{\theta^{(w)}})^\top \in \R^n, \\
