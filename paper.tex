@@ -118,7 +118,6 @@ respectively, where $a \wedge b$ denotes the minimum between two numbers $a$ and
 
 Let $X$ denotes the $p$-dimensional vector of time-independent features (e.g., patients characteristics, therapeutic strategy, or omics features recorded at the begining of a medical study), and let  $Y(t) = \big(Y^1(t), \ldots, Y^L(t) \big)^\top \in \R^L$ denote the value of the $L$-dimensional longitudinal outcome at time point $t \geq 0$, with $L \in \N_+$.
 
-
 \paragraph{Heterogeneity of the population.}
 
 An assumption of heterogeneity within the subject population is frequently relevant in medical research where several differing profiles of subjects are expected~\citep{bussy2019c}. To take account of this, we introduce a latent variable $G \in \{0, \ldots, K-1\}$ modeling the $K \geq 1$ subgroups of different risk, which is a classical modeling assumption in JLCMs~\citep{lin2002latent, proust2014joint}. Let us denote
@@ -833,11 +832,21 @@ Now, concerning the simulation of the longitudinal data, the idea is to sample f
 We use linear time-varying features such that
 \[ Y_i^l(t) = \sum_{k=0}^{K-1} \ind{\{G_i=k\}} \big( (1, t)^\top \beta_k^l + (1, t)^\top b_i^l + \epsilon_i^l(t) \big) \]
 where $t \geq 0$, the error term $\epsilon_i^l(t) \sim \cN(0, \sigma_l^2)$, the global variance-covariance matrix for the random effects components~\eqref{eq:random-effect-law} is such that $D = \bSigma_2(\rho_2)$, a $(r \times r)$ Toeplitz covariance matrix with correlation $\rho_2 \in (0, 1)$, and the fixed effect parameters are generated according to 
-\[ \beta_k^l \sim \cN\Big( 
+\[ \beta_k^l \sim \ind{\{l \in \cS_k \}} \cN\Big( 
 \mu_k, 
 \begin{bmatrix}
   \rho_3 & 0\\
   0 & \rho_3
+\end{bmatrix} 
+\Big)
++ \ind{\{l \notin \cS_k \}} \cN\Big( 
+\begin{pmatrix}
+  0 \\ 0
+\end{pmatrix}
+, 
+\begin{bmatrix}
+  \rho_4 & 0\\
+  0 & \rho_4
 \end{bmatrix} 
 \Big) \]
 for $k \in \{0, 1\}$ and with correlation $\rho_3 \in (0, 1)$, so that $\beta_k^l$ coefficients are both positive for high-risk subjects ($G_i=1$), which favours increasing trajectories with positive values, and negative otherwise ($G_i=0$), which favours decreasing trajectories with negative values. This choice makes sens regarding that for simplicity, we take joint association parameters being all positive, see~\eqref{eq:gamma-sparse}.
