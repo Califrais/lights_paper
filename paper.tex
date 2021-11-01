@@ -200,27 +200,27 @@ In the sequel of the paper, our aim is to associate the true and unobserved valu
 To quantify the effect of the longitudinal outcomes on the risk for an event, we use a Cox~\citep{Cox1972JRSS} relative risk model of the form
 \begin{equation}
 	\label{eq:intensity-model}
-	\lambda(t|\cM_k(t), G = k) = \lambda_0(t) \exp \Big\{\sum_{l=1}^L \sum_{a=1}^\cA {\gamma_{k,a}^l}^\top \varphi_a(t, b^l) \Big\},
+	\lambda(t|\cM_k(t), G = k) = \lambda_0(t) \exp \Big\{\sum_{l=1}^L \sum_{a=1}^\cA {\gamma_{k,a}^l}^\top \varphi_{k,a}(t, b^l) \Big\},
 \end{equation}
 where $\lambda_0(\cdot)$ is an unspecified baseline hazard function and given that $G = k$, we denote 
 \[\cM_k(t) = \{m_k^l(u), 0 \leq u < t\}\] 
-the history of the true unobserved longitudinal process up to time $t$. For each $l$-th longitudinal outcome, we consider $\cA \in \N_+$ known functionals $\varphi_a$ defining a shared association with $\gamma_{k,a}^l \in \R^{\imath_a}$ the corresponding joint association parameters, and $\imath_a \in \N_+$ the dimension of the corresponding $\text{Im}(\varphi_a)$.
+the history of the true unobserved longitudinal process up to time $t$. For each $l$-th longitudinal outcome, we consider $\cA \in \N_+$ known functionals $\varphi_{k,a}$ defining a shared association with $\gamma_{k,a}^l \in \R^{\imath_a}$ the corresponding joint association parameters, and $\imath_a \in \N_+$ the dimension of the corresponding $\text{Im}(\varphi_{k,a})$.
 This can be viewed as a generalization of SREMs~\citep{rizopoulos2010jm}. Let us finally denote
 \[\gamma_k= (\gamma_{k,1}^1, \ldots, \gamma_{k,\cA}^1, \ldots, \gamma_{k,1}^L, \ldots, \gamma_{k,\cA}^L )^\top \in \R^{L\sA}, \] with $\sA = \sum_{a=1}^\cA \imath_a$ and so that
 \begin{equation}
   \label{eq:def-asso-features}
-  \lambda(t|\cM_k(t), G = k) = \lambda_0(t) \exp \big\{\gamma_k^\top \Psi(t) \big\},
+  \lambda(t|\cM_k(t), G = k) = \lambda_0(t) \exp \big\{\gamma_k^\top \Psi_k(t) \big\},
 \end{equation}
-where $\Psi(t) \in \R^{L\sA}$ denotes the association features vector at time $t$.
+where $\Psi_k(t) \in \R^{L\sA}$ denotes the association features vector at time $t$.
 
-\paragraph{Specification of the functionals $(\varphi_a)_{a\in \cA}$.}
+\paragraph{Specification of the functionals $(\varphi_{k,a})_{a\in \cA}$.}
 
 The association structure between the longitudinal and the time-to-event submodels is key to the joint modeling framework. In spite of that, rationale for selecting shared associations has received little attention. We then propose to include some of the most common parameterization with no \textit{a priori}, set out in Table~\ref{table:shared_associations}, and let the model select the relevant ones through the regularization strategy described in Section~\ref{sec:penalized-obj}.
 \begin{table}[htb]
 \centering
 \begin{tabular}{ccccc}
 \toprule
-Description & $\varphi_a(t, b^l)$ & $\imath_a$ & Reference \\
+Description & $\varphi_{k,a}(t, b^l)$ & $\imath_a$ & Reference \\
 \midrule
 Linear predictor & $m_k^l(t)$ & 1 & \citet{chi2006joint} \\ [.15cm]
 Random effects & $b^l$ & $r_l$ & \citet{hatfield2011joint} \\
@@ -436,7 +436,7 @@ It can be written
 \begin{align*}
   \ell_n^\text{comp}(\theta) &= \ell_n^\text{comp}(\theta ; \cD_n, \textbf{\textit{b}}, \textbf{\textit{G}}) \\ 
   &= - n^{-1} \sum_{i=1}^n -\dfrac12 (r \log 2\pi + \log|D| + b_i^\top D^{-1}b_i) + \sum_{k=0}^{K-1} \ind{\{G_i=k\}} \Big[ \log \pi_{\xi_k}(x_i) \\ 
-  & \quad + \delta_i \Big(\log \lambda_0(t_i) + \gamma_k^\top \Psi_i(t_i) \Big) - \int_0^{t_i} \lambda_0(s) \exp \big\{ \gamma_k^\top \Psi_i(s) \big\} \dd s \\
+  & \quad + \delta_i \Big(\log \lambda_0(t_i) + \gamma_k^\top \Psi_{k,i}(t_i) \Big) - \int_0^{t_i} \lambda_0(s) \exp \big\{ \gamma_k^\top \Psi_{k,i}(s) \big\} \dd s \\
   & \quad + (y_i \odot \Phi_i)^\top M_{ik} - c_\phi(M_{ik}) + d_\phi(y_i) \Big].
 \end{align*}
 Suppose that we are at step $w + 1$ of the algorithm, with current iterate denoted $\theta^{(w)}$. 
@@ -574,8 +574,8 @@ The closed-form update is then given by
 \end{equation}
 Now, for the update of $\gamma_k^{(w)}$ for $k=0, \ldots, K-1$, we similarly denote
 \begin{align*}
-  Q^{(w)}_{n,k}(\gamma_k) = -n^{-1} \sum_{i=1}^n &\hat\pi_{ik}^{\theta^{(w)}} \Big[\delta_i \hat \E_{\theta^{(w)}}[ \gamma_k^\top \Psi_i(t_i) | t_i, \delta_i, y_i] \\
-  & - \sum_{j=1}^J \lambda_0^{(w)}(t_j^u) \hat \E_{\theta^{(w)}}[\exp \big\{\gamma_k^\top \Psi_i(t_j^u)\big\} | t_i, \delta_i, y_i] \ind{\{t_j^u \leq t_i\}} \Big]
+  Q^{(w)}_{n,k}(\gamma_k) = -n^{-1} \sum_{i=1}^n &\hat\pi_{ik}^{\theta^{(w)}} \Big[\delta_i \hat \E_{\theta^{(w)}}[ \gamma_k^\top \Psi_{k,i}(t_i) | t_i, \delta_i, y_i] \\
+  & - \sum_{j=1}^J \lambda_0^{(w)}(t_j^u) \hat \E_{\theta^{(w)}}[\exp \big\{\gamma_k^\top \Psi_{k,i}(t_j^u)\big\} | t_i, \delta_i, y_i] \ind{\{t_j^u \leq t_i\}} \Big]
 \end{align*}
 based on the quantities involved in $\cQ_n(\theta, \theta^{(w)})$ that depend on $\gamma_k$. The integration over the survival process has been replaced with a finite sum over the process evaluated at the distinct event times $(t_1^u, \ldots, t_J^u)$ with $J \in~\N_+$, since $\lambda_0^{(w)}$ defined in~\eqref{eq:update_lambda_0} is always zero except at observed event times. The update for $\gamma_k^{(w)}$ requires to solve the following minimization problem
 \begin{equation}
@@ -628,15 +628,15 @@ Hence, we update $\gamma_k^{(w)}$ with the following step
 Note that the warmstart initialization is left to the user's choice, as well as the ISTA acceleration~\citep{beck2009fast}, since warmstart can diminish acceleration effectiveness~\citep{tibshirani2010proximal}. The gradient of $Q_{n,k}^{(w)}$ is here given by
 \begin{align}
   \label{eq:grad-Q}
-  &\frac{\partial Q_{n,k}^{(w)}(\gamma_k)}{\partial \gamma_{k,a}^l} = -n^{-1} \sum_{i=1}^n \hat \pi_{ik}^{\theta^{(w)}} \Big[ \delta_i  \hat \E_{\theta^{(w)}}[ \varphi_a(t_i, b_i^l) | t_i, \delta_i, y_i] \\ \nonumber
-   &\qquad\qquad - \sum_{j=1}^J \lambda_0^{(w)}(t_j^u) \hat \E_{\theta^{(w)}}[ \varphi_a(t_j^u, b_i^l) \exp \big\{\gamma_k^\top \Psi_i(t_j^u)\big\} | t_i, \delta_i, y_i] \ind{\{t_j^u \leq t_i\}} \Big]
+  &\frac{\partial Q_{n,k}^{(w)}(\gamma_k)}{\partial \gamma_{k,a}^l} = -n^{-1} \sum_{i=1}^n \hat \pi_{ik}^{\theta^{(w)}} \Big[ \delta_i  \hat \E_{\theta^{(w)}}[ \varphi_{k,a}(t_i, b_i^l) | t_i, \delta_i, y_i] \\ \nonumber
+   &\qquad\qquad - \sum_{j=1}^J \lambda_0^{(w)}(t_j^u) \hat \E_{\theta^{(w)}}[ \varphi_{k,a}(t_j^u, b_i^l) \exp \big\{\gamma_k^\top \Psi_{k,i}(t_j^u)\big\} | t_i, \delta_i, y_i] \ind{\{t_j^u \leq t_i\}} \Big]
 \end{align}
 for all $a = 1, \ldots, \mathcal{A}$ and $l = 1, \ldots, L$.
 
 For the update of $\lambda_0^{(w)}$, we treat the jump size at each uncensored observed event times as parameters to be estimated~\citep{klein1992semiparametric}, and the closed-form update obtained by cancelling the gradient is given by
 \begin{equation}
   \label{eq:update_lambda_0}
-  \lambda_0^{(w+1)}(t)= \dfrac{\sum_{i=1}^n \delta_i \ind{\{t=t_i\}}}{\sum_{i=1}^n \sum_{k=0}^{K-1} \hat \pi_{ik}^{\theta^{(w)}} \hat \E_{\theta^{(w)}}\Big[\exp \big\{{\gamma_k^{(w+1)}}^\top \Psi_i(t)\big\} | t_i, \delta_i, y_i \Big] \ind{\{t_i \geq t\}} },
+  \lambda_0^{(w+1)}(t)= \dfrac{\sum_{i=1}^n \delta_i \ind{\{t=t_i\}}}{\sum_{i=1}^n \sum_{k=0}^{K-1} \hat \pi_{ik}^{\theta^{(w)}} \hat \E_{\theta^{(w)}}\Big[\exp \big\{{\gamma_k^{(w+1)}}^\top \Psi_{k,i}(t)\big\} | t_i, \delta_i, y_i \Big] \ind{\{t_i \geq t\}} },
 \end{equation}
 for all $t \geq 0$, which is a Breslow like estimator~\citep{breslow1972contribution} adapted to our model. 
 
@@ -797,7 +797,7 @@ Contrary to the lights model, there is no shared associations between the longit
 \paragraph*{Multivariate shared random effect model.}
 
 In this context, we consider the \texttt{JMbayes} package~\citep{2017_JMbayes}. The predictive marker associated with this model for subject $i$ is naturally given by the corresponding risk score
-\[\hat \cR_i^\text{JMbayes} = \exp \Big\{ x_i^\top \hat\gamma_0 + \sum_{l=1}^L \sum_{a=1}^\cA {\widehat{\gamma_{k,a}^l}}^\top \varphi_a(t_i^{max}, b_i^l) \Big\}.\] 
+\[\hat \cR_i^\text{JMbayes} = \exp \Big\{ x_i^\top \hat\gamma_0 + \sum_{l=1}^L \sum_{a=1}^\cA {\widehat{\gamma_{k,a}^l}}^\top \varphi_{k,a}(t_i^{max}, b_i^l) \Big\}.\] 
 
 \texttt{@Antoine : est-ce qu'il peut prendre des time-indep feat ? et quelles sont les assos ?}
 
@@ -1003,7 +1003,7 @@ for all $x \in \R^p$. Given that $\big(\text{prox}_{\lambda_1 \norm{\cdot}_1}(\b
 Then, it follows that
 \begin{equation}
     \label{eq:opt_gl}
-    0 \in \partial k(x^\star) = x^\star - \text{prox}_{\lambda_1 \norm{\cdot}_1}(\beta) + \partial\big( \lambda_2 \sum_{l=1}^L \norm{x^\star}_{2,l}\big)
+    0 \in \partial k_\beta(x^\star) = x^\star - \text{prox}_{\lambda_1 \norm{\cdot}_1}(\beta) + \partial\big( \lambda_2 \sum_{l=1}^L \norm{x^\star}_{2,l}\big)
 \end{equation}
 where $\partial k$ denotes the subgradient~\citep{rockafellar1974} of $k$.
 Now denoting
@@ -1168,9 +1168,9 @@ Let us introduce the following useful notations
     \begin{array}{ll}
     \tilde g^1&: b_i \mapsto b_i,\\
     \tilde g^2&: b_i \mapsto b_ib_i^\top, \\
-    \tilde g^3_{s}&: b_i \mapsto \Psi_i(s), \\
-    \tilde g^4_{s, \gamma_k}&: b_i \mapsto \exp \big\{\gamma_k^\top g^3_{s}(b_i) \big\}, \\
-    \tilde g^5_{s, \gamma_k}&: b_i \mapsto g^3_{s}(b_i)^\top g^4_{s}(b_i).
+    \tilde g^3_{s, k}&: b_i \mapsto \Psi_{k,i}(s), \\
+    \tilde g^4_{s, \gamma_k}&: b_i \mapsto \exp \big\{\gamma_k^\top g^3_{s, k}(b_i) \big\}, \\
+    \tilde g^5_{s, \gamma_k}&: b_i \mapsto g^3_{s, k}(b_i)^\top g^4_{s, k}(b_i).
     \end{array}
   \right. 
 \end{equation*}
