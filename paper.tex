@@ -394,7 +394,10 @@ where
 \paragraph{Specification of the design matrices.}
  
 In many practical applications, subjects show highly nonlinear longitudinal trajectories. In~\eqref{eq:log-lik}, the complete longitudinal history is required for the computation of the survival function. Hence, in order to produce a good estimate of $\cM_k(t)$, we consider a flexible representations for $u^l(t)$ using a high-dimensional vector of time monomials, namely 
-\[u^l(t) = (1, t, t^2, \ldots, t^\alpha)^\top\]
+\begin{equation}
+  \label{eq:alpha-def}
+  u^l(t) = (1, t, t^2, \ldots, t^\alpha)^\top
+\end{equation}
 with $\alpha \in \N_+$.
 The idea here is to let the practitioner choose a suitable polynomial order $\alpha$ for the representation -- that could also be tuned automatically using a model selection procedure and AIC~\citep{akaike1974new} for instance.
 We then let \[v^l(t) = (1, t)^\top\] so that each trajectory of each subject gets an affine random effect. Hence with this choice in practice, one has $q_l=\alpha + 1$ and $r_l=2$ for all $l=1, \ldots, L$.
@@ -832,24 +835,14 @@ Now, concerning the simulation of the longitudinal data, the idea is to sample f
 We use linear time-varying features such that
 \[ Y_i^l(t) = \sum_{k=0}^{K-1} \ind{\{G_i=k\}} \big( (1, t)^\top \beta_k^l + (1, t)^\top b_i^l + \epsilon_i^l(t) \big) \]
 where $t \geq 0$, the error term $\epsilon_i^l(t) \sim \cN(0, \sigma_l^2)$, the global variance-covariance matrix for the random effects components~\eqref{eq:random-effect-law} is such that $D = \bSigma_2(\rho_2)$, a $(r \times r)$ Toeplitz covariance matrix with correlation $\rho_2 \in (0, 1)$, and the fixed effect parameters are generated according to 
-\[ \beta_k^l \sim \ind{\{l \in \cS_k \}} \cN\Big( 
+\[ \beta_k^l \sim \cN\Big( 
 \mu_k, 
 \begin{bmatrix}
   \rho_3 & 0\\
   0 & \rho_3
 \end{bmatrix} 
-\Big)
-+ \ind{\{l \notin \cS_k \}} \cN\Big( 
-\begin{pmatrix}
-  0 \\ 0
-\end{pmatrix}
-, 
-\begin{bmatrix}
-  \rho_4 & 0\\
-  0 & \rho_4
-\end{bmatrix} 
 \Big) \]
-for $k \in \{0, 1\}$ and with correlation $\rho_3 \in (0, 1)$, so that $\beta_k^l$ coefficients are both positive for high-risk subjects ($G_i=1$), which favours increasing trajectories with positive values, and negative otherwise ($G_i=0$), which favours decreasing trajectories with negative values. This choice makes sens regarding that for simplicity, we take joint association parameters being all positive, see~\eqref{eq:gamma-sparse}.
+for $k \in \{0, 1\}$ and with correlation $\rho_3 \in (0, 1)$, so that trajectories start on average higher for high-risk subjects ($G_i=1$), and with a higher slope than low-risk subjects ($G_i=0$). This choice makes sens regarding that for simplicity, we take joint association parameters being all positive, see~\eqref{eq:gamma-sparse}.
 
 Most joint modeling simulation studies use fixed time points~\citep{hickey2018joinerml}, that is $n_i^l = n_i^{l'}$ and $t_{ij}^l = t_{ij}^{l'}$ for all $(l, l') \in \{1, \ldots, L\}^2$ and $j = 1, \ldots, n_i^l$ for a given subject $i$, but it does not reflect actual behavior in practice, since data measurements of the different longitudinal processes are barely done simultaneously. For this reason, the simulation of realistic longitudinal features is not trivial and we use Hawkes processes~\citep{hawkes1974cluster} with exponential kernels to generate measurement times, which is a family of counting process with an autoregressive intensity. 
 Hawkes processes model self-exciting behavior, that is in our case, when the measurement of one longitudinal process makes future measurements of the process -- as well as those of others processes, in a multivariate way -- more likely to happen.
@@ -859,22 +852,27 @@ for $l=1, \ldots, L$. $\Upsilon_{l} \geq 0$ is called baseline intensity, and co
 The matrix $A = [A_{ll'}]_{1 \leq l,l' \leq L}$ is the adjacency matrix such that $A_{ll'} \geq 0$ quantifies the impact of past measurement time of process $l'$ on the measurement time of process $l$, and $\upsilon \geq 0$ is a memory parameter. We sample $A_{ll'} \sim \cU\big([0.1,0.2]\big)$, but then enforce $A$ to be sparse (with a chosen density of $0.3$) by randomly zeroing non-diagonal coefficients. Simulation of the Hawkes processes
 is achieved using the \texttt{tick} library~\citep{bacry2017tick}. An example of simulated longitudinal features for an individual is displayed in Figure~\ref{fig:example-data} below. 
 
-To generate survival times, we choose a risk model of the form
-\begin{align*}
-\lambda_i(t|G_i = k) = \lambda_0(t) \exp \Big\{ \sum_{l=1}^L &\gamma_{k,1}^l (\beta_{k,1}^l + \beta_{k,2}^l t + b_{i,1}^l + b_{i,2}^l t) \\
-&+ (\gamma_{k,2,1}^l b_{i,1}^l + \gamma_{k,2,2}^l b_{i,2}^l) + \gamma_{k,3}^l (\beta_{k,2}^l + b_{i,2}^l) \Big\},
-\end{align*}
-which corresponds to~\eqref{eq:intensity-model} taking the first three functionals described in Table~\ref{table:shared_associations} as shared associations.
-Now, for the choice of the association parameters, we want to induce sparsity (similarly to~\eqref{eq:xi-sparse}), so we set 
-\[\cS_k=\Big\{ k \big\lfloor \dfrac{L r_s}{K} \big\rfloor + 1, \ldots,  (k + 1) \big\lfloor \dfrac{L r_s}{K} \big\rfloor \Big\}\] and
+Now to generate survival times, we want to induce sparsity in the longitudinal data effects, so we set 
+\[\cS_k=\Big\{ k \big\lfloor \dfrac{L r_s}{K} \big\rfloor + 1, \ldots,  (k + 1) \big\lfloor \dfrac{L r_s}{K} \big\rfloor \Big\}\] 
+and we choose a risk model~\eqref{eq:intensity-model} with
+\begin{equation*}
+  \left\{
+    \begin{array}{ll}
+    \big(\varphi_{k,a}(t, b_i^l)\big)_{a \in \{1,2\}} = \big(\beta_{k,1}^l + \beta_{k,2}^l t + b_{i,1}^l + b_{i,2}^l t\ , {b_i^l}^\top \big)^\top \ind{\{l \in \cS_k\}} + \cN \big(0, \bSigma_3(\rho_3)\big) \ind{\{l \notin \cS_k\}}  \\
+    \big( \varphi_{k,a}(t, b_i^l)\big)_{a=3,\ldots,\cA} = \cN \big(0, \bSigma_4(\rho_3)\big),
+    \end{array}
+  \right.
+\end{equation*}
+and 
 \begin{equation}
   \label{eq:gamma-sparse}
-  \gamma_{k,a}^l = \varsigma_2 \big(\ind{\{l \leq (k + 1) \lfloor L r_s/K \rfloor \}} + \ind{\{l \in \cS_k \}} \big) \mathbf{1}_{\imath_a},
+  \gamma_{k,a}^l = \varsigma_2 \mathbf{1}_{\imath_a} \ind{\big\{l \in \cS_k,\ a\in \{1, 2\} \big\}}
 \end{equation}
-so that there is a proportion $r_s$ of active longitudinal features among the $L$, and the longitudinal effects are distinct for each subgroup $k=0, \ldots, K-1$.
-Note that one can write
+for the choice of the association parameters, with $\cA = 3 + 3(1-r_s)/r_s$ so that $(i)$ there is a proportion $r_s$ of active longitudinal features among the $L$ (with the $\cS_k$), $(ii)$ we induce sparsity within each group adding a proportion of $(1-r_s)$ non-active association features ($a \geq 3$) in each group (similarly to~\eqref{eq:xi-sparse} for the time-independent features), and $(iii)$ the longitudinal effects are distinct for each subgroup $k=0, \ldots, K-1$ (thanks to the $\cS_k$ definition).
+
+In terms of active association features, it corresponds to~\eqref{eq:intensity-model} taking the first two functionals described in Table~\ref{table:shared_associations} as shared associations with $\alpha = 1$ in~\eqref{eq:alpha-def} so that one can write
 \[ \lambda_i(t|G_i = k) = \lambda_0(t) \exp \big\{ \iota_{i,k,1} + \iota_{i,k,2} t \big\},\]
-being a Cox model with a linear time-varying feature.
+being a Cox model with a linear time-varying feature that allows the following explicit survival times generation process. Then, we do not consider the time-dependent slope as association feature since here with $\alpha = 1$, it would be collinear with the random effects.
 We choose a Gompertz distribution~\citep{gompertz1825xxiv} for the baseline, that is
 \begin{equation}
   \label{eq:baseline}
