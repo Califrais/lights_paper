@@ -699,13 +699,13 @@ is satisfied for 3 consecutive iterations, since the monotonicity property is lo
 
 In many practical applications -- including those addressed in Section~\ref{sec:application} -- we are interested in identifying one subgroup of the population with a high risk of adverse event compared to the others. Then, in the following, we consider $G \in \{ 0, 1\}$ where $G=1$ means high-risk of early adverse event and $G=0$ means low risk.
 To simplify notations, let us set $\xi = \xi_1$, $\pi_\xi(x)$ the conditional probability that a subject belongs to the group with high risk of adverse event given its time-independent features $x$, and $\zeta_1 = \zeta_{1,1}$.
-In this context, which is the one we consider in practice in Sections~\ref{sec:simulation study} and~\ref{sec:application}, we suppose that the ``right'' penalty strength for $\xi_k$ and $\gamma_k$ does not depend on $k$, so that we denote $\zeta_2 = \zeta_{2,0} = \zeta_{2,1}$ and $\zeta_3 = \zeta_{3,0} = \zeta_{3,1}$. 
+In this context, which is the one we consider in practice in Sections~\ref{sec:simulation study} and~\ref{sec:application}, we suppose that the ``right'' penalty strength for $\xi_k$ and $\gamma_k$ does not depend on $k$, so that we denote $\zeta_2 = \zeta_{2,0} = \zeta_{2,1}$. 
 
 \paragraph{Cross-validation procedure.}
 
-The hyper-parameters $(\zeta_1, \zeta_2, \zeta_3)^\top \in \R_+^3$ are then tuned during a 10-fold randomized search cross-validation procedure~\citep{bergstra2012random} using predictive marker defined in Section~\ref{sec:evaluation strategy} and the C-index score defined in Section~\ref{sec:Metrics}.
-Random search is indeed more efficient in terms of computing times than classical grid search for hyper-parameters optimization and finds better models by effectively searching in a larger configuration space, which is appropriate to our high-dimensional problem. Moreover, the search interval for hyper-parameter $\zeta_1$ is automatically computed in a data driven way described in Appendix~\ref{sec:auto-grid-cv}, while the search intervals for $\zeta_2$ and $\zeta_3$ are determined empirically.
-% TODO: Figure de visualisation de la CV de (\zeta_1, \zeta_2, \zeta_3) en 3D
+The hyper-parameters $(\zeta_1, \zeta_2)^\top \in \R_+^2$ are then tuned during a 10-fold randomized search cross-validation procedure~\citep{bergstra2012random} using predictive marker defined in Section~\ref{sec:evaluation strategy} and the C-index score defined in Section~\ref{sec:Metrics}.
+Random search is indeed more efficient in terms of computing times than classical grid search for hyper-parameters optimization and finds better models by effectively searching in a larger configuration space, which is appropriate to our high-dimensional problem. Moreover, the search interval for hyper-parameter $\zeta_1$ is automatically computed in a data driven way described in Appendix~\ref{sec:auto-grid-cv}, while the search intervals for $\zeta_2$ is determined empirically.
+% TODO: Figure de visualisation de la CV de (\zeta_1, \zeta_2) en 3D
 
 
 \section{Performance evaluation}
@@ -1032,8 +1032,8 @@ which gives
 \label{sec:auto-grid-cv}
 
 Concerning the cross-validation procedure for tuning 
-\[(\zeta_{1,0}, \zeta_{2,0}, \zeta_{3,0}, \ldots, \zeta_{1,K-1}, \zeta_{2,K-1}, \zeta_{3,K-1})^\top \in \R_+^{3K}, \]
-we use a randomized search with the C-index metric (see Section~\ref{sec:evaluation strategy}) where for all $k=0, \ldots, K-1$ and $j \in \{1, 2, 3\}$, each $\zeta_{j,k}$ finds its candidates in the interval 
+\[(\zeta_{1,0}, \zeta_{2,0}, \ldots, \zeta_{1,K-1}, \zeta_{2,K-1})^\top \in \R_+^{2K}, \]
+we use a randomized search with the C-index metric (see Section~\ref{sec:evaluation strategy}) where for all $k=0, \ldots, K-1$ and $j \in \{1, 2\}$, each $\zeta_{j,k}$ finds its candidates in the interval 
 \[[\zeta_{j,k}^{\text{max}} \times 10^{-4}, \zeta_{j,k}^{\text{max}} ] \subset \R, \]
 with $\zeta_{j,k}^{\text{max}}$ the interval upper bound computed hereafter.
 
