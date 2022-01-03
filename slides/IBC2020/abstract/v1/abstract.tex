@@ -1,0 +1,76 @@
+\documentclass[11pt]{article}
+
+\usepackage[colorlinks=true,
+            linkcolor=red,
+            urlcolor=blue,
+            citecolor=blue,
+            breaklinks=true]{hyperref}
+\usepackage{breakurl} 
+\usepackage[a4paper, left=3cm, right=3cm, top=3cm, bottom=3cm]{geometry}
+\RequirePackage{amsmath,amsfonts, amssymb,amsthm}
+
+\usepackage{mathtools}
+\usepackage{xcolor}
+\usepackage{mathrsfs} 
+\usepackage{natbib}
+\usepackage{setspace}
+\usepackage{dsfont}
+\usepackage{caption}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{booktabs}
+
+\hypersetup{pdfauthor = {Simon Bussy}}
+
+\usepackage{authblk}
+\title{\vspace{-.5cm} Lights: a generalized joint model for high-dimensional multivariate longitudinal data and censored durations \vspace{.5cm}}
+\author[1]{Simon Bussy\thanks{Corresponding author: \href{mailto:simon.bussy@gmail.com}{\texttt{simon.bussy@gmail.com}}}}
+\author[2]{Antoine Barbieri}
+\author[1]{Sarah Zohar}
+\author[1,3]{Anne-Sophie Jannot}
+\affil[1]{INSERM, UMRS 1138, Centre de Recherche des Cordeliers, Paris, France}
+\affil[2]{INSERM, UMR 1219, Bordeaux Population Health Research Center, Univ. Bordeaux, France}
+\affil[3]{Biomedical Informatics and Public Health Department, EGPH, APHP, Paris, France}
+\setcounter{Maxaffil}{0}
+\renewcommand\Affilfont{\itshape\small}
+
+\DeclareMathOperator{\argmin}{argmin}
+
+\newcommand{\dd}{\mathrm{d}}
+\newcommand{\ind}[1]{\mathds{1}_{#1}}
+\newcommand{\norm}[1]{\|#1\|}
+\newcommand{\cM}{\mathcal M}
+\newcommand{\cD}{\mathcal D}
+\newcommand{\cC}{\mathcal C}
+\newcommand{\cN}{\mathcal N}
+\newcommand{\cA}{\mathcal A}
+\newcommand{\R}{\mathds R}
+\newcommand{\N}{\mathds N}
+\newcommand{\E}{\mathds E}
+\renewcommand{\P}{\mathds P}
+\newcommand{\bSigma}{\textbf{$\Sigma$}}
+
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\vspace{-.5cm}
+
+\begin{abstract}
+
+In many clinical studies, it has become increasingly common to record the values of longitudinal covariates until the occurrence of an event of interest. 
+With the development of electronic health records and an increased focus on personalized medicine, the need to implement multivariate models that account for a large number of longitudinal outcomes simultaneously is critical. Despite this, the state-of-the-art methods in this context have predominantly focused on univariate data, or on problems where the number of longitudinal outcomes are very low.
+Our paper introduces a prognostic method called lights (generaLized joInt hiGH-dimensional longiTudinal Survival) to deal with the problem of joint modeling of longitudinal data and censored durations, in a high-dimensional context. 
+The later introduces a latent variable modeling the heterogeneity within the patient population, with subgroups of different risk, and
+supposes a group-specific marker trajectory with a generalized linear mixed model for each longitudinal marker given the subgroup, and a group-specific Cox risk of event with multiple shared association defined through a known functional family.
+Inference is achieved using a novel fast stochastic approximation of a quasi-newton EM algorithm, by minimizing the negative log-likelihood penalized with elastic-net or group lasso regularization on the different parameter vectors of the model, depending on the desired interpretability power.
+The estimated latent class membership posterior probabilities are  used as discriminative marker rule in the cross-validation procedure for selecting the best regularization hyper-parameters.
+The statistical performance of the method is examined on an extensive Monte Carlo simulation study, and finally illustrated on a publicly available dataset.
+On this high-dimensional dataset, our proposed method outperforms the state-of-the-art models regarding risk prediction in terms of C-index, with a computing time orders of magnitude faster. In addition, it provides powerful interpretability by automatically pinpointing significant covariates being relevant from a clinical perspective. Thus, we propose a powerfull tool for personalized medicine, with the ability of automatically determining significant prognostic longitudinal biomarkers, which is of increasing importance in many areas of medicine.
+
+\end{abstract}
+
+
+\end{document}

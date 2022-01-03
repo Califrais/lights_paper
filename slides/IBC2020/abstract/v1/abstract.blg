@@ -1,0 +1,71 @@
+This is BibTeX, Version 0.99d (TeX Live 2019)
+Capacity: max_strings=100000, hash_size=100000, hash_prime=85009
+The top-level auxiliary file: abstract.aux
+The style file: plainnat.bst
+Database file #1: biblio.bib
+Warning--I didn't find a database entry for "wulfsohn1997joint"
+Warning--I didn't find a database entry for "tsiatis2004joint"
+Warning--I didn't find a database entry for "yu2004joint"
+Warning--I didn't find a database entry for "wang2012joint"
+Warning--I didn't find a database entry for "lin2002maximum"
+Warning--I didn't find a database entry for "hickey2016joint"
+Warning--I didn't find a database entry for "jaffa2014joint"
+Warning--I didn't find a database entry for "AndBorGilKei-93"
+Warning--I didn't find a database entry for "bussy2019c"
+Warning--I didn't find a database entry for "proust2009development"
+Warning--I didn't find a database entry for "rizopoulos2011dynamic"
+Warning--I didn't find a database entry for "heagerty2005survival"
+Warning--I didn't find a database entry for "schemper2000predictive"
+Warning--I didn't find a database entry for "zou2005regularization"
+Warning--I didn't find a database entry for "karimi2020f"
+Warning--I didn't find a database entry for "bergstra2012random"
+Warning--I didn't find a database entry for "hickey2018joinerml"
+Warning--I didn't find a database entry for "rizopoulos2010jm"
+Warning--I didn't find a database entry for "rizopoulos2014r"
+Warning--I didn't find a database entry for "philipson2018package"
+Warning--I didn't find a database entry for "zhang2018time"
+Warning--I didn't find a database entry for "therneau2017using"
+Warning--I didn't find a database entry for "harrell1996tutorial"
+Warning--I didn't find a database entry for "uno2011c"
+You've used 0 entries,
+            2773 wiz_defined-function locations,
+            617 strings with 5234 characters,
+and the built_in function-call counts, 33 in all, are:
+= -- 0
+> -- 0
+< -- 0
++ -- 0
+- -- 0
+* -- 2
+:= -- 10
+add.period$ -- 0
+call.type$ -- 0
+change.case$ -- 0
+chr.to.int$ -- 0
+cite$ -- 0
+duplicate$ -- 0
+empty$ -- 1
+format.name$ -- 0
+if$ -- 1
+int.to.chr$ -- 1
+int.to.str$ -- 1
+missing$ -- 0
+newline$ -- 8
+num.names$ -- 0
+pop$ -- 0
+preamble$ -- 1
+purify$ -- 0
+quote$ -- 0
+skip$ -- 1
+stack$ -- 0
+substring$ -- 0
+swap$ -- 0
+text.length$ -- 0
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 0
+warning$ -- 0
+while$ -- 0
+width$ -- 0
+write$ -- 7
+(There were 24 warnings)

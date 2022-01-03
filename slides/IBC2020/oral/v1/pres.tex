@@ -1,0 +1,438 @@
+\documentclass{beamer}
+
+\mode<presentation>
+{
+  \usetheme{Goettingen}      
+  \usecolortheme{default}
+  \usefonttheme{default}
+  \setbeamertemplate{navigation symbols}{}
+  \setbeamertemplate{caption}[numbered]
+} 
+
+\usepackage[english]{babel}
+\usepackage[utf8x]{inputenc}
+\usepackage{amsmath}
+\usepackage{dsfont}
+\usepackage{booktabs,multirow,array}
+\usepackage{algorithm}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{graphicx}
+\usepackage{url}
+\usepackage{xcolor}
+\usepackage{moresize}
+\usepackage{lmodern}
+\usepackage{mathrsfs}
+
+\usepackage[numbers]{natbib}
+\renewcommand\bibsection{\section[]{\refname}}
+
+\definecolor{blue_pres}{RGB}{51,50,178}
+\definecolor{darkpastelgreen}{rgb}{0.01, 0.75, 0.24}
+
+\hypersetup{
+    colorlinks,
+    citecolor=orange,
+    linkcolor=blue_pres,
+    backref=true,
+    urlcolor=darkpastelgreen
+}
+
+\makeatletter
+\let\@@magyar@captionfix\relax
+\makeatother
+
+\DeclareCaptionFormat{myformat}{#3}
+\captionsetup[algorithm]{format=myformat}
+\usepackage{algpseudocode}
+
+%%%%%%%%%%%%%%%%%%%%
+%%% New commands %%%
+%%%%%%%%%%%%%%%%%%%%
+
+\DeclareMathOperator{\TV}{TV}
+\DeclareMathOperator{\bina}{bina}
+\DeclareMathOperator{\argmin}{argmin}
+
+\newcommand{\dd}{\mathrm{d}}
+\newcommand{\bC}{\mathbb C}
+\newcommand{\bD}{\mathbb D}
+\newcommand{\bP}{\mathbb P}
+\newcommand{\bX}{\boldsymbol X}
+\newcommand{\XB}{{\boldsymbol X}^B}
+\newcommand{\E}{\mathbb E}
+\newcommand{\N}{\mathbb N}
+\newcommand{\bigO}{\mathcal{O}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\D}{\mathbb{D}}
+\newcommand{\R}{\mathbb R}
+\newcommand{\cA}{\mathcal A}
+\newcommand{\cB}{\mathcal B}
+\newcommand{\cH}{\mathcal H}
+\newcommand{\cS}{\mathcal S}
+\newcommand{\cM}{\mathcal M}
+\newcommand{\cC}{\mathcal C}
+\newcommand{\cG}{\mathcal G}
+\newcommand{\cN}{\mathcal N}
+\newcommand{\cU}{\mathcal U}
+\renewcommand{\P}{\mathds{P}}
+\newcommand{\Gb}{\bar G}
+\newcommand{\Fb}{\bar F}
+\newcommand{\Ub}{\bar U}
+\newcommand{\by}{\boldsymbol y}
+\newcommand{\bz}{\boldsymbol z}
+\newcommand{\bdelta}{\boldsymbol \delta}
+\newcommand{\bSigma}{\textbf{$\Sigma$}}
+\newcommand{\norm}[1]{\|#1\|}
+\newcommand{\pluseq}{\mathrel{+}=}
+\newcommand{\minuseq}{\mathrel{-}=}
+\newcommand{\bcdot}{\raisebox{-0.25ex}{\scalebox{1.2}{$\cdot$}}}
+\newcommand{\ind}[1]{\mathds{1}_{#1}}
+\newcommand\independent{\protect\mathpalette{\protect\independenT}{\perp}} 
+\newcommand{\cD}{\mathcal D}
+\newcommand{\cQ}{\mathcal Q}
+\newcommand{\cR}{\mathcal R}
+\renewcommand{\P}{\mathds P}
+
+
+\definecolor{blue_pres}{RGB}{51,50,178}
+
+\newcommand\Algphase[1]{%
+\vspace*{-.7\baselineskip}\Statex\hspace*{\dimexpr-\algorithmicindent-2pt\relax}\rule{\textwidth}{0.4pt}%
+\vspace*{-.4\baselineskip}\Statex\hspace*{\algorithmicindent}\textbf{#1}%
+\vspace*{-.7\baselineskip}\Statex\hspace*{\dimexpr-\algorithmicindent-2pt\relax}\rule{\textwidth}{0.4pt}%
+}
+\newcommand*\rot{\rotatebox{90}}
+\newcommand*\OK{\ding{51}}
+
+\def\independenT#1#2{\mathrel{\rlap{$#1#2$}\mkern2mu{#1#2}}}
+\newtheorem{hyp}{Hypothesis}
+
+
+\title[IBC 2020 \\ Lights \\ \insertframenumber/\inserttotalframenumber \vspace{-1cm}]{}
+
+\institute[shortinst]{
+  \vspace{-2.2cm} \\
+  \includegraphics[width=2.5cm]{figures/SU} \hspace{1cm}
+  \includegraphics[width=2.2cm]{figures/inserm} \hspace{1cm}
+  \includegraphics[width=1.7cm]{figures/Califrais_logo} \\
+  \vspace{.6cm}
+  \textcolor{blue_pres}{\Large IBC 2020 Online Learning Series}\\
+  \vspace{.5cm}
+  \large
+  \textbf{Simon Bussy}\\
+  \vspace{.25cm}
+  \scriptsize
+  \href{mailto:simon.bussy@gmail.com}{\texttt{simon.bussy@gmail.com}}\\
+  \vspace{.4cm}
+  \small
+  \textbf{Lights: a generalized joint model for high-dimensional multivariate longitudinal data and censored durations} \\
+  \vspace{.3cm}
+  S. Bussy $^{(1,2)}$, A. Barbieri $^{(3)}$, S. Zohar $^{(1)}$, A.S. Jannot $^{(1,4)}$\\
+
+  \vspace{.4cm}  
+
+  \tiny
+  
+  $^{(1)}$INSERM, UMRS 1138, Centre de Recherche des Cordeliers, Paris, France. \\
+  $^{(2)}$Califrais' Machine Learning Lab, Paris, France. \\
+  $^{(3)}$INSERM, UMR 1219, Bordeaux Population Health Research Center, Univ. Bordeaux, France. \\
+  $^{(4)}$Biomedical Informatics and Public Health Department, EGPH, APHP, Paris, France. 
+}
+
+\date{}
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\section{Introduction}
+
+\begin{frame}[noframenumbering]
+\Large \centering
+\textcolor{blue_pres}{I.} Introduction
+\end{frame}
+
+\subsection{Overview}
+
+\begin{frame}{Overview}
+
+\begin{itemize}
+  \item<1-> Deal with the problem of joint modeling of longitudinal data and censored durations
+  \item<2-> Large number of both longitudinal and time-independent features are available
+  \item<3-> Flexibility in modeling the dependency between the longitudinal features and the event time with appropriate penalties
+  \item<4-> Inference achieved using an efficient and novel Quasi-Newton Monte Carlo Expectation Maximization algorithm
+\end{itemize}
+
+\end{frame}
+
+\subsection{Use cases}
+
+\begin{frame}{Use cases}
+
+\small
+\begin{itemize}
+  \item<1-> Predict the risk for an event of interest to occur quickly, taking into account simultaneously a huge number of longitudinal signals in a high-dimensional context
+  \item<2-> Provides powerful interpretability by automatically pinpointing significant time-dependent and time-independent features
+\end{itemize}
+
+\begin{block}<3->{Real-time decision support}
+\begin{itemize}
+  \item<3-> Medical context $\rightarrow$ event of interest: survival time, re-hospitalization, relapse or disease progression ; longitudinal data: biomarkers or vital parameters measurements
+  \item<4-> Customer's satisfaction monitoring context $\rightarrow$ event of interest: time when a client churns ; longitudinal data: the client's activity recorded from account opening throughout the duration of the business relationship
+\end{itemize}
+\end{block}
+
+\end{frame}
+
+\subsection{Framework}
+
+\begin{frame}{High-dimensional framework}
+
+\small
+\begin{itemize}
+  \item<1-> Survival analysis
+  \begin{center}
+  $T = T^\star \wedge C \quad \text{and} \quad \Delta = \ind{\{T^\star \leq C\}}$
+  \end{center}
+  \item<2-> Time-independent features $X \in \R^p$ with $p \gg n$
+  \item<3-> $L$ longitudinal outcomes such that $L \gg n$ and \[Y(t) = \big(Y^1(t), \ldots, Y^L(t) \big)^\top \in \R^L\]
+  \item<4-> Heterogeneity of the population: latent subgroups \[G \in \{ 0, \ldots, K-1\}\]
+  \item<5-> Softmax link function for the latent class membership probability given time-independent features
+  \begin{center}
+  $\pi_{\xi_k}(x) = \P[G=k|X=x] = \dfrac{e^{x^\top\xi_k}}{\sum_{k=0}^{K-1}e^{x^\top\xi_k}}$
+  \end{center}
+\end{itemize}
+
+\end{frame}
+
+\section{Model}
+
+\begin{frame}[noframenumbering]
+\Large \centering
+\textcolor{blue_pres}{II.} Model
+\end{frame}
+
+\subsection{Submodels}
+
+\begin{frame}{Submodels}
+
+\small
+\begin{block}<1->{Group-specific marker trajectories}
+\begin{itemize}
+  \item<1-> \footnotesize $h_l\big(\E[Y^l(t)|b^l, G=k]\big) = m_k^l(t) = u^l(t)^\top\beta_k^l + v^l(t)^\top b^l$\\
+  with fixed effect parameters $\beta_k^l \in \R^{q_l}$ and subject-and-longitudinal outcome specific random effects $b^l \in \R^{r_l} \sim \cN(0, D_{ll})$
+  \item<2-> $\text{Cov}[b^l,b^{l'}] = D_{ll'}$
+  \only<2>{ and
+  \[ D = 
+  \begin{bmatrix}
+    D_{11} & \cdots & D_{1L}\\
+    \vdots &  \ddots & \vdots \\
+    D_{1L}^\top & \cdots & D_{LL}
+  \end{bmatrix}
+  \]
+  the global variance-covariance matrix}
+
+\end{itemize}
+\end{block}
+
+\begin{block}<3->{Group-specific risk of event}
+\begin{itemize}
+  \item<3-> \footnotesize $\lambda(t|G = k) = \lambda_0(t) \exp \Big\{ x^\top \gamma_{k,0} + \sum_{l=1}^L \sum_{a=1}^\cA {\gamma_{k,a}^l}^\top \varphi_a(t, \beta_k^l, b^l) \Big\}$
+  \item<4-> Functionals $(\varphi_a)_{a\in \cA}$
+\begin{table}[htb]
+\centering
+\resizebox{.9\textwidth}{!}{%
+\begin{tabular}{cccc}
+\toprule
+Description & $\varphi_a(t, \beta_k^l, b^l)$ & $\frac{\partial \varphi_a(t, \beta_k^l, b^l)}{\partial \beta_k^l}$  & Reference \\
+\midrule
+Linear predictor & $m_k^l(t)$ & $u^l(t)$ & \citet{chi2006joint} \\ [.15cm]
+Random effects & $b^l$ & $\mathbf{0}_{q_l}$ & \citet{hatfield2011joint} \\ 
+Time-dependent slope & $\dfrac{\dd}{\dd t} m_k^l(t)$ & $\dfrac{\dd}{\dd t} u^l(t)$ & \citet{rizopoulos2011bayesian} \\ [.3cm]
+Cumulative effect & $\int_0^t m_k^l(s) \dd s$ & $\int_0^t u^l(s) \dd s$ & \citet{andrinopoulou2017combined} \\ [.1cm]
+ \bottomrule
+\end{tabular}}
+\end{table}
+
+\end{itemize}
+\end{block}
+
+\end{frame}
+
+\subsection{Notations}
+
+\begin{frame}{Notations}
+
+\footnotesize
+\begin{itemize}
+  \item<1-> $\cD_n = \big\{ (x_1, y_1^1, \ldots, y_1^L, t_1, \delta_1), \ldots, (x_n, y_n^1, \ldots, y_n^L, t_n, \delta_n) \big\}$ with $y_i^l=(y_{i1}^l, \ldots, y_{in_i^l}^l)^\top \in \R^{n_i^l} \text{ and } y_{ij}^l=Y_i^l(t_{ij}^l)$
+  \item<2-> $y_i = ({y_i^1}^\top \cdots {y_i^L}^\top)^\top \in \R^{n_i}$ with $n_i = \sum_{l=1}^L n_i^l$
+  \item<3-> $b_i = ({b_i^1}^\top \cdots {b_i^L}^\top)^\top \in \R^r$ with $r = \sum_{l=1}^L r_l$
+  \item<4-> Design matrices 
+  \[ U_i = 
+\begin{bmatrix}
+  U_{i1} & \cdots & 0\\
+  \vdots &  \ddots & \vdots \\
+  0 & \cdots & U_{iL}
+\end{bmatrix} 
+\in \R^{n_i \times q}
+\text{ and }
+V_i = 
+\begin{bmatrix}
+  V_{i1} & \cdots & 0\\
+  \vdots &  \ddots & \vdots \\
+  0 & \cdots & V_{iL}
+\end{bmatrix}
+\in \R^{n_i \times r}
+\]
+with $q = \sum_{l=1}^L q_l$ and where for all $l=1, \ldots, L$, one writes
+\[
+\left\{
+    \begin{array}{ll}
+        U_{il} &= \big(u_i^l(t_{i1}^l)^\top \cdots u_i^l(t_{in_i^l}^l)^\top\big)^\top \in \R^{n_i^l \times q_l},\\
+        V_{il} &= \big(v_i^l(t_{i1}^l)^\top \cdots v_i^l(t_{in_i^l}^l)^\top\big)^\top \in \R^{n_i^l \times r_l}.
+    \end{array}
+\right.
+\]
+  \item<5-> $\beta_k = ({\beta_k^1}^\top \cdots {\beta_k^L}^\top)^\top \in \R^q$
+  \item<6-> $M_{ik} = U_i\beta_k + V_ib_i \in \R^{n_i}$
+\end{itemize}
+
+\end{frame}
+
+\subsection{Likelihood}
+
+\begin{frame}{Likelihood}
+
+\footnotesize
+\begin{itemize}
+  \item<1-> \scriptsize $\theta = \big(\xi_0^\top \cdots \xi_{K-1}^\top, \beta_0^\top \cdots \beta_{K-1}^\top, \phi^\top, \text{vech}(D), \lambda_0(t), \gamma_0^\top \cdots \gamma_{K-1}^\top\big) \in \R^\vartheta$ 
+  \item<2-> Assumptions : (i) $b \independent G$ \ (ii)  $b | T, \Delta, Y \independent G | T, \Delta, Y$ \\ (iii) $Y^l | b, G \independent Y^{l'} | b, G$ (iv) $f(t_i, \delta_i, y_i | b_i, G_i = k ; \theta) = f(t_i, \delta_i| b_i, G_i = k ; \theta) f(y_i | b_i, G_i = k ; \theta)$
+  \item<3-> $f(y_i|b_i, G_i=k) = \exp \big\{(y_i \odot \Phi_i)^\top M_{ik} - c_\phi(M_{ik}) + d_\phi(y_i) \big\}$ with $\Phi_i = (\phi_1^{-1} {\textbf{1}_{n_i^1}}^\top \cdots \phi_L^{-1} {\textbf{1}_{n_i^L}}^\top)^\top \in \R^{n_i}$
+  \item<4-> Survival part: 
+  \begin{align*}f(t_i, \delta_i| b_i, G_i = k ; \theta) = &\big[\lambda(t_i|\cM_k(t_i), G_i = k)\big]^{\delta_i} \\ & \times \exp \Big\{-\int_0^{t_i} \lambda(s|\cM_k(s), G_i = k) \dd s \Big\}
+  \end{align*}
+  \item<5-> Then, the likelihood writes
+  \begin{align*}\ell_n(\theta) = n^{-1} \sum_{i=1}^n \log \int_{\R^r} \sum_{k=0}^{K-1} &\pi_{\xi_k}(x_i) f(t_i, \delta_i| b_i, G_i = k ; \theta) \\ & \times f(y_i | b_i, G_i = k ; \theta) f(b_i ; \theta) \dd b_i
+  \end{align*}
+\end{itemize}
+
+\end{frame}
+
+\section{Inference}
+
+\begin{frame}[noframenumbering]
+\Large \centering
+\textcolor{blue_pres}{III.} Inference
+\end{frame}
+
+\subsection{Penalization}
+
+\begin{frame}{Penalization}
+
+\small
+
+\begin{itemize}
+  \item<1-> Penalized objective
+  \begin{equation*}
+  \ell_n^\text{pen}(\theta) = - \ell_n(\theta) + \sum_{k=0}^{K-1} \zeta_{1,k} \norm{\xi_k}_{\text{en}, \eta} + \zeta_{2,k} \norm{\gamma_k}_{\text{sg} l_1, \tilde{\eta}} + \zeta_{3,k} \norm{\beta_k}_{\text{sg} l_1, \tilde{\eta}}
+  \end{equation*}
+  with the elasticnet penalty \[ \norm{z}_{\text{en}, \eta} = (1-\eta)\norm{z}_1 + \dfrac\eta2 \norm{z}_2^2 \] and the sparse group lasso penalty \[ \norm{z}_{\text{sg} l_1, \tilde{\eta}} = (1-\tilde{\eta})\norm{z}_1 + \tilde{\eta} \sum_{l=1}^L\norm{z^l}_2 \]
+  \item<2-> Resulting optimization problem \[\hat \theta \in \argmin_{\theta \in \R^\vartheta} \ell_n^\text{pen}(\theta)\]
+\end{itemize}
+
+\end{frame}
+
+\subsection{MCQNEM}
+
+\begin{frame}{MCQNEM algorithm (1/2)}
+
+\small
+
+\begin{itemize}
+  \item<1-> $\ell_n^\text{comp}(\theta) = \ell_n^\text{comp}(\theta ; \cD_n, \textbf{\textit{b}}, \textbf{\textit{G}})$
+\end{itemize}
+
+\begin{block}<2->{Monte Carlo E-step}
+\begin{itemize}
+  \item<2-> $\cQ_n(\theta, \theta^{(w)}) = \E_{\theta^{(w)}}[\ell_n^\text{comp}(\theta) | \cD_n]$
+  \item<3-> Requires to compute expectations of the form
+  \footnotesize
+\[ \E_{\theta^{(w)}}[ g(b_i, G_i) | t_i, \delta_i, y_i] = \sum_{k=0}^{K-1} \pi_{ik}^{\theta^{(w)}} \int_{\R^r} g(b_i, G_i) f(b_i | t_i, \delta_i, y_i ; \theta^{(w)}) \dd b_i \] 
+\small for different functions $g$, where we denote 
+\[\pi_{ik}^{\theta^{(w)}} = \P_{\theta^{(w)}}[G_i = k | t_i, \delta_i, y_i] \]
+  \item<4-> Monte Carlo approximations used for untractable integrals
+\end{itemize}
+\end{block}
+
+
+\end{frame}
+
+\begin{frame}{MCQNEM algorithm (2/2)}
+
+\scriptsize
+
+\begin{block}<1->{Quasi-Newton M-step}
+\begin{itemize}
+  \item<1-> \tiny $\theta^{(w+1)} \in \argmin_{\theta} \cQ_n(\theta, \theta^{(w)}) + \sum_{k=0}^{K-1} \zeta_{1,k} \norm{\xi_k}_{\text{en}, \eta} + \zeta_{2,k} \norm{\gamma_k}_{\text{sg} l_1, \tilde{\eta}} + \zeta_{3,k} \norm{\beta_k}_{\text{sg} l_1, \tilde{\eta}}$
+  \item<2-> $D^{(w+1)} = n^{-1} \sum_{i=1}^n \hat \E_{\theta^{(w)}}[ b_i b_i^\top | t_i, \delta_i, y_i]$
+  \item<3-> $P^{(w)}_{n,k}(\xi_k) = -n^{-1} \sum_{i=1}^n \hat \pi_{ik}^{\theta^{(w)}} \log \pi_{\xi_k}(x_i)$
+  \item<4-> $\xi_k^{(w+1)} \in \argmin_{\xi_k \in \R^p} P^{(w)}_{n,k}(\xi_k) + \zeta_{1,k} \norm{\xi_k}_{\text{en}, \eta}$ 
+  \item<5-> L-BFGS-B to solve the problem
+  \tiny
+  \begin{equation*}
+  \begin{split}
+    \text{minimize}& \quad \quad P_{n, k}^{(w)}(\xi_k^+ - \xi_k^-) + \zeta_{1,k} \big((1 - \eta) \sum_{j=1}^p (\xi_{k,j}^+ + \xi_{k,j}^-) + \dfrac \eta 2 \norm{{\xi_k}^+ - {\xi_k}^-}_2^2 \big) \\
+    \text{subject to}& \quad \quad \xi_{k,j}^+ \geq 0 \text{ and } \xi_{k,j}^- \geq 0 \text{ for } j = 1, \ldots, p
+  \end{split} 
+  \end{equation*}
+  \item<6-> Similar tricks for $\beta_k^{(w+1)}$ and $\gamma_k^{(w+1)}$
+  \item<7-> Predictive marker \scriptsize $\hat \cR_{ik} = \dfrac{\pi_{\hat \xi_k}(x_i) \hat f(t^{max}_i, y_i | b_i, G_i=k ; \hat \theta)}{\sum_{k=0}^{K-1} \pi_{\hat \xi_k}(x_i) \hat f(t^{max}_i, y_i | b_i, G_i=k ; \hat \theta)}$, which is an estimate of $\P_\theta[G_i=k | T^\star_i > t^{max}_i, y_i]$
+\end{itemize}
+\end{block}
+
+\end{frame}
+
+\section{Conclusion}
+
+\begin{frame}[noframenumbering]
+\Large \centering
+\textcolor{blue_pres}{V.} Conclusion
+\end{frame}
+
+\begin{frame}{Conclusion}
+
+\begin{itemize}
+  \item<1-> Prognostic method called lights introduced to deal with the problem of joint modeling of longitudinal data and censored durations, where a large number of longitudinal features are available
+  \item<2-> Penalization of the likelihood in order to perform feature selection and to prevent overfitting
+  \item<3-> New efficient estimation algorithm (QNMCEM) has been derived
+  \item<4-> Automatically determines significant prognostic longitudinal features
+\end{itemize}
+
+\begin{block}<4->{\texttt{Python} 3 package}
+\begin{itemize}
+  \item<4-> Available at \small{\url{https://github.com/Califrais/lights}}
+  \item<5-> Applications of the model available soon on an \texttt{arXiv} paper.
+\end{itemize}
+\end{block}
+
+\end{frame}
+
+\begin{frame}[noframenumbering]
+\Large \centering
+\textcolor{blue_pres}{} Thank you!
+\end{frame}
+
+\section{References}
+\frame{
+  \small
+  \frametitle{References}
+  \bibliographystyle{plainnat}
+  \bibliography{refs}
+}
+
+\end{document}
+              

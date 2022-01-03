@@ -1,0 +1,37 @@
+\begin{thebibliography}{4}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Andrinopoulou et~al.(2017)Andrinopoulou, Rizopoulos, Takkenberg, and
+  Lesaffre]{andrinopoulou2017combined}
+Eleni-Rosalina Andrinopoulou, Dimitris Rizopoulos, Johanna~JM Takkenberg, and
+  Emmanuel Lesaffre.
+\newblock Combined dynamic predictions using joint models of two longitudinal
+  outcomes and competing risk data.
+\newblock \emph{Statistical methods in medical research}, 26\penalty0
+  (4):\penalty0 1787--1801, 2017.
+
+\bibitem[Chi and Ibrahim(2006)]{chi2006joint}
+Yueh-Yun Chi and Joseph~G Ibrahim.
+\newblock Joint models for multivariate longitudinal and multivariate survival
+  data.
+\newblock \emph{Biometrics}, 62\penalty0 (2):\penalty0 432--445, 2006.
+
+\bibitem[Hatfield et~al.(2011)Hatfield, Boye, and Carlin]{hatfield2011joint}
+Laura~A Hatfield, Mark~E Boye, and Bradley~P Carlin.
+\newblock Joint modeling of multiple longitudinal patient-reported outcomes and
+  survival.
+\newblock \emph{Journal of Biopharmaceutical Statistics}, 21\penalty0
+  (5):\penalty0 971--991, 2011.
+
+\bibitem[Rizopoulos and Ghosh(2011)]{rizopoulos2011bayesian}
+Dimitris Rizopoulos and Pulak Ghosh.
+\newblock A bayesian semiparametric multivariate joint model for multiple
+  longitudinal outcomes and a time-to-event.
+\newblock \emph{Statistics in medicine}, 30\penalty0 (12):\penalty0 1366--1380,
+  2011.
+
+\end{thebibliography}

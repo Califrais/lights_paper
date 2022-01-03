@@ -1,0 +1,15 @@
+\babel@toc {english}{}
+\beamer@sectionintoc {1}{Introduction}{2}{0}{1}
+\beamer@subsectionintoc {1}{1}{Overview}{3}{0}{1}
+\beamer@subsectionintoc {1}{2}{Use cases}{7}{0}{1}
+\beamer@subsectionintoc {1}{3}{Framework}{11}{0}{1}
+\beamer@sectionintoc {2}{Model}{16}{0}{2}
+\beamer@subsectionintoc {2}{1}{Submodels}{17}{0}{2}
+\beamer@subsectionintoc {2}{2}{Notations}{21}{0}{2}
+\beamer@subsectionintoc {2}{3}{Likelihood}{27}{0}{2}
+\beamer@sectionintoc {3}{Inference}{31}{0}{3}
+\beamer@subsectionintoc {3}{1}{Penalization}{32}{0}{3}
+\beamer@subsectionintoc {3}{2}{QNMCEM}{34}{0}{3}
+\beamer@sectionintoc {4}{Conclusion}{45}{0}{4}
+\beamer@sectionintoc {5}{References}{53}{0}{5}
+\beamer@sectionintoc {6}{References}{53}{0}{6}
