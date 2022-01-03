@@ -17,14 +17,15 @@
 \usepackage{authblk}
 \title{\vspace{-.5cm} Lights: a generalized joint model for high-dimensional multivariate longitudinal data and censored durations \vspace{.5cm}}
 \author[1,2]{Simon Bussy\thanks{Corresponding author: \href{mailto:simon.bussy@gmail.com}{\texttt{simon.bussy@gmail.com}}}}
-\author[2]{Van Tuan Nguyen}
-\author[3]{Antoine Barbieri}
+\author[2,3]{Van Tuan Nguyen}
+\author[4]{Antoine Barbieri}
 \author[1]{Sarah Zohar}
-\author[1,4]{Anne-Sophie Jannot}
+\author[1,5]{Anne-Sophie Jannot}
 \affil[1]{INSERM, UMRS 1138, Centre de Recherche des Cordeliers, Paris, France}
 \affil[2]{LOPF, Califrais' Machine Learning Lab, Paris, France}
-\affil[3]{INSERM, UMR 1219, Bordeaux Population Health Research Center, Univ. Bordeaux, France}
-\affil[4]{Biomedical Informatics and Public Health Department, EGPH, APHP, Paris, France}
+\affil[3]{LPSM, UMR 8001, CNRS, Sorbonne University, Paris, France}
+\affil[4]{INSERM, UMR 1219, Bordeaux Population Health Research Center, Univ. Bordeaux, France}
+\affil[5]{Biomedical Informatics and Public Health Department, EGPH, APHP, Paris, France}
 \setcounter{Maxaffil}{0}
 \renewcommand\Affilfont{\itshape\small}
 
@@ -86,10 +87,10 @@
 
 \begin{abstract}
 
-This paper introduces a prognostic method called \textit{lights} to deal with the problem of joint modeling of longitudinal data and censored durations, where a large number of longitudinal features are available. Yet there is no standard model so far to learn from such high-dimensional multivariate longitudinal data in a survival analysis setting.
-Features are extracted from the longitudinal processes and included as potential risk factor in a group-specific Cox model with high-dimensional shared associations. Appropriate penalties are then used during inference to allow flexibility in modeling the dependency between the longitudinal features and the event time.
-The statistical performance of the method is examined on an extensive Monte Carlo simulation study, and finally illustrated on publicly available datasets.
-On these high-dimensional datasets, our proposed method significantly outperforms the state-of-the-art survival models regarding risk prediction in terms of C-index, with a computing time orders of magnitude faster. In addition, it provides powerful interpretability by automatically pinpointing significant features being relevant from a practical perspective. Thus, we propose a powerfull tool with the ability of automatically determining significant prognostic longitudinal features, which is of increasing importance in many areas: for instance personalized medicine, or churn prediction in a customer profile and activity monitoring setting, to name but a few.\\
+This paper introduces a prognostic method called \textit{lights} to deal with the problem of joint modeling of longitudinal data and censored durations, where a large number of both longitudinal and time-independent features are available. Yet there is no standard model so far to learn from such high-dimensional multivariate longitudinal data in a survival analysis setting.
+Shared association features are learned from the longitudinal processes and included as potential risk factor in a group-specific Cox model. Appropriate penalties are then used during inference to allow flexibility in modeling the dependency between the longitudinal features and the event time.
+The statistical performance of the method is examined on an extensive Monte Carlo simulation study, and finally illustrated on a publicly available dataset.
+Our proposed method significantly outperforms the state-of-the-art survival models regarding risk prediction in terms of C-index, with a computing time orders of magnitude faster. In addition, it provides powerful interpretability by automatically pinpointing significant features being relevant from a practical perspective. Thus, we propose a powerfull tool with the ability of automatically determining significant prognostic longitudinal features, which is of increasing importance in many areas: for instance personalized medicine, or churn prediction in a customer profile and activity monitoring setting, to name but a few.\\
 
 \noindent
 \emph{Keywords.} High-dimensional estimation; Joint modeling; Multivariate longitudinal data; Survival analysis
@@ -109,7 +110,7 @@ Despite many multivariate models being presented in full generality, questions a
 \paragraph{General framework.}
 
 The setting of this paper is such that we want to incorporate high-dimensional time-dependent (longitudinal) features measured with error in a survival model. Let us consider the usual survival analysis framework.
-Following~\citet{andersen2012statistical}, let non-negative random variables $T^\star$ and $C$ stand for the times of the event of interest and censoring times respectively. The event of interest could be for instance survival time, re-hospitalization, relapse or disease progression in a medical context; or the time when a client stops using a company's product or service in a churn prediction setting.
+Following~\citet{andersen2012statistical}, let non-negative random variables $T^\star$ and $C$ stand for the times of the event of interest and censoring times respectively. The event of interest could be for instance the time when a client stops using a company's product or service in a churn prediction setting~ ; or survival time, re-hospitalization, relapse or disease progression in a medical context.
 We then denote $T$ the right-censored time and $\Delta$ the censoring indicator, defined as 
 \begin{equation*}
 T = T^\star \wedge C \quad \text{and} \quad \Delta = \ind{\{T^\star \leq C\}}
@@ -137,10 +138,10 @@ From now on, all computations are done conditionally on features $x$.
 
 In this paper, we propose a method called \textit{lights} (generaLized joInt hiGH-dimensional longiTudinal Survival) which is from both JLCMs and SREMs, since we also include features extracted from the longitudinal processes as potential risk factor in the survival model, which is a group-specific Cox model~\citep{Cox1972JRSS} with high-dimensional shared associations.
 To allow flexibility in modeling the dependency between the longitudinal features and the event time, we use appropriate penalties : elastic net~\citep{zou2005regularization}
-for feature selection in the latent class membership, and sparse group lasso~\citep{simon2013sparse} in the survival model, as well as for the fixed effect (allowing flexible representations of time). Indeed, this penalty acts like the lasso at the trajectory level, namely an entire trajectory may drop out of the model on one side. On the other hand, it yields sparsity for a given trajectory, namely feature selection.
-Inference is achieved using an efficient and novel Quasi-Newton Monte Carlo Expectation Maximization algorithm.
-Posterior estimates of the latent class membership probabilities given the longitudinal process and the fact that the subject is still alive at prediction time -- in a so called ``real-time prediction paradigm'' -- are then used as discriminative marker rule for risk prediction in the cross-validation procedure for selecting the best regularization hyper-parameters (to perform feature selection and adapt to the longitudinal data complexity).
-Hence, the method provides interpretations of the high-dimensional longitudinal features, thus offering a powerful tool for clinical decision making in patient monitoring for instance, or else for real-time decision support in a customer's satisfaction monitoring context.
+for time-independent feature selection in the latent class membership, and sparse group lasso~\citep{simon2013sparse} in the survival model : this penalty acts like the lasso at the trajectory level, namely an entire trajectory may drop out of the model, and yields sparsity for a given trajectory.
+Inference is achieved using an efficient and novel proximal Quasi-Newton Monte Carlo Expectation Maximization algorithm (prox-QNMCEM).
+Posterior estimates of the latent class membership probabilities given the longitudinal process and the fact that the subject is still alive at prediction time -- in a so called ``real-time prediction paradigm'' -- are then used as discriminative marker rule for risk prediction in the cross-validation procedure for selecting the best regularization hyper-parameters.
+Hence, the method provides interpretations of the high-dimensional longitudinal features, thus offering a powerful tool for real-time decision support in a customer's satisfaction monitoring context for instance, or else for clinical decision making in patient monitoring.
 
 \paragraph{Organization of the paper.}
 
@@ -149,7 +150,7 @@ Section~\ref{sec:inference} focuses on a regularized version of the
 model to exploit dimension reduction and prevent overfitting. Inference is
 presented under this framework, as well as the developed algorithm.
 Section~\ref{sec:Performance evaluation} introduces the C-index metric, as well as a novel evaluation strategy to assess diagnostic prediction performances while mimicking a real-time use of the model in clinical care, and finally the considered competing methods.
-Section~\ref{sec:simulation study} presents the simulation procedure used to evaluate the performance of our method in a high-dimensional context and compares it with state-of-the-art ones. In Section~\ref{sec:application}, we apply our method to high-dimensional publicly available datasets. Finally, we discuss the obtained results in Section~\ref{sec:conclusion}.
+Section~\ref{sec:simulation study} presents the simulation procedure used to evaluate the performance of our method in a high-dimensional context and compares it with state-of-the-art ones. In Section~\ref{sec:application}, we apply our method to a publicly available dataset. Finally, we discuss the obtained results in Section~\ref{sec:conclusion}.
 
 \paragraph{Notations.}
 
@@ -339,7 +340,7 @@ For all $k = 0, \ldots, K-1$, we denote
 and 
 \[M_{ik} = U_i\beta_k + V_ib_i \in \R^{n_i}. \]
 
-Given~\eqref{eq:link-function} and Assumption~\ref{indep-hyp-2}, each $y_i^l$ is assumed to be from a one-parameter exponential family with respect to a reference measure which is either the Lebesgue measure (e.g., in the Gaussian case) or the counting measure (e.g., in the logistic cases).
+Given~\eqref{eq:link-function} and Assumption~\ref{indep-hyp-2}, each $y_i^l$ is assumed to be from a one-parameter exponential family with respect to a reference measure which is either the Lebesgue measure (e.g., in the Gaussian case) or the counting measure (e.g., in the logistic case).
 The conditional distribution of $y_i|b_i, G_i=k$ is then assumed to be from a distribution with a density of the form
 \begin{equation}
 	\label{eq:exp-family-density}
@@ -351,7 +352,7 @@ with
   \Phi_i = (\phi_1^{-1} {\textbf{1}_{n_i^1}}^\top \cdots \phi_L^{-1} {\textbf{1}_{n_i^L}}^\top)^\top \in \R^{n_i}
 \end{equation} 
 and $\phi = (\phi_1, \ldots, \phi_L)^\top \in \R^L$.
-The density described in~\eqref{eq:exp-family-density} encompasses several distributions, see Table~\ref{table:glm}. The functions $c_\phi(\cdot)$ and $d_\phi(\cdot)$ are known as well as the dispersion parameters $\phi_l$, while parameters $\beta_k$ have to be estimated. Note that $d_\phi(\cdot)$ is related to the normalizing constant.
+The density described in~\eqref{eq:exp-family-density} encompasses several distributions, see Table~\ref{table:glm}. The functions $c_\phi(\cdot)$ and $d_\phi(\cdot)$ are known as well as the dispersion parameter $\phi_l$, while parameter $\beta_k$ has to be estimated. Note that $d_\phi(\cdot)$ is related to the normalizing constant.
 \begin{table}[htb]
 \centering
 \resizebox{\textwidth}{!}{%
@@ -364,7 +365,7 @@ The density described in~\eqref{eq:exp-family-density} encompasses several distr
  Poisson & $\N$ & Count of occurrences & 1 &  $z \mapsto \log(z)$ & $z \mapsto e^z$ \\
  \bottomrule
 \end{tabular}}
-\caption[]{Examples of standard distributions that fit in the considered setting, given in the univariate case for simplicity of the notations.}
+\caption[]{Example of standard distributions that fit in the considered setting, given in the univariate case for simplicity of the notations.}
 \label{table:glm}
 \end{table}
 
@@ -425,7 +426,7 @@ Hence, the resulting optimization problem is written
    \hat \theta \in \argmin_{\theta \in \R^\vartheta} \ell_n^\text{pen}(\theta).
  \end{equation}
 
-One advantage of the considered regularization method is its ability to perform feature selection (the lasso part) and pinpoint the most important features relatively to the prediction objective : the support of $\xi_k$ thus informs on the time-independent features involved in the $k$-th group membership. The ridge part allows to handle potential correlation between features.
+One advantage of the considered regularization method is its ability to perform feature selection (the lasso part) and pinpoint the most important features relatively to the prediction objective : the support of $\xi_k$ thus informs on the time-independent features involved in the $k$-th group membership. The ridge part allows to handle potential correlation between time-independent features.
 On the other hand, the sparse group lasso allows to perform feature selection for each trajectory : the support of $\gamma_k^l$ informs on the features involved in the $k$-th group risk of event for the $l$-th longitudinal outcome.
 Note that in practice, the intercept is not regularized.
 
@@ -473,7 +474,7 @@ with
   &= \int_{\R^r} \tilde g(b_i) f(t_i, \delta_i, y_i | b_i, G_i = k ; \theta^{(w)}) f(b_i ; \theta^{(w)}) \dd b_i
 \end{align}
 and $\Lambda_{ik,1}^{\theta^{(w)}}$ obtained from $\Lambda_{ik,\tilde g}^{\theta^{(w)}}$ taking $\tilde g: b_i \mapsto 1$.
-The integral in~\eqref{eq:Lambda_ik-b_i|y_i} or~\eqref{eq:Lambda_ik-b_i} is not tractable analytically, and some form of approximation must be used in practice. Standard numerical integration techniques (such as Gaussian quadrature) are not well suited in our high-dimensional context. We then propose to use Monte Carlo approximation, which has already been applied for generalized linear mixed models~\citep{booth1999maximizing}, with antithetic normal variates method~\citep{hammersley1956new} to reduce variance of the simulation result. Algorithm~\ref{alg:construct-set-S} describes how to construct the set $S_{ik}^{(w)}$ used for the approximation.
+The integrals in~\eqref{eq:Lambda_ik-b_i|y_i} or~\eqref{eq:Lambda_ik-b_i} are not tractable analytically, and some form of approximation must be used in practice. Standard numerical integration techniques (such as Gaussian quadrature) are not well suited in our high-dimensional context. We then propose to use Monte Carlo approximation, which has already been applied for generalized linear mixed models~\citep{booth1999maximizing}, with antithetic normal variates method~\citep{hammersley1956new} to reduce variance of the simulation result. Algorithm~\ref{alg:construct-set-S} describes how to construct the set $S_{ik}^{(w)}$ used for the approximation.
 
 \vspace{.5cm}
 
@@ -501,7 +502,7 @@ $C_i^{(w)}{C_i^{(w)}}^\top = \text{M}_i^1$ \tcp{Cholesky decomposition} \nonumbe
   y_i | G_i = k &\sim \cN\big(U_i\beta_k, V_iDV_i^\top + \Sigma_i\big) \\
   b_i | y_i, G_i=k &\sim \cN \big(W_iV_i^T\Sigma_i^{-1}(y_i - U_i\beta_k), W_i\big)  
 \end{align*}
-with $W_i = (V_i^\top\Sigma_i^{-1}V_i + D^{-1})^{-1}$, or one can choose $\left\{ \begin{array}{ll} \text{M}_i^1 &= D^{(w)} \\ \text{M}_{ik}^2 &= 0 \end{array} \right.$ based on~\eqref{eq:Lambda_ik-b_i} using a sampling $b_i \sim \cN(0, D^{(w)})$. The advantage of this second option is that $S_{ik}^{(w)}$ does not depend on $i$ nor $k$, which significantly improves computational performances. We then implement this option in practice, being more appropriated in our high-dimensional context.
+with $W_i = (V_i^\top\Sigma_i^{-1}V_i + D^{-1})^{-1}$, or one can choose $\left\{ \begin{array}{ll} \text{M}_i^1 &= D^{(w)} \\ \text{M}_{ik}^2 &= 0 \end{array} \right.$ based on~\eqref{eq:Lambda_ik-b_i} using a sampling $b_i \sim \cN(0, D^{(w)})$. The huge advantage of this second option is that $S_{ik}^{(w)}$ does not depend on $i$ nor $k$, which significantly improves computational performances. We then implement this option in practice, being more appropriated in our high-dimensional context.
 
 The approximation of~\eqref{eq:def-E-g-tilde} is finally obtained by
 \begin{equation}
@@ -586,7 +587,7 @@ based on the quantities involved in $\cQ_n(\theta, \theta^{(w)})$ that depend on
   \gamma_k^{(w+1)} \in \argmin_{\gamma_k \in \R^{L\sA}} Q^{(w)}_{n,k}(\gamma_k) + \zeta_{2,k} \norm{\gamma_k}_{\text{sg} l_1, \tilde{\eta}}.
 \end{equation}
 
-The previous trick we used to handle the non-differentiability of the $\ell_1$ part in the elastic net is no longer sufficient for~\eqref{eq:minimization-beta_k}, since the $\ell_2$ norm in the sparse group lasso is not squared, leading to a non-differentiability at 0 (which is precisely the criterion exploited by the penalty to set some groups of coefficients to exactly 0~\citep{simon2013sparse}). Then, we choose to solve problem~\eqref{eq:minimization-beta_k} using the proximal gradient descent~\citep{boyd2004convex} described in Algorithm~\ref{alg:ISTA}, where we first define
+The previous trick we used to handle the non-differentiability of the $\ell_1$ part in the elastic net is no longer sufficient for~\eqref{eq:minimization-gamma_k}, since the $\ell_2$ norm in the sparse group lasso is not squared, leading to a non-differentiability at 0 (which is precisely the criterion exploited by the penalty to set some groups of coefficients to exactly 0~\citep{simon2013sparse}). Then, we choose to solve problem~\eqref{eq:minimization-gamma_k} using the proximal gradient descent~\citep{boyd2004convex} described in Algorithm~\ref{alg:ISTA}, where we first define
 \[p_{\varrho}(y) = \argmin_u \Big\{\dfrac{1}{2\varrho} \left\lVert u - \big(y - \varrho  \nabla f(y) \big)\right\rVert_2^2 + \zeta \norm{u}_{\text{sg} l_1, \tilde{\eta}} \Big\}.\]
 
 \vspace{.5cm}
@@ -653,7 +654,7 @@ Appendix~\ref{sec:prox-QNMCEM class} gives some details about the way we impleme
 
 \paragraph*{Initialization.}
 Our algorithm gives a local minimum, and it is clever to choose an initial value $\theta^{(0)}$ close to the final solution $\hat \theta$, so that the number of iterations required to reach convergence is reduced. We then give some details about the starting point $\theta^{(0)}$ of Algorithm~\ref{alg:prox-QNMCEM}. 
-For all $k = 0, \ldots, K-1$, we first choose $\xi_k^{(0)} = \mathbf{0}_d$ and ${\gamma_{k,a}^l}^{(0)} = 0$ for all $l=1, \ldots, L$ and $a=1, \ldots, \cA$. Then, we initialize $\lambda_0^{(0)}$ like if there is no subgroup ($\gamma_{0}^{(0)} = \cdots = \gamma_{K-1}^{(0)}$) with a standard Cox proportional hazards regression with time-independent features using the \texttt{Python} library \texttt{tick}. Finally, the longitudinal submodels parameters $\beta_k^{(0)}$, $D^{(0)}$ and $\phi^{(0)}$ are initialized -- again like if there is no subgroup ($\beta_0^{(0)} = \cdots = \beta_{K-1}^{(0)}$) -- using a multivariate linear mixed model with an explicit EM algorithm (details on the algorithm are given in Appendix~\ref{sec:MLMM}, and details on the implementation in Appendix~\ref{sec:MLMM class}), being itself initialized with univariates fits using the \texttt{Python} package \texttt{statsmodels}.
+For all $k = 0, \ldots, K-1$, we first choose $\xi_k^{(0)} = \mathbf{0}_d$ and ${\gamma_k}^{(0)} = \mathbf{0}_{L\sA}$. Then, we initialize $\lambda_0^{(0)}$ like if there is no subgroup ($\gamma_{0}^{(0)} = \cdots = \gamma_{K-1}^{(0)}$) with a standard Cox proportional hazards regression with time-independent features using the \texttt{Python} library \texttt{tick}. Finally, the longitudinal submodels parameters $\beta_k^{(0)}$, $D^{(0)}$ and $\phi^{(0)}$ are initialized -- again like if there is no subgroup ($\beta_0^{(0)} = \cdots = \beta_{K-1}^{(0)}$) -- using a multivariate linear mixed model with an explicit EM algorithm (details on the algorithm are given in Appendix~\ref{sec:MLMM}, and details on the implementation in Appendix~\ref{sec:MLMM class}), being itself initialized with univariates fits using the \texttt{Python} package \texttt{statsmodels}.
 
 \paragraph*{The prox-QNMCEM algorithm.}
 Algorithm~\ref{alg:prox-QNMCEM} describes the main steps of the resulting QNMCEM algorithm to solve the optimization problem~\eqref{eq:optim-pb}. 
@@ -699,7 +700,7 @@ is satisfied for 3 consecutive iterations, since the monotonicity property is lo
 
 In many practical applications -- including those addressed in Section~\ref{sec:application} -- we are interested in identifying one subgroup of the population with a high risk of adverse event compared to the others. Then, in the following, we consider $G \in \{ 0, 1\}$ where $G=1$ means high-risk of early adverse event and $G=0$ means low risk.
 To simplify notations, let us set $\xi = \xi_1$, $\pi_\xi(x)$ the conditional probability that a subject belongs to the group with high risk of adverse event given its time-independent features $x$, and $\zeta_1 = \zeta_{1,1}$.
-In this context, which is the one we consider in practice in Sections~\ref{sec:simulation study} and~\ref{sec:application}, we suppose that the ``right'' penalty strength for $\xi_k$ and $\gamma_k$ does not depend on $k$, so that we denote $\zeta_2 = \zeta_{2,0} = \zeta_{2,1}$. 
+In this context, which is the one we consider in practice in Sections~\ref{sec:simulation study} and~\ref{sec:application}, we suppose that the ``right'' penalty strength for $\gamma_k$ does not depend on $k$, so that we denote $\zeta_2 = \zeta_{2,0} = \zeta_{2,1}$. 
 
 \paragraph{Cross-validation procedure.}
 
@@ -735,7 +736,7 @@ with
 \[ \hat f(t^{max}_i, y_i | G_i=k ; \hat \theta) = \dfrac{1}{2N} \sum_{\breve{b} \in \hat S} f(t^{max}_i, 0, y_i | \breve{b}, G_i = k ; \hat \theta), \]
 where $\hat S$ is obtained with Algorithm~\ref{alg:construct-set-S} using $\hat D$ (that is $S^{(w_{max})}$ for the last iteration $w_{max}$), and the density $f$ in the rigth hand side of the previous equation being defined in~\eqref{eq:ind-hyp}.
 Note that marker~\eqref{eq:marker-def} is in fact obtained from the definition of $\hat \pi_{ik}^{\hat\theta}$ in~\eqref{eq:hat_pi_ik-def} taking $(t_i, \delta_i) = (t^{max}_i, 0)$, and turns out to be an estimate of the following posterior probability 
-\[\P_\theta[G_i=k | T^\star_i > t^{max}_i, y_i, x_i].\]
+\[\P_\theta[G_i=k | T^\star_i > t^{max}_i, y_i].\]
 
 \subsection{The C-index metric}
 \label{sec:Metrics}
