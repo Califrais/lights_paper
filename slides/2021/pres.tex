@@ -160,10 +160,10 @@
 \begin{frame}{Overview}
 
 \begin{itemize}
-  \item<1-> Deal with the problem of joint modeling of longitudinal data and censored durations
-  \item<2-> Large number of both longitudinal and time-independent features are available
-  \item<3-> Flexibility in modeling the dependency between the longitudinal features and the event time with appropriate penalties
-  \item<4-> Inference achieved using an efficient and novel Quasi-Newton Monte Carlo Expectation Maximization algorithm
+  \item Deal with the problem of joint modeling of longitudinal data and censored durations
+  \item Large number of both longitudinal and time-independent features are available
+  \item Flexibility in modeling the dependency between the longitudinal features and the event time with appropriate penalties
+  \item Inference achieved using an efficient and novel Quasi-Newton Monte Carlo Expectation Maximization algorithm
 \end{itemize}
 
 \end{frame}
@@ -174,14 +174,14 @@
 
 \small
 \begin{itemize}
-  \item<1-> Predict the risk for an event of interest to occur quickly, taking into account simultaneously a huge number of longitudinal signals in a high-dimensional context
-  \item<2-> Provides powerful interpretability by automatically pinpointing significant time-dependent and time-independent features
+  \item Predict the risk for an event of interest to occur quickly, taking into account simultaneously a huge number of longitudinal signals in a high-dimensional context
+  \item Provides powerful interpretability by automatically pinpointing significant time-dependent and time-independent features
 \end{itemize}
 
-\begin{block}<3->{Real-time decision support}
+\begin{block}{Real-time decision support}
 \begin{itemize}
-  \item<3-> Medical context $\rightarrow$ event of interest: survival time, re-hospitalization, relapse or disease progression ; longitudinal data: biomarkers or vital parameters measurements
-  \item<4-> Customer's satisfaction monitoring context $\rightarrow$ event of interest: time when a client churns ; longitudinal data: the client's activity recorded from account opening throughout the duration of the business relationship
+  \item Medical context $\rightarrow$ event of interest: survival time, re-hospitalization, relapse or disease progression ; longitudinal data: biomarkers or vital parameters measurements
+  \item Customer's satisfaction monitoring context $\rightarrow$ event of interest: time when a client churns ; longitudinal data: the client's activity recorded from account opening throughout the duration of the business relationship
 \end{itemize}
 \end{block}
 
@@ -193,14 +193,14 @@
 
 \small
 \begin{itemize}
-  \item<1-> Survival analysis
+  \item Survival analysis
   \begin{center}
   $T = T^\star \wedge C \quad \text{and} \quad \Delta = \ind{\{T^\star \leq C\}}$
   \end{center}
-  \item<2-> Time-independent features $X \in \R^p$ with $p \gg n$
-  \item<3-> $L$ longitudinal outcomes such that $L \gg n$ and \[Y(t) = \big(Y^1(t), \ldots, Y^L(t) \big)^\top \in \R^L\]
-  \item<4-> Heterogeneity of the population: latent subgroups \[G \in \{ 0, \ldots, K-1\}\]
-  \item<5-> Softmax link function for the latent class membership probability given time-independent features
+  \item Time-independent features $X \in \R^p$ with $p \gg n$
+  \item $L$ longitudinal outcomes such that $L \gg n$ and \[Y(t) = \big(Y^1(t), \ldots, Y^L(t) \big)^\top \in \R^L\]
+  \item Heterogeneity of the population: latent subgroups \[G \in \{ 0, \ldots, K-1\}\]
+  \item Softmax link function for the latent class membership probability given time-independent features
   \begin{center}
   $\pi_{\xi_k}(x) = \P[G=k|X=x] = \dfrac{e^{x^\top\xi_k}}{\sum_{k=0}^{K-1}e^{x^\top\xi_k}}$
   \end{center}
@@ -220,12 +220,12 @@
 \begin{frame}{Submodels}
 
 \small
-\begin{block}<1->{Group-specific marker trajectories}
+\begin{block}{Group-specific marker trajectories}
 \begin{itemize}
-  \item<1-> \footnotesize $h_l\big(\E[Y^l(t)|b^l, G=k]\big) = m_k^l(t) = u^l(t)^\top\beta_k^l + v^l(t)^\top b^l$\\
+  \item \footnotesize $h_l\big(\E[Y^l(t)|b^l, G=k]\big) = m_k^l(t) = u^l(t)^\top\beta_k^l + v^l(t)^\top b^l$\\
   with fixed effect parameters $\beta_k^l \in \R^{q_l}$ and subject-and-longitudinal outcome specific random effects $b^l \in \R^{r_l} \sim \cN(0, D_{ll})$
-  \item<2-> $\text{Cov}[b^l,b^{l'}] = D_{ll'}$
-  \only<2>{ and
+  \item $\text{Cov}[b^l,b^{l'}] = D_{ll'}$
+  \only{ and
   \[ D = 
   \begin{bmatrix}
     D_{11} & \cdots & D_{1L}\\
@@ -238,21 +238,26 @@
 \end{itemize}
 \end{block}
 
-\begin{block}<3->{Group-specific risk of event}
+\end{frame}
+
+\begin{frame}{Submodels}
+
+\small
+\begin{block}{Group-specific risk of event}
 \begin{itemize}
-  \item<3-> \footnotesize $\lambda(t|G = k) = \lambda_0(t) \exp \Big\{ x^\top \gamma_{k,0} + \sum_{l=1}^L \sum_{a=1}^\cA {\gamma_{k,a}^l}^\top \varphi_a(t, \beta_k^l, b^l) \Big\}$
-  \item<4-> Functionals $(\varphi_a)_{a\in \cA}$
+  \item \footnotesize $\lambda(t|G = k) = \lambda_0(t) \exp \Big\{ \sum_{l=1}^L \sum_{a=1}^\cA {\gamma_{k,a}^l}^\top \varphi_{k, a}(t, b^l) \Big\}$
+  \item Functionals $(\varphi_a)_{a\in \cA}$
 \begin{table}[htb]
 \centering
 \resizebox{.9\textwidth}{!}{%
-\begin{tabular}{cccc}
+\begin{tabular}{ccccc}
 \toprule
-Description & $\varphi_a(t, \beta_k^l, b^l)$ & $\frac{\partial \varphi_a(t, \beta_k^l, b^l)}{\partial \beta_k^l}$  & Reference \\
+Description & $\varphi_{k,a}(t, b^l)$ & $\imath_a$ & Reference \\
 \midrule
-Linear predictor & $m_k^l(t)$ & $u^l(t)$ & \citet{chi2006joint} \\ [.15cm]
-Random effects & $b^l$ & $\mathbf{0}_{q_l}$ & \citet{hatfield2011joint} \\ 
-Time-dependent slope & $\dfrac{\dd}{\dd t} m_k^l(t)$ & $\dfrac{\dd}{\dd t} u^l(t)$ & \citet{rizopoulos2011bayesian} \\ [.3cm]
-Cumulative effect & $\int_0^t m_k^l(s) \dd s$ & $\int_0^t u^l(s) \dd s$ & \citet{andrinopoulou2017combined} \\ [.1cm]
+Linear predictor & $m_k^l(t)$ & 1 & \citet{chi2006joint} \\ [.15cm]
+Random effects & $b^l$ & $r_l$ & \citet{hatfield2011joint} \\
+Time-dependent slope & $\dfrac{\dd}{\dd t} m_k^l(t)$ & 1 & \citet{rizopoulos2011bayesian} \\ [.3cm]
+Cumulative effect & $\int_0^t m_k^l(s) \dd s$ & 1 & \citet{andrinopoulou2017combined} \\ [.1cm]
  \bottomrule
 \end{tabular}}
 \end{table}
@@ -268,10 +273,10 @@ Cumulative effect & $\int_0^t m_k^l(s) \dd s$ & $\int_0^t u^l(s) \dd s$ & \citet
 
 \footnotesize
 \begin{itemize}
-  \item<1-> $\cD_n = \big\{ (x_1, y_1^1, \ldots, y_1^L, t_1, \delta_1), \ldots, (x_n, y_n^1, \ldots, y_n^L, t_n, \delta_n) \big\}$ with $y_i^l=(y_{i1}^l, \ldots, y_{in_i^l}^l)^\top \in \R^{n_i^l} \text{ and } y_{ij}^l=Y_i^l(t_{ij}^l)$
-  \item<2-> $y_i = ({y_i^1}^\top \cdots {y_i^L}^\top)^\top \in \R^{n_i}$ with $n_i = \sum_{l=1}^L n_i^l$
-  \item<3-> $b_i = ({b_i^1}^\top \cdots {b_i^L}^\top)^\top \in \R^r$ with $r = \sum_{l=1}^L r_l$
-  \item<4-> Design matrices 
+  \item $\cD_n = \big\{ (x_1, y_1^1, \ldots, y_1^L, t_1, \delta_1), \ldots, (x_n, y_n^1, \ldots, y_n^L, t_n, \delta_n) \big\}$ with $y_i^l=(y_{i1}^l, \ldots, y_{in_i^l}^l)^\top \in \R^{n_i^l} \text{ and } y_{ij}^l=Y_i^l(t_{ij}^l)$
+  \item $y_i = ({y_i^1}^\top \cdots {y_i^L}^\top)^\top \in \R^{n_i}$ with $n_i = \sum_{l=1}^L n_i^l$
+  \item $b_i = ({b_i^1}^\top \cdots {b_i^L}^\top)^\top \in \R^r$ with $r = \sum_{l=1}^L r_l$
+  \item Design matrices
   \[ U_i = 
 \begin{bmatrix}
   U_{i1} & \cdots & 0\\
@@ -297,8 +302,8 @@ with $q = \sum_{l=1}^L q_l$ and where for all $l=1, \ldots, L$, one writes
     \end{array}
 \right.
 \]
-  \item<5-> $\beta_k = ({\beta_k^1}^\top \cdots {\beta_k^L}^\top)^\top \in \R^q$
-  \item<6-> $M_{ik} = U_i\beta_k + V_ib_i \in \R^{n_i}$
+  \item $\beta_k = ({\beta_k^1}^\top \cdots {\beta_k^L}^\top)^\top \in \R^q$
+  \item $M_{ik} = U_i\beta_k + V_ib_i \in \R^{n_i}$
 \end{itemize}
 
 \end{frame}
@@ -309,12 +314,12 @@ with $q = \sum_{l=1}^L q_l$ and where for all $l=1, \ldots, L$, one writes
 
 \footnotesize
 \begin{itemize}
-  \item<1-> \scriptsize $\theta = \big(\xi_0^\top \cdots \xi_{K-1}^\top, \beta_0^\top \cdots \beta_{K-1}^\top, \phi^\top, \text{vech}(D), \lambda_0(t), \gamma_0^\top \cdots \gamma_{K-1}^\top\big) \in \R^\vartheta$ 
-  \item<2-> $f(y_i|b_i, G_i=k) = \exp \big\{(y_i \odot \Phi_i)^\top M_{ik} - c_\phi(M_{ik}) + d_\phi(y_i) \big\}$ with $\Phi_i = (\phi_1^{-1} {\textbf{1}_{n_i^1}}^\top \cdots \phi_L^{-1} {\textbf{1}_{n_i^L}}^\top)^\top \in \R^{n_i}$
-  \item<3-> Survival part: 
+  \item \scriptsize $\theta = \big(\xi_0^\top \cdots \xi_{K-1}^\top, \beta_0^\top \cdots \beta_{K-1}^\top, \phi^\top, \text{vech}(D), \lambda_0^\top, \gamma_0^\top \cdots \gamma_{K-1}^\top\big) \in \R^\vartheta$
+  \item $f(y_i|b_i, G_i=k) = \exp \big\{(y_i \odot \Phi_i)^\top M_{ik} - c_\phi(M_{ik}) + d_\phi(y_i) \big\}$ with $\Phi_i = (\phi_1^{-1} {\textbf{1}_{n_i^1}}^\top \cdots \phi_L^{-1} {\textbf{1}_{n_i^L}}^\top)^\top \in \R^{n_i}$
+  \item Survival part:
   \begin{align*}f(t_i, \delta_i| b_i, G_i = k ; \theta) = &\big[\lambda(t_i|\cM_k(t_i), G_i = k)\big]^{\delta_i} \\ & \times \exp \Big\{-\int_0^{t_i} \lambda(s|\cM_k(s), G_i = k) \dd s \Big\}
   \end{align*}
-  \item<4-> Then, the likelihood writes
+  \item Then, the likelihood writes
   \begin{align*}\ell_n(\theta) = n^{-1} \sum_{i=1}^n \log \int_{\R^r} \sum_{k=0}^{K-1} &\pi_{\xi_k}(x_i) f(t_i, \delta_i| b_i, G_i = k ; \theta) \\ & \times f(y_i | b_i, G_i = k ; \theta) f(b_i ; \theta) \dd b_i
   \end{align*}
 \end{itemize}
@@ -335,12 +340,12 @@ with $q = \sum_{l=1}^L q_l$ and where for all $l=1, \ldots, L$, one writes
 \small
 
 \begin{itemize}
-  \item<1-> Penalized objective
+  \item Penalized objective
   \begin{equation*}
-  \ell_n^\text{pen}(\theta) = - \ell_n(\theta) + \sum_{k=0}^{K-1} \zeta_{1,k} \norm{\xi_k}_{\text{en}, \eta} + \zeta_{2,k} \norm{\gamma_k}_{\text{sg} l_1, \tilde{\eta}} + \zeta_{3,k} \norm{\beta_k}_{\text{sg} l_1, \tilde{\eta}}
+  \ell_n^\text{pen}(\theta) = - \ell_n(\theta) + \sum_{k=0}^{K-1} \zeta_{1,k} \norm{\xi_k}_{\text{en}, \eta} + \zeta_{2,k} \norm{\gamma_k}_{\text{sg} l_1, \tilde{\eta}}
   \end{equation*}
   with the elasticnet penalty \[ \norm{z}_{\text{en}, \eta} = (1-\eta)\norm{z}_1 + \dfrac\eta2 \norm{z}_2^2 \] and the sparse group lasso penalty \[ \norm{z}_{\text{sg} l_1, \tilde{\eta}} = (1-\tilde{\eta})\norm{z}_1 + \tilde{\eta} \sum_{l=1}^L\norm{z^l}_2 \]
-  \item<2-> Resulting optimization problem \[\hat \theta \in \argmin_{\theta \in \R^\vartheta} \ell_n^\text{pen}(\theta)\]
+  \item Resulting optimization problem \[\hat \theta \in \argmin_{\theta \in \R^\vartheta} \ell_n^\text{pen}(\theta)\]
 \end{itemize}
 
 \end{frame}
@@ -352,18 +357,18 @@ with $q = \sum_{l=1}^L q_l$ and where for all $l=1, \ldots, L$, one writes
 \small
 
 \begin{itemize}
-  \item<1-> $\ell_n^\text{comp}(\theta) = \ell_n^\text{comp}(\theta ; \cD_n, \textbf{\textit{b}}, \textbf{\textit{G}})$
+  \item $\ell_n^\text{comp}(\theta) = \ell_n^\text{comp}(\theta ; \cD_n, \textbf{\textit{b}}, \textbf{\textit{G}})$
 \end{itemize}
 
-\begin{block}<2->{Monte Carlo E-step}
+\begin{block}{Monte Carlo E-step}
 \begin{itemize}
-  \item<2-> $\cQ_n(\theta, \theta^{(w)}) = \E_{\theta^{(w)}}[\ell_n^\text{comp}(\theta) | \cD_n]$
-  \item<3-> Requires to compute expectations of the form
+  \item $\cQ_n(\theta, \theta^{(w)}) = \E_{\theta^{(w)}}[\ell_n^\text{comp}(\theta) | \cD_n]$
+  \item Requires to compute expectations of the form
   \footnotesize
 \[ \E_{\theta^{(w)}}[ g(b_i, G_i) | t_i, \delta_i, y_i] = \sum_{k=0}^{K-1} \pi_{ik}^{\theta^{(w)}} \int_{\R^r} g(b_i, G_i) f(b_i | t_i, \delta_i, y_i ; \theta^{(w)}) \dd b_i \] 
 \small for different functions $g$, where we denote 
 \[\pi_{ik}^{\theta^{(w)}} = \P_{\theta^{(w)}}[G_i = k | t_i, \delta_i, y_i] \]
-  \item<4-> Monte Carlo approximations used for untractable integrals
+  \item Monte Carlo approximations used for untractable integrals
 \end{itemize}
 \end{block}
 
@@ -376,11 +381,11 @@ with $q = \sum_{l=1}^L q_l$ and where for all $l=1, \ldots, L$, one writes
 
 \begin{block}<1->{Quasi-Newton M-step}
 \begin{itemize}
-  \item<1-> \tiny $\theta^{(w+1)} \in \argmin_{\theta} \cQ_n(\theta, \theta^{(w)}) + \sum_{k=0}^{K-1} \zeta_{1,k} \norm{\xi_k}_{\text{en}, \eta} + \zeta_{2,k} \norm{\gamma_k}_{\text{sg} l_1, \tilde{\eta}} + \zeta_{3,k} \norm{\beta_k}_{\text{sg} l_1, \tilde{\eta}}$
-  \item<2-> $D^{(w+1)} = n^{-1} \sum_{i=1}^n \hat \E_{\theta^{(w)}}[ b_i b_i^\top | t_i, \delta_i, y_i]$
-  \item<3-> $P^{(w)}_{n,k}(\xi_k) = -n^{-1} \sum_{i=1}^n \hat \pi_{ik}^{\theta^{(w)}} \log \pi_{\xi_k}(x_i)$
-  \item<4-> $\xi_k^{(w+1)} \in \argmin_{\xi_k \in \R^p} P^{(w)}_{n,k}(\xi_k) + \zeta_{1,k} \norm{\xi_k}_{\text{en}, \eta}$ 
-  \item<5-> L-BFGS-B to solve the problem
+  \item \tiny $\theta^{(w+1)} \in \argmin_{\theta} \cQ_n(\theta, \theta^{(w)}) + \sum_{k=0}^{K-1} \zeta_{1,k} \norm{\xi_k}_{\text{en}, \eta} + \zeta_{2,k} \norm{\gamma_k}_{\text{sg} l_1, \tilde{\eta}}$
+  \item $D^{(w+1)} = n^{-1} \sum_{i=1}^n \hat \E_{\theta^{(w)}}[ b_i b_i^\top | t_i, \delta_i, y_i]$
+  \item $P^{(w)}_{n,k}(\xi_k) = -n^{-1} \sum_{i=1}^n \hat \pi_{ik}^{\theta^{(w)}} \log \pi_{\xi_k}(x_i)$
+  \item $\xi_k^{(w+1)} \in \argmin_{\xi_k \in \R^p} P^{(w)}_{n,k}(\xi_k) + \zeta_{1,k} \norm{\xi_k}_{\text{en}, \eta}$
+  \item L-BFGS-B to solve the problem
   \tiny
   \begin{equation*}
   \begin{split}
@@ -388,8 +393,8 @@ with $q = \sum_{l=1}^L q_l$ and where for all $l=1, \ldots, L$, one writes
     \text{subject to}& \quad \quad \xi_{k,j}^+ \geq 0 \text{ and } \xi_{k,j}^- \geq 0 \text{ for } j = 1, \ldots, p
   \end{split} 
   \end{equation*}
-  \item<6-> Similar tricks for $\beta_k^{(w+1)}$ and $\gamma_k^{(w+1)}$
-  \item<7-> Predictive marker \scriptsize $\hat \cR_{ik} = \dfrac{\pi_{\hat \xi_k}(x_i) \hat f(t^{max}_i, y_i | b_i, G_i=k ; \hat \theta)}{\sum_{k=0}^{K-1} \pi_{\hat \xi_k}(x_i) \hat f(t^{max}_i, y_i | b_i, G_i=k ; \hat \theta)}$, which is an estimate of $\P_\theta[G_i=k | T^\star_i > t^{max}_i, y_i]$
+  \item Similar tricks for $\gamma_k^{(w+1)}$
+  \item Predictive marker \scriptsize $\hat \cR_{ik} = \dfrac{\pi_{\hat \xi_k}(x_i) \hat f(t^{max}_i, y_i | b_i, G_i=k ; \hat \theta)}{\sum_{k=0}^{K-1} \pi_{\hat \xi_k}(x_i) \hat f(t^{max}_i, y_i | b_i, G_i=k ; \hat \theta)}$, which is an estimate of $\P_\theta[G_i=k | T^\star_i > t^{max}_i, y_i]$
 \end{itemize}
 \end{block}
 
@@ -405,16 +410,16 @@ with $q = \sum_{l=1}^L q_l$ and where for all $l=1, \ldots, L$, one writes
 \begin{frame}{Conclusion}
 
 \begin{itemize}
-  \item<1-> Prognostic method called lights introduced to deal with the problem of joint modeling of longitudinal data and censored durations, where a large number of longitudinal features are available
-  \item<2-> Penalization of the likelihood in order to perform feature selection and to prevent overfitting
-  \item<3-> New efficient estimation algorithm (QNMCEM) has been derived
-  \item<4-> Automatically determines significant prognostic longitudinal features
+  \item Prognostic method called lights introduced to deal with the problem of joint modeling of longitudinal data and censored durations, where a large number of longitudinal features are available
+  \item Penalization of the likelihood in order to perform feature selection and to prevent overfitting
+  \item New efficient estimation algorithm (QNMCEM) has been derived
+  \item Automatically determines significant prognostic longitudinal features
 \end{itemize}
 
-\begin{block}<5->{\texttt{Python} 3 package}
+\begin{block}{\texttt{Python} 3 package}
 \begin{itemize}
-  \item<5-> Available at \small{\url{https://github.com/Califrais/lights}}
-  \item<6-> Applications of the model available soon on an \texttt{arXiv} paper.
+  \item Available at \small{\url{https://github.com/Califrais/lights}}
+  \item Applications of the model available soon on an \texttt{arXiv} paper.
 \end{itemize}
 \end{block}
 
