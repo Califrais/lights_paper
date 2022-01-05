@@ -108,45 +108,7 @@
 \def\independenT#1#2{\mathrel{\rlap{$#1#2$}\mkern2mu{#1#2}}}
 \newtheorem{hyp}{Hypothesis}
 
-
-\title[JSM 2020 \\ Lights \\ \insertframenumber/\inserttotalframenumber \vspace{-1cm}]{}
-
-\institute[shortinst]{
-  \vspace{-2.2cm} \\
-  \includegraphics[width=2.5cm]{figures/SU} \hspace{1cm}
-  \includegraphics[width=2.2cm]{figures/inserm} \hspace{1cm}
-  \includegraphics[width=1.7cm]{figures/Califrais_logo} \\
-  \vspace{.6cm}
-  \textcolor{blue_pres}{\Large 2020 Joint Statistical Meetings}\\
-  \vspace{.5cm}
-  \large
-  \textbf{Simon Bussy}\\
-  \vspace{.25cm}
-  \scriptsize
-  \href{mailto:simon.bussy@gmail.com}{\texttt{simon.bussy@gmail.com}}\\
-  \vspace{.4cm}
-  \small
-  \textbf{Lights: a generalized joint model for high-dimensional multivariate longitudinal data and censored durations} \\
-  \vspace{.3cm}
-  S. Bussy $^{(1,2)}$, A. Barbieri $^{(3)}$, S. Zohar $^{(1)}$, A.S. Jannot $^{(1,4)}$\\
-
-  \vspace{.4cm}  
-
-  \tiny
-  
-  $^{(1)}$INSERM, UMRS 1138, Centre de Recherche des Cordeliers, Paris, France. \\
-  $^{(2)}$Califrais' Machine Learning Lab, Paris, France. \\
-  $^{(3)}$INSERM, UMR 1219, Bordeaux Population Health Research Center, Univ. Bordeaux, France. \\
-  $^{(4)}$Biomedical Informatics and Public Health Department, EGPH, APHP, Paris, France. 
-}
-
-\date{}
-
 \begin{document}
-
-\begin{frame}
-  \titlepage
-\end{frame}
 
 \section{Introduction}
 
@@ -267,6 +229,13 @@ Cumulative effect & $\int_0^t m_k^l(s) \dd s$ & 1 & \citet{andrinopoulou2017comb
 
 \end{frame}
 
+\begin{frame}{Submodels}
+\begin{itemize}
+\item Graphical representation of a joint model of a time-to-event submodel and K-multivariate longitudinal outcomes submodel
+\includegraphics[scale=0.42]{figures/lights_graphical_representation.png}
+\end{itemize}
+
+\end{frame}
 \subsection{Notations}
 
 \begin{frame}{Notations}
@@ -383,28 +352,41 @@ with $q = \sum_{l=1}^L q_l$ and where for all $l=1, \ldots, L$, one writes
 \begin{itemize}
   \item \tiny $\theta^{(w+1)} \in \argmin_{\theta} \cQ_n(\theta, \theta^{(w)}) + \sum_{k=0}^{K-1} \zeta_{1,k} \norm{\xi_k}_{\text{en}, \eta} + \zeta_{2,k} \norm{\gamma_k}_{\text{sg} l_1, \tilde{\eta}}$
   \item $D^{(w+1)} = n^{-1} \sum_{i=1}^n \hat \E_{\theta^{(w)}}[ b_i b_i^\top | t_i, \delta_i, y_i]$
+  \item \tiny $R^{(w)}_{n,k}(\beta_k) = -n^{-1} \sum_{i=1}^n \hat \pi_{ik}^{\theta^{(w)}} \Big[ (y_i \odot \Phi_i^{(w)})^\top \hat \E_{\theta^{(w)}}[ M_{ik} | t_i, \delta_i, y_i] - \hat \E_{\theta^{(w)}}[ c_{\phi^{(w)}}(M_{ik}) | t_i, \delta_i, y_i] \Big]$
+  \item $\beta_k^{(w+1)} \in \argmin_{\beta_k \in \R^q} R^{(w)}_{n,k}(\beta_k)$
   \item $P^{(w)}_{n,k}(\xi_k) = -n^{-1} \sum_{i=1}^n \hat \pi_{ik}^{\theta^{(w)}} \log \pi_{\xi_k}(x_i)$
   \item $\xi_k^{(w+1)} \in \argmin_{\xi_k \in \R^p} P^{(w)}_{n,k}(\xi_k) + \zeta_{1,k} \norm{\xi_k}_{\text{en}, \eta}$
   \item L-BFGS-B to solve the problem
-  \tiny
-  \begin{equation*}
-  \begin{split}
-    \text{minimize}& \quad \quad P_{n, k}^{(w)}(\xi_k^+ - \xi_k^-) + \zeta_{1,k} \big((1 - \eta) \sum_{j=1}^p (\xi_{k,j}^+ + \xi_{k,j}^-) + \dfrac \eta 2 \norm{{\xi_k}^+ - {\xi_k}^-}_2^2 \big) \\
-    \text{subject to}& \quad \quad \xi_{k,j}^+ \geq 0 \text{ and } \xi_{k,j}^- \geq 0 \text{ for } j = 1, \ldots, p
-  \end{split} 
-  \end{equation*}
-  \item Similar tricks for $\gamma_k^{(w+1)}$
+  \item Proximal gradient method to estimate $\gamma_k^{(w+1)}$
   \item Predictive marker \scriptsize $\hat \cR_{ik} = \dfrac{\pi_{\hat \xi_k}(x_i) \hat f(t^{max}_i, y_i | b_i, G_i=k ; \hat \theta)}{\sum_{k=0}^{K-1} \pi_{\hat \xi_k}(x_i) \hat f(t^{max}_i, y_i | b_i, G_i=k ; \hat \theta)}$, which is an estimate of $\P_\theta[G_i=k | T^\star_i > t^{max}_i, y_i]$
 \end{itemize}
 \end{block}
 
 \end{frame}
 
+\section{Evaluation}
+
+\begin{frame}[noframenumbering]
+\Large \centering
+\textcolor{blue_pres}{V.} Evaluation
+\end{frame}
+
+\begin{frame}{Experiments}
+  \centering
+  \includegraphics[height= 3cm, width=5cm]{figures/likelihood.png} \hspace{1cm} \\
+  \vspace{0.5cm}
+  \includegraphics[height= 2cm, width=4cm]{figures/beta_learning.png} \hspace{0.7cm}
+  \includegraphics[height= 2cm, width=4cm]{figures/beta_estimation.png} \\
+  \vspace{0.5cm}
+  \includegraphics[height= 2cm, width=4cm]{figures/xi_learning.png} \hspace{0.7cm}
+  \includegraphics[height= 2cm, width=4cm]{figures/xi_estimation.png} \\
+\end{frame}
+
 \section{Conclusion}
 
 \begin{frame}[noframenumbering]
 \Large \centering
-\textcolor{blue_pres}{V.} Conclusion
+\textcolor{blue_pres}{VI.} Conclusion
 \end{frame}
 
 \begin{frame}{Conclusion}
