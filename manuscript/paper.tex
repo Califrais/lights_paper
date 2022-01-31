@@ -139,7 +139,7 @@ From now on, all computations are done conditionally on features $x$.
 In this paper, we propose a method called \textit{lights} (generaLized joInt hiGH-dimensional longiTudinal Survival) which is from both JLCMs and SREMs, since we also include features extracted from the longitudinal processes as potential risk factor in the survival model, which is a group-specific Cox model~\citep{Cox1972JRSS} with high-dimensional shared associations.
 To allow flexibility in modeling the dependency between the longitudinal features and the event time, we use appropriate penalties : elastic net~\citep{zou2005regularization}
 for time-independent feature selection in the latent class membership, and sparse group lasso~\citep{simon2013sparse} in the survival model : this penalty acts like the lasso at the trajectory level, namely an entire trajectory may drop out of the model, and yields sparsity for a given trajectory.
-Inference is achieved using an efficient and novel proximal Quasi-Newton Monte Carlo Expectation Maximization algorithm (prox-QNMCEM).
+Inference is achieved using an efficient and novel proximal Quasi-Newton Expectation Maximization algorithm (prox-QNEM).
 Posterior estimates of the latent class membership probabilities given the longitudinal process and the fact that the subject is still alive at prediction time -- in a so called ``real-time prediction paradigm'' -- are then used as discriminative marker rule for risk prediction in the cross-validation procedure for selecting the best regularization hyper-parameters.
 Hence, the method provides interpretations of the high-dimensional longitudinal features, thus offering a powerful tool for real-time decision support in a customer's satisfaction monitoring context for instance, or else for clinical decision making in patient monitoring.
 
@@ -411,8 +411,8 @@ One advantage of the considered regularization method is its ability to perform 
 On the other hand, the sparse group lasso allows to perform feature selection for each trajectory : the support of $\gamma_k^l$ informs on the features involved in the $k$-th group risk of event for the $l$-th longitudinal outcome.
 Note that in practice, the intercept is not regularized.
 
-\subsection{A Quasi-Newton Monte Carlo EM}
-\label{sec:prox-QNMCEM}
+\subsection{A Quasi-Newton EM}
+\label{sec:prox-QNEM}
 
 In order to derive an algorithm for this objective, we introduce a so-called prox-QNEM algorithm, being a combination between an EM algorithm~\citep{dempster1977maximum}, an L-BFGS-B algorithm~\citep{zhu1997algorithm} and a proximal gradient descent algorithm~\citep{beck2009fast}. EM algorithm has already been used for multivariate data joint modeling (see~\citet{lin2002maximum} for instance), but here we face different original problems: for each subject $i$, the latent variables are the pairs $(G_i, b_i)$ (not only the random effects); and then, we want to minimize the penalized objective $\ell_n^\text{pen}$ (not ``only'' the negative log-likelihood).
 
@@ -426,7 +426,7 @@ It can be written
 \end{align*}
 Suppose that we are at step $w + 1$ of the algorithm, with current iterate denoted $\theta^{(w)}$. 
 
-\paragraph*{Monte Carlo E-step.}
+\paragraph*{E-step.}
 
 We need to compute the expected negative log-likelihood of the complete data conditional on the observed data and the current estimate of the parameters given by 
 \begin{equation*}
@@ -468,7 +468,7 @@ Now in the case $g = g_k$, one has $\E_{\theta^{(w)}}[g_k(Gi) | t_i, \delta_i, y
 
 \paragraph*{Proximal Quasi-Newton M-step.}
 Here, we need to compute \[\theta^{(w+1)} \in \argmin_{\theta \in \R^\vartheta} \cQ_n(\theta, \theta^{(w)}) + \sum_{k=0}^{K-1} \zeta_{1,k} \norm{\xi_k}_{\text{en}, \eta} + \zeta_{2,k} \norm{\gamma_k}_{\text{sg} l_1, \tilde{\eta}}.\]
-We then present the parameters updates in the order given in Algorithm~\ref{alg:prox-QNMCEM}.
+We then present the parameters updates in the order given in Algorithm~\ref{alg:prox-QNEM}.
 First, the update of $D^{(w)}$ is naturally given in closed-form by
 \begin{equation}
   \label{eq:update_D}
@@ -497,7 +497,7 @@ where $\xi_k^\pm = (\xi_{k,1}^\pm, \ldots, \xi_{k,p}^\pm)^\top$. The L-BFGS-B so
   \label{eq:grad-xi_k}
   \frac{\partial P_{n,k}^{(w)}(\xi_k)}{\partial \xi_k} = -n^{-1} \sum_{i=1}^n  \big( \hat \pi_{ik}^{\theta^{(w)}} - \pi_{\xi_k}(x_i) \big) x_i.
 \end{equation}
-In practice, we use the \texttt{Python} solver \texttt{fmin\_l\_bfgs\_b} from \texttt{scipy.optimize}~\citep{virtanen2020scipy}. Similarly to the strategy of increasing $N$ with the iterations $w$ for computational reasons, it is not clever to use a too small solver tolerance in the early steps of the algorithm, where we call tolerance the value for which iterations stop when the stopping criterion is below it. We then decrease the L-BFGS-B tolerance (which we denote $tol$ in Algorithm~\ref{alg:prox-QNMCEM}) with every increase of $N$.
+In practice, we use the \texttt{Python} solver \texttt{fmin\_l\_bfgs\_b} from \texttt{scipy.optimize}~\citep{virtanen2020scipy}. Similarly to the strategy of increasing $N$ with the iterations $w$ for computational reasons, it is not clever to use a too small solver tolerance in the early steps of the algorithm, where we call tolerance the value for which iterations stop when the stopping criterion is below it. We then decrease the L-BFGS-B tolerance (which we denote $tol$ in Algorithm~\ref{alg:prox-QNEM}) with every increase of $N$.
 
 Concerning the update of $\beta_k^{(w)}$ for $k=0, \ldots, K-1$, let us follow the same strategy by denoting
 \begin{equation*}
@@ -521,8 +521,7 @@ The closed-form update is then given by
 \end{equation}
 Now, for the update of $\gamma_k^{(w)}$ for $k=0, \ldots, K-1$, we similarly denote
 \begin{align*}
-  Q^{(w)}_{n,k}(\gamma_k) = -n^{-1} \sum_{i=1}^n &\hat\pi_{ik}^{\theta^{(w)}} \Big[\delta_i \hat \E_{\theta^{(w)}}[ \gamma_k^\top \Psi_{k,i}(t_i) | t_i, \delta_i, y_i] \\
-  & - \sum_{j=1}^J \lambda_0^{(w)}(t_j^u) \hat \E_{\theta^{(w)}}[\exp \big\{\gamma_k^\top \Psi_{k,i}(t_j^u)\big\} | t_i, \delta_i, y_i] \ind{\{t_j^u \leq t_i\}} \Big]
+  Q^{(w)}_{n,k}(\gamma_k) = -n^{-1} \sum_{i=1}^n &\hat\pi_{ik}^{\theta^{(w)}} \Big[\delta_i \gamma_k^\top \Psi_i -  \exp \big\{\gamma_k^\top \Psi_i\big\} \sum_{j=1}^J \lambda_0^{(w)}(t_j^u) \ind{\{t_j^u \leq t_i\}} \Big]
 \end{align*}
 based on the quantities involved in $\cQ_n(\theta, \theta^{(w)})$ that depend on $\gamma_k$. The integration over the survival process has been replaced with a finite sum over the process evaluated at the distinct event times $(t_1^u, \ldots, t_J^u)$ with $J \in~\N_+$, since $\lambda_0^{(w)}$ defined in~\eqref{eq:update_lambda_0} is always zero except at observed event times. The update for $\gamma_k^{(w)}$ requires to solve the following minimization problem
 \begin{equation}
@@ -575,15 +574,14 @@ Hence, we update $\gamma_k^{(w)}$ with the following step
 Note that the warmstart initialization is left to the user's choice, as well as the ISTA acceleration~\citep{beck2009fast}, since warmstart can diminish acceleration effectiveness~\citep{tibshirani2010proximal}. The gradient of $Q_{n,k}^{(w)}$ is here given by
 \begin{align}
   \label{eq:grad-Q}
-  &\frac{\partial Q_{n,k}^{(w)}(\gamma_k)}{\partial \gamma_{k,a}^l} = -n^{-1} \sum_{i=1}^n \hat \pi_{ik}^{\theta^{(w)}} \Big[ \delta_i  \hat \E_{\theta^{(w)}}[ \varphi_{k,a}(t_i, b_i^l) | t_i, \delta_i, y_i] \\ \nonumber
-   &\qquad\qquad - \sum_{j=1}^J \lambda_0^{(w)}(t_j^u) \hat \E_{\theta^{(w)}}[ \varphi_{k,a}(t_j^u, b_i^l) \exp \big\{\gamma_k^\top \Psi_{k,i}(t_j^u)\big\} | t_i, \delta_i, y_i] \ind{\{t_j^u \leq t_i\}} \Big]
+  &\frac{\partial Q_{n,k}^{(w)}(\gamma_k)}{\partial \gamma_{k,a}^l} = -n^{-1} \sum_{i=1}^n \hat \pi_{ik}^{\theta^{(w)}} \Psi_{i, a}^l  \Big[ \delta_i - \exp \big\{\gamma_k^\top \Psi_i\big\} \sum_{j=1}^J \lambda_0^{(w)}(t_j^u) \ind{\{t_j^u \leq t_i\}} \Big]
 \end{align}
 for all $a = 1, \ldots, \mathcal{A}$ and $l = 1, \ldots, L$.
 
 For the update of $\lambda_0^{(w)}$, we treat the jump size at each uncensored observed event times as parameters to be estimated~\citep{klein1992semiparametric}, and the closed-form update obtained by cancelling the gradient is given by
 \begin{equation}
   \label{eq:update_lambda_0}
-  \lambda_0^{(w+1)}(t)= \dfrac{\sum_{i=1}^n \delta_i \ind{\{t=t_i\}}}{\sum_{i=1}^n \sum_{k=0}^{K-1} \hat \pi_{ik}^{\theta^{(w)}} \hat \E_{\theta^{(w)}}\Big[\exp \big\{{\gamma_k^{(w+1)}}^\top \Psi_{k,i}(t)\big\} | t_i, \delta_i, y_i \Big] \ind{\{t_i \geq t\}} },
+  \lambda_0^{(w+1)}(t)= \dfrac{\sum_{i=1}^n \delta_i \ind{\{t=t_i\}}}{\sum_{i=1}^n \sum_{k=0}^{K-1} \hat \pi_{ik}^{\theta^{(w)}} \exp \big\{{\gamma_k^{(w+1)}}^\top \Psi_i\big\} \ind{\{t_i \geq t\}} },
 \end{equation}
 for all $t \geq 0$, which is a Breslow like estimator~\citep{breslow1972contribution} adapted to our model. 
 
@@ -593,29 +591,29 @@ Finally, for the update of $\phi^{(w)}$ and regarding Table~\ref{table:glm}, we 
   \phi_l^{(w+1)} = \big(\sum_{i=1}^n n_i^l \big)^{-1} &\sum_{i=1}^n \sum_{k=0}^{K-1} \hat \pi_{ik}^{\theta^{(w)}} \Big[ \big(y_i^l - U_{il} {\beta_k^l}^{(w+1)}\big)^\top \Big(y_i^l - U_{il} {\beta_k^l}^{(w+1)} \nonumber \\
   & - 2V_{il} \hat \E_{\theta^{(w)}}[ b_i^l | t_i, \delta_i, y_i]\Big) + \Tr\big(V_{il}^\top V_{il}\hat \E_{\theta^{(w)}}[ b_i^l {b_i^l}^\top | t_i, \delta_i, y_i]\big) \Big].
 \end{align}
-Appendix~\ref{sec:prox-QNMCEM class} gives some details about the way we implement the equations and their computation in practice.
+Appendix~\ref{sec:prox-QNEM class} gives some details about the way we implement the equations and their computation in practice.
 
 \paragraph*{Initialization.}
-Our algorithm gives a local minimum, and it is clever to choose an initial value $\theta^{(0)}$ close to the final solution $\hat \theta$, so that the number of iterations required to reach convergence is reduced. We then give some details about the starting point $\theta^{(0)}$ of Algorithm~\ref{alg:prox-QNMCEM}. 
+Our algorithm gives a local minimum, and it is clever to choose an initial value $\theta^{(0)}$ close to the final solution $\hat \theta$, so that the number of iterations required to reach convergence is reduced. We then give some details about the starting point $\theta^{(0)}$ of Algorithm~\ref{alg:prox-QNEM}.
 For all $k = 0, \ldots, K-1$, we first choose $\xi_k^{(0)} = \mathbf{0}_d$ and ${\gamma_k}^{(0)} = \mathbf{0}_{L\sA}$. Then, we initialize $\lambda_0^{(0)}$ like if there is no subgroup ($\gamma_{0}^{(0)} = \cdots = \gamma_{K-1}^{(0)}$) with a standard Cox proportional hazards regression with time-independent features using the \texttt{Python} library \texttt{tick}. Finally, the longitudinal submodels parameters $\beta_k^{(0)}$, $D^{(0)}$ and $\phi^{(0)}$ are initialized -- again like if there is no subgroup ($\beta_0^{(0)} = \cdots = \beta_{K-1}^{(0)}$) -- using a multivariate linear mixed model with an explicit EM algorithm (details on the algorithm are given in Appendix~\ref{sec:MLMM}, and details on the implementation in Appendix~\ref{sec:MLMM class}), being itself initialized with univariates fits using the \texttt{Python} package \texttt{statsmodels}.
 
-\paragraph*{The prox-QNMCEM algorithm.}
-Algorithm~\ref{alg:prox-QNMCEM} describes the main steps of the resulting QNMCEM algorithm to solve the optimization problem~\eqref{eq:optim-pb}. 
+\paragraph*{The prox-QNEM algorithm.}
+Algorithm~\ref{alg:prox-QNEM} describes the main steps of the resulting QNEM algorithm to solve the optimization problem~\eqref{eq:optim-pb}.
 
 % \vspace{.5cm}
 
 \begin{algorithm}[!htb]
 \DontPrintSemicolon
-\caption{prox-QNMCEM algorithm for the lights model inference}
-\label{alg:prox-QNMCEM}
+\caption{prox-QNEM algorithm for the lights model inference}
+\label{alg:prox-QNEM}
 \KwInput{Training data $\cD_n$; initialize $N=50L$; tuning hyper-parameters $(\zeta_{1,k}, \zeta_{2,k})_{k=0,\ldots,K-1}$}
 \KwOutput{Last parameters $\hat \theta \in \R^\vartheta$}
 \tcc{Initialization}
 Compute the starting parameters $\theta^{(0)} \in \R^\vartheta$ \\
 \For{$w = 1,\ldots,$ until convergence}    
 { 
-  \tcc{Monte Carlo E-step}
-  Compute $\hat \Lambda_{ik,\tilde g}^{\theta^{(w)}}$ using~\eqref{eq:hat_Lambda_ik} for the required functions $\tilde g$\\
+  \tcc{E-step}
+  Compute $\hat \Lambda_{ik,\tilde g}^{\theta^{(w)}}$ using~\eqref{eq:Lambda_ik-b_i} for the required functions $\tilde g$\\
   Compute $\hat \pi_{ik}^{\theta^{(w)}}$ using~\eqref{eq:hat_pi_ik-def}\\
   \If{Condition}
   {
@@ -634,9 +632,9 @@ Compute the starting parameters $\theta^{(0)} \in \R^\vartheta$ \\
 \end{algorithm}
 Let us define the relative difference at step $(w+1)$ as
 \[\Delta_{\text{rel}}^{(w+1)} = \max_{j=1,\ldots,\vartheta} \Big\{\dfrac{|\theta^{(w+1)}_j - \theta^{(w)}_j|}{|\theta^{(w)}_j| + \epsilon_1 } \Big\}.\]
-Then in practice, the convergence for Algorithm~\ref{alg:prox-QNMCEM} is declared when the condition
+Then in practice, the convergence for Algorithm~\ref{alg:prox-QNEM} is declared when the condition
 \[\Delta_{\text{rel}}^{(w+1)} < \epsilon_2\]
-is satisfied for 3 consecutive iterations, since the monotonicity property is lost due to the Monte Carlo approximations.  
+is satisfied for 3 consecutive iterations.
 
 \subsection{The case $K=2$}
 \label{sec:K=2}
@@ -667,7 +665,7 @@ Developments in the field of joint modeling have primarily focused on modeling a
 
 The question now is to choose a discriminative marker rule for risk prediction to be used in the cross-validation procedure for selecting the best regularization hyper-parameters, and of course to be used as final risk prediction after hyper-parameters fine-tuning.
 The lights model has the ability to produce prognostic predictions that can be dynamically updated according to the observed trajectory of the features. 
-Once the model is trained (so that one obtains $\hat\theta$ from~\eqref{eq:optim-pb} using our prox-QNMCEM algorithm introduced in Section~\ref{sec:prox-QNMCEM}), posterior risk classification for subject $i$ and group $k$ can be made through $\hat \pi_{ik}^{\hat\theta}$ (see~\eqref{eq:hat_pi_ik-def}). Similar posterior probabilities have been considered for goodness-of-fit evaluation in other JLCMs models, see~\citet{proust2014joint} for instance.
+Once the model is trained (so that one obtains $\hat\theta$ from~\eqref{eq:optim-pb} using our prox-QNEM algorithm introduced in Section~\ref{sec:prox-QNEM}), posterior risk classification for subject $i$ and group $k$ can be made through $\hat \pi_{ik}^{\hat\theta}$ (see~\eqref{eq:hat_pi_ik-def}). Similar posterior probabilities have been considered for goodness-of-fit evaluation in other JLCMs models, see~\citet{proust2014joint} for instance.
 
 But in the real-time prediction paradigm, it makes no sense from a practical point of view to use this marker rule as is for risk prediction, since the latter requires to know the survival labels $(t_i, \delta_i)$, being intrinsically unknow in a context where we want to perform real-time risk prediction. 
 Denoting $t^{max}_i$ the time for subject $i$ when one wants to perform the risk prediction -- so in practice, the time up to which one has data measurements for $Y_i$, say the ``present'' time for prediction -- a natural and appropriate marker rule of the lights model for subject $i$ being in subgroup $k$ would rather be 
@@ -907,7 +905,7 @@ The MIMIC III (Medical Information Mart for Intensive Care III) database is a la
 \label{sec:conclusion}
 
 In this paper, a generalized joint model for high-dimensional multivariate longitudinal data and censored durations (lights) has been introduced, and a new efficient estimation
-algorithm (prox-QNMCEM) has been derived, that considers a penalization of the likelihood in order to perform feature
+algorithm (prox-QNEM) has been derived, that considers a penalization of the likelihood in order to perform feature
 selection and to prevent overfitting.
 
 
@@ -1022,7 +1020,7 @@ $\hfill\square$
 \section{Multivariate linear mixed model}
 \label{sec:MLMM}
 
-Let us derive here the explicit EM algorithm for the multivariate linear mixed model used to initialized the longitudinal parameters $\beta_k^{(0)}$, $D^{(0)}$ and $\phi^{(0)}$ in the prox-QNMCEM algorithm in Section~\ref{sec:prox-QNMCEM}, acting as if there is no subgroup ($\beta_0^{(0)} = \cdots = \beta_{K-1}^{(0)}$). 
+Let us derive here the explicit EM algorithm for the multivariate linear mixed model used to initialized the longitudinal parameters $\beta_k^{(0)}$, $D^{(0)}$ and $\phi^{(0)}$ in the prox-QNEM algorithm in Section~\ref{sec:prox-QNEM}, acting as if there is no subgroup ($\beta_0^{(0)} = \cdots = \beta_{K-1}^{(0)}$).
 For the sake of simplicity, let us denote here 
 \[\theta = (\beta^\top, \text{vech}(D), \phi^\top)^\top \in \R^\vartheta\]
 the parameter vector to infer.
@@ -1070,7 +1068,7 @@ and \[D^{(w+1)} = n^{-1} \sum_{i=1}^n \E_{\theta^{(w)}}[ b_i {b_i}^\top | y_i].\
 \subsection{\texttt{MLMM class}}
 \label{sec:MLMM class}
 
-This class implements an EM algorithm for fitting a multivariate linear mixed model used to initialize the MCQNEM algorithm.
+This class implements an EM algorithm for fitting a multivariate linear mixed model used to initialize the QNEM algorithm.
 Let us introduce the list $\Omega^{(w)} = [\Omega_1^{(w)}, \ldots, \Omega_n^{(w)}]$, the matrices $\mu = [\mu_1, \ldots, \mu_n] \in \R^{r \times n}$, $U^l = [{U_{1l}}^\top \cdots {U_{nl}}^\top]^\top \in \R^{n_l \times q_l}$, $U = [U_1^\top \cdots U_n^\top]^\top \in \R^{\cN \times q}$,
 \[ V^l = \begin{bmatrix}
     V_{1l} & \cdots & 0\\
