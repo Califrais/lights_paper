@@ -193,7 +193,7 @@ where $h_l$ denotes a known one-to-one link function, and $m_k^l$ the linear pre
 where $u^l(t) \in \R^{q_l}$ is a row vector of (possibly) time-varying features with corresponding unknown fixed effect parameters $\beta_k^l$, and $v^l(t) \in \R^{r_l}$ is a row vector of (possibly) time-varying features with $r_l \leq q_l$ and where the corresponding subject-and-longitudinal outcome specific random effects $b^l$ that does not depend on the group membership, which is not a strong modeling assumption.
 \begin{assumption}
 \label{assumption1}
-We suppose that the random effects are independent of the group membership, and that the latter remain independent conditional on the observed data (namely $T$, $\Delta$ and $Y$).
+We suppose that the random effects are conditional independent of the group membership on the association features, and that the latter remain independent conditional on the observed data (namely $T$, $\Delta$ and $Y$).
 \end{assumption}
 A suitable distributional assumption for the random effects component is a zero-mean multivariate normal distribution~\citep{hickey2016joint}, that is
 \begin{equation}
