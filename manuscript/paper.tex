@@ -165,6 +165,22 @@ Finally, we write, for short, $\mathbf{1}_m$  (resp. $\mathbf{0}_m$) for the vec
 
 In this section, we descibe the longitudinal and time-to-event submodels, as well as the required hypothesis in order to write a likelihood and draw inference for the lights model.
 
+\subsection{Group-specific risk of event}
+
+To quantify the effect of the longitudinal outcomes on the risk for an event, we use a Cox~\citep{Cox1972JRSS} relative risk model of the form
+\begin{equation}
+  \label{eq:intensity-model}
+  \lambda(t|\cM_k(t), G = k) = \lambda_0(t) \exp \Big\{\sum_{l=1}^L \sum_{a=1}^\cA {\gamma_{k,a}^l}^\top \Psi_a^l \Big\},
+\end{equation}
+where $\lambda_0(\cdot)$ is an unspecified baseline hazard function.
+
+For each $l$-th longitudinal outcome, we consider $\cA \in \N_+$ known features $\Psi_a$ defining a shared association with $\gamma_{k,a}^l \in \R^{\cA}$ the corresponding joint association parameters.  These features are extracted from $Y$ by the \texttt{Python} library \texttt{tsfresh}. This can be viewed as a generalization of SREMs~\citep{rizopoulos2010jm}. Let us finally denote
+\[\gamma_k= (\gamma_{k,1}^1, \ldots, \gamma_{k,\cA}^1, \ldots, \gamma_{k,1}^L, \ldots, \gamma_{k,\cA}^L )^\top \in \R^{L\cA}, \] so that
+\begin{equation}
+  \label{eq:def-asso-features}
+  \lambda(t|\Psi, G = k) = \lambda_0(t) \exp \big\{\gamma_k^\top \Psi \big\}.
+\end{equation}
+
 \subsection{Group-specific marker trajectories}
 
 We suppose a group-specific marker trajectory and a generalized linear mixed model for each longitudinal marker given subgroup $G$, so that for the $l$-th outcome at time $t \geq 0$ one has
