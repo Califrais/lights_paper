@@ -355,10 +355,10 @@ the collection of the $\vartheta \in \N_+$ unknown parameters to estimate. Note 
 To write the log-likelihood $\ell_n(\theta)$ (rescaled by $n^{-1}$)  for samples in $\cD_n$, corresponding to the joint distribution of the time-to-event and longitudinal outcomes, let us make the following hypothesis.
 \begin{assumption}
 \label{indep-hyp-3}
-Assume that both the random effects vector $b_i$ and the group membership account for the association between the longitudinal and event outcomes, that is
+Assume that the random effects vector $b_i$, the group membership account for the association between the longitudinal and event outcomes and the association features $\Psi_i$, that is
 \begin{equation}
   \label{eq:ind-hyp}
-  f(t_i, \delta_i, y_i | b_i, G_i = k ; \theta) = f(t_i, \delta_i| b_i, G_i = k ; \theta) f(y_i | b_i, G_i = k ; \theta)
+  f(t_i, \delta_i, y_i | b_i, G_i = k, \Psi_i ; \theta) = f(t_i, \delta_i| G_i = k, \Psi_i ; \theta) f(y_i | b_i, G_i = k ; \theta)
 \end{equation}
 for all $i=1, \ldots, n$.
 \end{assumption}
