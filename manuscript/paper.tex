@@ -212,42 +212,6 @@ To account for dependence between the different longitudinal outcome types, we l
 the global variance-covariance matrix.
 In the sequel of the paper, our aim is to associate the true and unobserved value $m_k^l(t)$ of the $l$-th longitudinal outcome at time $t$ with the event outcome $T^\star$.
 
-\subsection{Group-specific risk of event}
-
-To quantify the effect of the longitudinal outcomes on the risk for an event, we use a Cox~\citep{Cox1972JRSS} relative risk model of the form
-\begin{equation}
-	\label{eq:intensity-model}
-	\lambda(t|\cM_k(t), G = k) = \lambda_0(t) \exp \Big\{\sum_{l=1}^L \sum_{a=1}^\cA {\gamma_{k,a}^l}^\top \varphi_{k,a}(t, b^l) \Big\},
-\end{equation}
-where $\lambda_0(\cdot)$ is an unspecified baseline hazard function and given that $G = k$, we denote 
-\[\cM_k(t) = \{m_k^l(u), 0 \leq u < t\}\] 
-the history of the true unobserved longitudinal process up to time $t$. For each $l$-th longitudinal outcome, we consider $\cA \in \N_+$ known functionals $\varphi_{k,a}$ defining a shared association with $\gamma_{k,a}^l \in \R^{\imath_a}$ the corresponding joint association parameters, and $\imath_a \in \N_+$ the dimension of the corresponding $\text{Im}(\varphi_{k,a})$.
-This can be viewed as a generalization of SREMs~\citep{rizopoulos2010jm}. Let us finally denote
-\[\gamma_k= (\gamma_{k,1}^1, \ldots, \gamma_{k,\cA}^1, \ldots, \gamma_{k,1}^L, \ldots, \gamma_{k,\cA}^L )^\top \in \R^{L\sA}, \] with $\sA = \sum_{a=1}^\cA \imath_a$ and so that
-\begin{equation}
-  \label{eq:def-asso-features}
-  \lambda(t|\cM_k(t), G = k) = \lambda_0(t) \exp \big\{\gamma_k^\top \Psi_k(t) \big\},
-\end{equation}
-where $\Psi_k(t) \in \R^{L\sA}$ denotes the association features vector at time $t$.
-
-\paragraph{Specification of the functionals $(\varphi_{k,a})_{a\in \cA}$.}
-
-The association structure between the longitudinal and the time-to-event submodels is key to the joint modeling framework. In spite of that, rationale for selecting shared associations has received little attention. We then propose to include some of the most common parameterization with no \textit{a priori}, set out in Table~\ref{table:shared_associations}, and let the model select the relevant ones through the regularization strategy described in Section~\ref{sec:penalized-obj}.
-\begin{table}[htb]
-\centering
-\begin{tabular}{ccccc}
-\toprule
-Description & $\varphi_{k,a}(t, b^l)$ & $\imath_a$ & Reference \\
-\midrule
-Linear predictor & $m_k^l(t)$ & 1 & \citet{chi2006joint} \\ [.15cm]
-Random effects & $b^l$ & $r_l$ & \citet{hatfield2011joint} \\
-Time-dependent slope & $\dfrac{\dd}{\dd t} m_k^l(t)$ & 1 & \citet{rizopoulos2011bayesian} \\ [.3cm]
-Cumulative effect & $\int_0^t m_k^l(s) \dd s$ & 1 & \citet{andrinopoulou2017combined} \\ [.1cm]
- \bottomrule
-\end{tabular}
-\caption[]{Description of the shared associations included in the group-specific risk of event submodel~\eqref{eq:intensity-model}.}
-\label{table:shared_associations}
-\end{table}
 
 \subsection{Graphical model for the lights}
 Figure~\ref{fig:graphical-model} below gives the graphical representation for the lights model to get a beter view of the dependence structure for the model.
