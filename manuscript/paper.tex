@@ -367,10 +367,11 @@ Then, one has
 \begin{align}
 	\label{eq:log-lik}
 	\ell_n(\theta) &= \ell_n(\theta ; \cD_n) \nonumber \\
-	&= n^{-1} \sum_{i=1}^n \log \sum_{k=0}^{K-1} \pi_{\xi_k}(x_i) f(y_i | G_i = k)\int_{\R^r} f(t_i, \delta_i| b_i, G_i = k ; \theta) f(b_i | y_i, G_i = k; \theta) \dd b_i,
+	&= n^{-1} \sum_{i=1}^n \log \sum_{k=0}^{K-1} \pi_{\xi_k}(x_i) \int_{\R^r} f(t_i, \delta_i| b_i, G_i = k, \Psi_i ; \theta) f(y_i | b_i, G_i = k, \Psi_i; \theta) f(b_i ; \theta) \dd b_i \\
+  &= n^{-1} \sum_{i=1}^n \log \sum_{k=0}^{K-1} \pi_{\xi_k}(x_i) f(t_i, \delta_i| G_i = k, \Psi_i ; \theta) f(y_i | G_i = k; \theta) \dd b_i,
 \end{align}
 where 
-\[f(t_i, \delta_i| b_i, G_i = k ; \theta) = \big[\lambda(t_i|\cM_k(t_i), G_i = k)\big]^{\delta_i} \exp \Big\{-\int_0^{t_i} \lambda(s|\cM_k(s), G_i = k) \dd s \Big\}. \]
+\[f(t_i, \delta_i| G_i = k, \Psi_i ; \theta) = \big[\lambda(t_i|G_i = k, \Psi_i)\big]^{\delta_i} \exp \Big\{-\int_0^{t_i} \lambda(s|G_i = k, \Psi_i) \dd s \Big\}. \]
 
 \paragraph{Specification of the design matrices.}
  
@@ -413,14 +414,14 @@ Note that in practice, the intercept is not regularized.
 \subsection{A Quasi-Newton Monte Carlo EM}
 \label{sec:prox-QNMCEM}
 
-In order to derive an algorithm for this objective, we introduce a so-called prox-QNMCEM algorithm, being a combination between an EM algorithm~\citep{dempster1977maximum} with Monte Carlo approximations~\citep{levine2001implementations}, an L-BFGS-B algorithm~\citep{zhu1997algorithm} and a proximal gradient descent algorithm~\citep{beck2009fast}. EM algorithm has already been used for multivariate data joint modeling (see~\citet{lin2002maximum} for instance), but here we face different original problems: for each subject $i$, the latent variables are the pairs $(G_i, b_i)$ (not only the random effects); and then, we want to minimize the penalized objective $\ell_n^\text{pen}$ (not ``only'' the negative log-likelihood).
+In order to derive an algorithm for this objective, we introduce a so-called prox-QNEM algorithm, being a combination between an EM algorithm~\citep{dempster1977maximum}, an L-BFGS-B algorithm~\citep{zhu1997algorithm} and a proximal gradient descent algorithm~\citep{beck2009fast}. EM algorithm has already been used for multivariate data joint modeling (see~\citet{lin2002maximum} for instance), but here we face different original problems: for each subject $i$, the latent variables are the pairs $(G_i, b_i)$ (not only the random effects); and then, we want to minimize the penalized objective $\ell_n^\text{pen}$ (not ``only'' the negative log-likelihood).
 
 We first need to compute the negative completed log-likelihood (here scaled by $n^{-1}$), namely the negative joint distribution of $\cD_n$, $\textbf{\textit{b}} = (b_1, \ldots, b_n)$ and $\textbf{\textit{G}} = (G_1, \ldots, G_n)$.
 It can be written
 \begin{align*}
   \ell_n^\text{comp}(\theta) &= \ell_n^\text{comp}(\theta ; \cD_n, \textbf{\textit{b}}, \textbf{\textit{G}}) \\ 
   &= - n^{-1} \sum_{i=1}^n -\dfrac12 (r \log 2\pi + \log|D| + b_i^\top D^{-1}b_i) + \sum_{k=0}^{K-1} \ind{\{G_i=k\}} \Big[ \log \pi_{\xi_k}(x_i) \\ 
-  & \quad + \delta_i \Big(\log \lambda_0(t_i) + \gamma_k^\top \Psi_{k,i}(t_i) \Big) - \int_0^{t_i} \lambda_0(s) \exp \big\{ \gamma_k^\top \Psi_{k,i}(s) \big\} \dd s \\
+  & \quad + \delta_i \Big(\log \lambda_0(t_i) + \gamma_k^\top \Psi_i \Big) - \exp \big\{ \gamma_k^\top \Psi_i \big\} \int_0^{t_i} \lambda_0(s) \dd s \\
   & \quad + (y_i \odot \Phi_i)^\top M_{ik} - c_\phi(M_{ik}) + d_\phi(y_i) \Big].
 \end{align*}
 Suppose that we are at step $w + 1$ of the algorithm, with current iterate denoted $\theta^{(w)}$. 
