@@ -230,10 +230,10 @@ Figure~\ref{fig:graphical-model} below gives the graphical representation for th
   \node[main, fill = white!100] (G) [right=4cm of xi] {\Large$\bm{G_i}$};
   \node[main, fill = white!100] (mu) [right=4cm of beta] {\Large$\bm{M_{ik}^l(t)}$};
   \node[main, fill = black!30] (Y) [right=of mu] {\Large$\bm{Y_i^l(t)}$};
-  \node[main, fill = white!100] (b) [below=0.7cm of Y] {\Large$\bm{b_i^l}$};
+  \node[main, fill = white!100] (b) [above=of mu] {\Large$\bm{b_i^l}$};
   \node[var, fill = white!100] (phi) [above=of Y] {\Large$\bm{\phi_l}$};
-  \node[var, fill = white!100] (Sigma) [right=of b] {\Large$\bm{D}$};
-  \node[main, fill = white!100] (W) [below=of b] {\Large$\bm{\varphi_i(t)}$};
+  \node[var, fill = white!100] (Sigma) [left=of b] {\Large$\bm{D}$};
+  \node[main, fill = black!30] (W) [below=3cm of Y] {\Large$\bm{\Psi_i}$};
   \node[main, fill = white!100] (lambda) [right=4cm of gamma] {\Large$\bm{\lambda_i(t)}$};
   \node[main, fill = black!30] (T) [right=of lambda] {\Large$\bm{T_i}$};
   \node[main, fill = black!30] (X) at (3, -8.3) {\Large$\bm{X_i}$};
@@ -251,12 +251,12 @@ Figure~\ref{fig:graphical-model} below gives the graphical representation for th
         (W) edge (lambda)
         (G) edge (lambda)
         (lambda) edge (T)
+        (Y) edge (W)
         ;
 
   \node[rectangle, inner sep=8mm,draw=black!100, ultra thick, fit= (beta) (xi) (gamma),label={[anchor=west, yshift=-0.5cm, xshift=-10mm]{\Large$\bm{k = 1...K}$}}] at (0, -4.6) {};
   \node[rectangle, inner sep=4mm,draw=black!100, ultra thick, fit= (beta) (mu) (b) (Y) (b) (Sigma) (phi)] {};
-  \node[rectangle, inner sep=4mm, fit= (beta) (mu) (b) (Y) (b) (Sigma) (phi),ultra thick] at (12, 3.5) {\Large$\bm{l = 1...L}$};
-  \node[rectangle, dashed, inner sep=3mm, draw=red!100, fit= (b) (W),ultra thick] {};
+  \node[rectangle, inner sep=4mm, fit= (beta) (mu) (b) (Y) (b) (Sigma) (phi),ultra thick] at (8, 4.1) {\Large$\bm{l = 1...L}$};
   
   \node[rectangle,inner sep=6mm, draw=black!100, label=center:\rotatebox{90}{\color{white}\Large{\textbf{Longitudinal}}}, minimum width=1cm, minimum height = 6cm, fill = black!50] at (-2.7,0.5) {};
   
