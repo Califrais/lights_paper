@@ -270,7 +270,7 @@ Figure~\ref{fig:graphical-model} below gives the graphical representation for th
 \subsection{Likelihood}
 
 Consider an independent and identically distributed (i.i.d.) cohort of $n$ subjects
-\[ \cD_n = \big\{ (x_1, y_1^1, \ldots, y_1^L, t_1, \delta_1), \ldots, (x_n, y_n^1, \ldots, y_n^L, t_n, \delta_n) \big\} \]
+\[ \cD_n = \big\{ (x_1, y_1^1, \ldots, y_1^L, t_1, \delta_1, \Psi_1), \ldots, (x_n, y_n^1, \ldots, y_n^L, t_n, \delta_n, \Psi_n) \big\} \]
 where for each subject $i=1, \ldots, n$, process $Y_i^l$ is measured $n_i^l$ times at $t_{i1}^l, \ldots, t_{in_i^l}^l$ (which can differ between subjects and outcomes) with $t_{ij}^l \leq t_{ij+1}^l$ for all $j=1, \ldots, n_i^l-1$ and such that
 \[ y_i^l=(y_{i1}^l, \ldots, y_{in_i^l}^l)^\top \in \R^{n_i^l} \quad \text{ with } \quad y_{ij}^l=Y_i^l(t_{ij}^l) \]
 for all $l=1, \ldots, L$. 
