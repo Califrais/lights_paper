@@ -1099,62 +1099,18 @@ And finally for the $\phi$ update, one has
 &+ \text{Tr}\big\{{V^l}^\top V^l \big({\Omega^l}^{(w)} + (\tilde\mu^l)^{(w)} {(\tilde\mu^l)^{(w)}}^\top\big)\big\} \big].
 \end{align*}
 
-\subsection{\texttt{prox-QNMCEM class}}
-\label{sec:prox-QNMCEM class}
+\subsection{\texttt{prox-QNEM class}}
+\label{sec:prox-QNEM class}
 
 Let us introduce the following useful notations
 \begin{equation*}
   \left\{
     \begin{array}{ll}
     \tilde g^1&: b_i \mapsto b_i,\\
-    \tilde g^2&: b_i \mapsto b_ib_i^\top, \\
-    \tilde g^3_{s, k}&: b_i \mapsto \Psi_{k,i}(s), \\
-    \tilde g^4_{s, \gamma_k}&: b_i \mapsto \exp \big\{\gamma_k^\top g^3_{s, k}(b_i) \big\}, \\
-    \tilde g^5_{s, \gamma_k}&: b_i \mapsto g^3_{s, k}(b_i)^\top g^4_{s, k}(b_i).
+    \tilde g^2&: b_i \mapsto b_ib_i^\top.
     \end{array}
   \right. 
 \end{equation*}
-We also denote 
-\[ \cI_1 = 
-\begin{bmatrix}
-  \ind{\{t_{1} = t_1^u\}}  & \cdots & \ind{\{t_{1} = t_J^u\}}\\
-  \vdots &  \ddots & \vdots \\
-  \ind{\{t_{n} = t_1^u\}} & \cdots & \ind{\{t_{n} = t_J^u\}}
-\end{bmatrix}
-\in \R^{n \times J}
-\quad \text{and} \quad 
-\cI_2 = 
-\begin{bmatrix}
-  \ind{\{t_{1} \leq t_1^u\}} & \cdots & \ind{\{t_{1} \leq t_J^u\}}\\
-  \vdots &  \ddots & \vdots \\
-  \ind{\{t_{n} \leq t_1^u\}} & \cdots & \ind{\{t_{n} \leq t_J^u\}}
-\end{bmatrix}
-\in \R^{n \times J} \]
-some matrices to compare each event times with the vector of distinct event times. Those matrices are widely used in practice to replace indicators. For instance, the quantities
-\begin{align*}
-f(t_i, \delta_i| \breve{b}, G_i = k ; \theta^{(w)}) = &\big(\lambda_0^{(w)}(t_i) g^4_{t_i, \gamma_k^{(w)}}(\breve{b}) \big)^{\delta_i} \\ 
-&\times \exp \Big\{ - \sum_{j=1}^J \lambda_0^{(w)}(t_j^u) g^4_{t_j^u, \gamma_k^{(w)}}(\breve{b}) \ind{\{t_j^u \leq t_i\}} \Big\}
-\end{align*}
-for $i = 1, \ldots, n$ and $\breve{b} \in S^{(w)}$ can be represented in the following matrix 
-\[ \underset{J}{\text{sum}} \big( \boldsymbol{g^4_{\gamma_k}} \boldsymbol{\lambda_0^{(w)}} \cI_1 \big)^{\boldsymbol{\delta}} \exp \big\{- \underset{J}{\text{sum}} \big(\boldsymbol{g^4_{\gamma_k}} \boldsymbol{\lambda_0^{(w)}} \cI_2 \big) \big\} \in \R^{n \times 2N} \]
-where 
-\begin{equation*}
-  \left\{
-    \begin{array}{ll}
-    \boldsymbol{g^4_{\gamma_k}} \in \R^{2N \times J} \text{ with } \big[\boldsymbol{g^4_{\gamma_k}}\big]_{i, j} = \tilde g^4_{t_j^u, \gamma_k^{(w)}}(\breve{b}_i) , \\
-    \boldsymbol{\lambda_0^{(w)}} = \big(\lambda_0^{(w)}(t_1^u), \ldots, \lambda_0^{(w)}(t_J^u) \big)^\top \in \R^J, \\
-    \boldsymbol{\delta} = (\delta_1, \ldots, \delta_n)^\top \in \R^n.
-    \end{array}
-  \right.
-\end{equation*}
-Another example is the update of the baseline hazard~\eqref{eq:update_lambda_0} as
-\[\boldsymbol{\lambda_0^{(w+1)}} = \underset{n}{\text{sum}}( \boldsymbol{\delta} \cI_1) / \underset{n}{\text{sum }} \underset{k}{\text{sum }} (\boldsymbol{g^4_{\gamma_k}} \cI_2 \boldsymbol{\hat \pi^{(w)}})\]
-with $\boldsymbol{\hat \pi^{(w)}} \in \R^{2 \times n} \text{ and }  \left\{
-    \begin{array}{ll}
-    \boldsymbol{\hat \pi_{1,\bullet}^{(w)}}= (\hat \pi_{11}^{\theta^{(w)}}, \ldots, \hat \pi_{n1}^{\theta^{(w)}})^\top \in \R^n, \\
-    \boldsymbol{\hat\pi_{0,\bullet}^{(w)}} = 1 - \boldsymbol{\hat\pi_{1,\bullet}^{(w)}}.
-    \end{array}
-  \right.$
 
 
 \bibliography{biblio}
