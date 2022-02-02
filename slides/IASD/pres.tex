@@ -122,10 +122,10 @@
 \begin{frame}{Overview}
 
 \begin{itemize}
-  \item Deal with the problem of joint modeling of longitudinal data and censored durations
-  \item Large number of both longitudinal and time-independent features are available
-  \item Flexibility in modeling the dependency between the longitudinal features and the event time with appropriate penalties
-  \item Inference achieved using an efficient and novel Quasi-Newton Monte Carlo Expectation Maximization algorithm
+  \item<1-> Deal with the problem of joint modeling of longitudinal data and censored durations
+  \item<2-> Large number of both longitudinal and time-independent features are available
+  \item<3-> Flexibility in modeling the dependency between the longitudinal features and the event time with appropriate penalties
+  \item<4-> Inference achieved using an efficient and novel Quasi-Newton Expectation Maximization algorithm
 \end{itemize}
 
 \end{frame}
@@ -136,14 +136,14 @@
 
 \small
 \begin{itemize}
-  \item Predict the risk for an event of interest to occur quickly, taking into account simultaneously a huge number of longitudinal signals in a high-dimensional context
-  \item Provides powerful interpretability by automatically pinpointing significant time-dependent and time-independent features
+  \item<1-> Predict the risk for an event of interest to occur quickly, taking into account simultaneously a huge number of longitudinal signals in a high-dimensional context
+  \item<2-> Provides powerful interpretability by automatically pinpointing significant time-dependent and time-independent features
 \end{itemize}
 
-\begin{block}{Real-time decision support}
+\begin{block}<3->{Real-time decision support}
 \begin{itemize}
-  \item Medical context $\rightarrow$ event of interest: survival time, re-hospitalization, relapse or disease progression ; longitudinal data: biomarkers or vital parameters measurements
-  \item Customer's satisfaction monitoring context $\rightarrow$ event of interest: time when a client churns ; longitudinal data: the client's activity recorded from account opening throughout the duration of the business relationship
+  \item<3-> Medical context $\rightarrow$ event of interest: survival time, re-hospitalization, relapse or disease progression ; longitudinal data: biomarkers or vital parameters measurements
+  \item<4-> Customer's satisfaction monitoring context $\rightarrow$ event of interest: time when a client churns ; longitudinal data: the client's activity recorded from account opening throughout the duration of the business relationship
 \end{itemize}
 \end{block}
 
@@ -155,14 +155,14 @@
 
 \small
 \begin{itemize}
-  \item Survival analysis
+  \item<1-> Survival analysis
   \begin{center}
   $T = T^\star \wedge C \quad \text{and} \quad \Delta = \ind{\{T^\star \leq C\}}$
   \end{center}
-  \item Time-independent features $X \in \R^p$ with $p \gg n$
-  \item $L$ longitudinal outcomes such that $L \gg n$ and \[Y(t) = \big(Y^1(t), \ldots, Y^L(t) \big)^\top \in \R^L\]
-  \item Heterogeneity of the population: latent subgroups \[G \in \{ 0, \ldots, K-1\}\]
-  \item Softmax link function for the latent class membership probability given time-independent features
+  \item<2-> Time-independent features $X \in \R^p$ with $p \gg n$
+  \item<3-> $L$ longitudinal outcomes such that $L \gg n$ and \[Y(t) = \big(Y^1(t), \ldots, Y^L(t) \big)^\top \in \R^L\]
+  \item<4-> Heterogeneity of the population: latent subgroups \[G \in \{ 0, \ldots, K-1\}\]
+  \item<5-> Softmax link function for the latent class membership probability given time-independent features
   \begin{center}
   $\pi_{\xi_k}(x) = \P[G=k|X=x] = \dfrac{e^{x^\top\xi_k}}{\sum_{k=0}^{K-1}e^{x^\top\xi_k}}$
   \end{center}
@@ -184,9 +184,9 @@
 \small
 \begin{block}{Group-specific marker trajectories}
 \begin{itemize}
-  \item \footnotesize $h_l\big(\E[Y^l(t)|b^l, G=k]\big) = m_k^l(t) = u^l(t)^\top\beta_k^l + v^l(t)^\top b^l$\\
+  \item<1-> \footnotesize $h_l\big(\E[Y^l(t)|b^l, G=k]\big) = m_k^l(t) = u^l(t)^\top\beta_k^l + v^l(t)^\top b^l$\\
   with fixed effect parameters $\beta_k^l \in \R^{q_l}$ and subject-and-longitudinal outcome specific random effects $b^l \in \R^{r_l} \sim \cN(0, D_{ll})$
-  \item $\text{Cov}[b^l,b^{l'}] = D_{ll'}$
+  \item<2-> $\text{Cov}[b^l,b^{l'}] = D_{ll'}$
   \only{ and
   \[ D = 
   \begin{bmatrix}
@@ -242,10 +242,10 @@ Cumulative effect & $\int_0^t m_k^l(s) \dd s$ & 1 & \citet{andrinopoulou2017comb
 
 \footnotesize
 \begin{itemize}
-  \item $\cD_n = \big\{ (x_1, y_1^1, \ldots, y_1^L, t_1, \delta_1), \ldots, (x_n, y_n^1, \ldots, y_n^L, t_n, \delta_n) \big\}$ with $y_i^l=(y_{i1}^l, \ldots, y_{in_i^l}^l)^\top \in \R^{n_i^l} \text{ and } y_{ij}^l=Y_i^l(t_{ij}^l)$
-  \item $y_i = ({y_i^1}^\top \cdots {y_i^L}^\top)^\top \in \R^{n_i}$ with $n_i = \sum_{l=1}^L n_i^l$
-  \item $b_i = ({b_i^1}^\top \cdots {b_i^L}^\top)^\top \in \R^r$ with $r = \sum_{l=1}^L r_l$
-  \item Design matrices
+  \item<1-> $\cD_n = \big\{ (x_1, y_1^1, \ldots, y_1^L, t_1, \delta_1, \Psi_1), \ldots, (x_n, y_n^1, \ldots, y_n^L, t_n, \delta_n, \Psi_n) \big\}$ with $y_i^l=(y_{i1}^l, \ldots, y_{in_i^l}^l)^\top \in \R^{n_i^l} \text{ and } y_{ij}^l=Y_i^l(t_{ij}^l)$
+  \item<2-> $y_i = ({y_i^1}^\top \cdots {y_i^L}^\top)^\top \in \R^{n_i}$ with $n_i = \sum_{l=1}^L n_i^l$
+  \item<3-> $b_i = ({b_i^1}^\top \cdots {b_i^L}^\top)^\top \in \R^r$ with $r = \sum_{l=1}^L r_l$
+  \item<4-> Design matrices
   \[ U_i = 
 \begin{bmatrix}
   U_{i1} & \cdots & 0\\
@@ -271,8 +271,8 @@ with $q = \sum_{l=1}^L q_l$ and where for all $l=1, \ldots, L$, one writes
     \end{array}
 \right.
 \]
-  \item $\beta_k = ({\beta_k^1}^\top \cdots {\beta_k^L}^\top)^\top \in \R^q$
-  \item $M_{ik} = U_i\beta_k + V_ib_i \in \R^{n_i}$
+  \item<5-> $\beta_k = ({\beta_k^1}^\top \cdots {\beta_k^L}^\top)^\top \in \R^q$
+  \item<6-> $M_{ik} = U_i\beta_k + V_ib_i \in \R^{n_i}$
 \end{itemize}
 
 \end{frame}
@@ -392,16 +392,16 @@ with $q = \sum_{l=1}^L q_l$ and where for all $l=1, \ldots, L$, one writes
 \begin{frame}{Conclusion}
 
 \begin{itemize}
-  \item Prognostic method called lights introduced to deal with the problem of joint modeling of longitudinal data and censored durations, where a large number of longitudinal features are available
-  \item Penalization of the likelihood in order to perform feature selection and to prevent overfitting
-  \item New efficient estimation algorithm (QNMCEM) has been derived
-  \item Automatically determines significant prognostic longitudinal features
+  \item<1-> Prognostic method called lights introduced to deal with the problem of joint modeling of longitudinal data and censored durations, where a large number of longitudinal features are available
+  \item<2-> Penalization of the likelihood in order to perform feature selection and to prevent overfitting
+  \item<3-> New efficient estimation algorithm (QNEM) has been derived
+  \item<4-> Automatically determines significant prognostic longitudinal features
 \end{itemize}
 
-\begin{block}{\texttt{Python} 3 package}
+\begin{block}<5->{\texttt{Python} 3 package}
 \begin{itemize}
-  \item Available at \small{\url{https://github.com/Califrais/lights}}
-  \item Applications of the model available soon on an \texttt{arXiv} paper.
+  \item<5-> Available at \small{\url{https://github.com/Califrais/lights}}
+  \item<6-> Applications of the model available soon on an \texttt{arXiv} paper.
 \end{itemize}
 \end{block}
 
