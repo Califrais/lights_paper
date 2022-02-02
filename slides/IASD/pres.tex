@@ -297,56 +297,55 @@ with $q = \sum_{l=1}^L q_l$ and where for all $l=1, \ldots, L$, one writes
 \small
 
 \begin{itemize}
-  \item Penalized objective
+  \item<1-> Penalized objective
   \begin{equation*}
   \ell_n^\text{pen}(\theta) = - \ell_n(\theta) + \sum_{k=0}^{K-1} \zeta_{1,k} \norm{\xi_k}_{\text{en}, \eta} + \zeta_{2,k} \norm{\gamma_k}_{\text{sg} l_1, \tilde{\eta}}
   \end{equation*}
   with the elasticnet penalty \[ \norm{z}_{\text{en}, \eta} = (1-\eta)\norm{z}_1 + \dfrac\eta2 \norm{z}_2^2 \] and the sparse group lasso penalty \[ \norm{z}_{\text{sg} l_1, \tilde{\eta}} = (1-\tilde{\eta})\norm{z}_1 + \tilde{\eta} \sum_{l=1}^L\norm{z^l}_2 \]
-  \item Resulting optimization problem \[\hat \theta \in \argmin_{\theta \in \R^\vartheta} \ell_n^\text{pen}(\theta)\]
+  \item<2-> Resulting optimization problem \[\hat \theta \in \argmin_{\theta \in \R^\vartheta} \ell_n^\text{pen}(\theta)\]
 \end{itemize}
 
 \end{frame}
 
-\subsection{QNMCEM}
+\subsection{QNEM}
 
-\begin{frame}{QNMCEM algorithm (1/2)}
+\begin{frame}{QNEM algorithm (1/2)}
 
 \small
 
 \begin{itemize}
-  \item $\ell_n^\text{comp}(\theta) = \ell_n^\text{comp}(\theta ; \cD_n, \textbf{\textit{b}}, \textbf{\textit{G}})$
+  \item<1-> $\ell_n^\text{comp}(\theta) = \ell_n^\text{comp}(\theta ; \cD_n, \textbf{\textit{b}}, \textbf{\textit{G}})$
 \end{itemize}
 
-\begin{block}{Monte Carlo E-step}
+\begin{block}{E-step}
 \begin{itemize}
-  \item $\cQ_n(\theta, \theta^{(w)}) = \E_{\theta^{(w)}}[\ell_n^\text{comp}(\theta) | \cD_n]$
-  \item Requires to compute expectations of the form
+  \item<2-> $\cQ_n(\theta, \theta^{(w)}) = \E_{\theta^{(w)}}[\ell_n^\text{comp}(\theta) | \cD_n]$
+  \item<3-> Requires to compute expectations of the form
   \footnotesize
 \[ \E_{\theta^{(w)}}[ g(b_i, G_i) | t_i, \delta_i, y_i] = \sum_{k=0}^{K-1} \pi_{ik}^{\theta^{(w)}} \int_{\R^r} g(b_i, G_i) f(b_i | t_i, \delta_i, y_i ; \theta^{(w)}) \dd b_i \] 
 \small for different functions $g$, where we denote 
 \[\pi_{ik}^{\theta^{(w)}} = \P_{\theta^{(w)}}[G_i = k | t_i, \delta_i, y_i] \]
-  \item Monte Carlo approximations used for untractable integrals
 \end{itemize}
 \end{block}
 
 
 \end{frame}
 
-\begin{frame}{QNMCEM algorithm (2/2)}
+\begin{frame}{QNEM algorithm (2/2)}
 
 \scriptsize
 
 \begin{block}<1->{Quasi-Newton M-step}
 \begin{itemize}
-  \item \tiny $\theta^{(w+1)} \in \argmin_{\theta} \cQ_n(\theta, \theta^{(w)}) + \sum_{k=0}^{K-1} \zeta_{1,k} \norm{\xi_k}_{\text{en}, \eta} + \zeta_{2,k} \norm{\gamma_k}_{\text{sg} l_1, \tilde{\eta}}$
-  \item $D^{(w+1)} = n^{-1} \sum_{i=1}^n \hat \E_{\theta^{(w)}}[ b_i b_i^\top | t_i, \delta_i, y_i]$
-  \item \tiny $R^{(w)}_{n,k}(\beta_k) = -n^{-1} \sum_{i=1}^n \hat \pi_{ik}^{\theta^{(w)}} \Big[ (y_i \odot \Phi_i^{(w)})^\top \hat \E_{\theta^{(w)}}[ M_{ik} | t_i, \delta_i, y_i] - \hat \E_{\theta^{(w)}}[ c_{\phi^{(w)}}(M_{ik}) | t_i, \delta_i, y_i] \Big]$
-  \item $\beta_k^{(w+1)} \in \argmin_{\beta_k \in \R^q} R^{(w)}_{n,k}(\beta_k)$
-  \item $P^{(w)}_{n,k}(\xi_k) = -n^{-1} \sum_{i=1}^n \hat \pi_{ik}^{\theta^{(w)}} \log \pi_{\xi_k}(x_i)$
-  \item $\xi_k^{(w+1)} \in \argmin_{\xi_k \in \R^p} P^{(w)}_{n,k}(\xi_k) + \zeta_{1,k} \norm{\xi_k}_{\text{en}, \eta}$
-  \item L-BFGS-B to solve the problem
-  \item Proximal gradient method to estimate $\gamma_k^{(w+1)}$
-  \item Predictive marker \scriptsize $\hat \cR_{ik} = \dfrac{\pi_{\hat \xi_k}(x_i) \hat f(t^{max}_i, y_i | b_i, G_i=k ; \hat \theta)}{\sum_{k=0}^{K-1} \pi_{\hat \xi_k}(x_i) \hat f(t^{max}_i, y_i | b_i, G_i=k ; \hat \theta)}$, which is an estimate of $\P_\theta[G_i=k | T^\star_i > t^{max}_i, y_i]$
+  \item<1-> \tiny $\theta^{(w+1)} \in \argmin_{\theta} \cQ_n(\theta, \theta^{(w)}) + \sum_{k=0}^{K-1} \zeta_{1,k} \norm{\xi_k}_{\text{en}, \eta} + \zeta_{2,k} \norm{\gamma_k}_{\text{sg} l_1, \tilde{\eta}}$
+  \item<2-> $D^{(w+1)} = n^{-1} \sum_{i=1}^n \hat \E_{\theta^{(w)}}[ b_i b_i^\top | t_i, \delta_i, y_i]$
+  \item<3-> \tiny $R^{(w)}_{n,k}(\beta_k) = -n^{-1} \sum_{i=1}^n \hat \pi_{ik}^{\theta^{(w)}} \Big[ (y_i \odot \Phi_i^{(w)})^\top \hat \E_{\theta^{(w)}}[ M_{ik} | t_i, \delta_i, y_i] - \hat \E_{\theta^{(w)}}[ c_{\phi^{(w)}}(M_{ik}) | t_i, \delta_i, y_i] \Big]$
+  \item<4-> $\beta_k^{(w+1)} \in \argmin_{\beta_k \in \R^q} R^{(w)}_{n,k}(\beta_k)$
+  \item<5-> $P^{(w)}_{n,k}(\xi_k) = -n^{-1} \sum_{i=1}^n \hat \pi_{ik}^{\theta^{(w)}} \log \pi_{\xi_k}(x_i)$
+  \item<6-> $\xi_k^{(w+1)} \in \argmin_{\xi_k \in \R^p} P^{(w)}_{n,k}(\xi_k) + \zeta_{1,k} \norm{\xi_k}_{\text{en}, \eta}$
+  \item<7-> L-BFGS-B to solve the problem
+  \item<8-> Proximal gradient method to estimate $\gamma_k^{(w+1)}$
+  \item<9-> Predictive marker \scriptsize $\hat \cR_{ik} = \dfrac{\pi_{\hat \xi_k}(x_i) \hat f(t^{max}_i, y_i | G_i=k, \Psi_i ; \hat \theta)}{\sum_{k=0}^{K-1} \pi_{\hat \xi_k}(x_i) \hat f(t^{max}_i, y_i | G_i=k, \Psi_i ; \hat \theta)}$, which is an estimate of $\P_\theta[G_i=k | T^\star_i > t^{max}_i, y_i]$
 \end{itemize}
 \end{block}
 
