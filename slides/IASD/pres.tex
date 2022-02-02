@@ -207,22 +207,9 @@
 \small
 \begin{block}{Group-specific risk of event}
 \begin{itemize}
-  \item \footnotesize $\lambda(t|G = k) = \lambda_0(t) \exp \Big\{ \sum_{l=1}^L \sum_{a=1}^\cA {\gamma_{k,a}^l}^\top \varphi_{k, a}(t, b^l) \Big\}$
-  \item Functionals $(\varphi_a)_{a\in \cA}$
-\begin{table}[htb]
-\centering
-\resizebox{.9\textwidth}{!}{%
-\begin{tabular}{ccccc}
-\toprule
-Description & $\varphi_{k,a}(t, b^l)$ & $\imath_a$ & Reference \\
-\midrule
-Linear predictor & $m_k^l(t)$ & 1 & \citet{chi2006joint} \\ [.15cm]
-Random effects & $b^l$ & $r_l$ & \citet{hatfield2011joint} \\
-Time-dependent slope & $\dfrac{\dd}{\dd t} m_k^l(t)$ & 1 & \citet{rizopoulos2011bayesian} \\ [.3cm]
-Cumulative effect & $\int_0^t m_k^l(s) \dd s$ & 1 & \citet{andrinopoulou2017combined} \\ [.1cm]
- \bottomrule
-\end{tabular}}
-\end{table}
+  \item<1-> \footnotesize $\lambda(t|\Psi, G = k) = \lambda_0(t) \exp \big\{\gamma_k^\top \Psi \big\}$
+  \item<2-> Fetures $\Psi$ are extracted from $Y$ by the \texttt{Python} library \texttt{tsfresh}
+  \item<2-> \color{red}{TODO: Add descriptions}
 
 \end{itemize}
 \end{block}
