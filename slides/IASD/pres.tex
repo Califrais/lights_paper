@@ -269,13 +269,15 @@ with $q = \sum_{l=1}^L q_l$ and where for all $l=1, \ldots, L$, one writes
 
 \footnotesize
 \begin{itemize}
-  \item \scriptsize $\theta = \big(\xi_0^\top \cdots \xi_{K-1}^\top, \beta_0^\top \cdots \beta_{K-1}^\top, \phi^\top, \text{vech}(D), \lambda_0^\top, \gamma_0^\top \cdots \gamma_{K-1}^\top\big) \in \R^\vartheta$
-  \item $f(y_i|b_i, G_i=k) = \exp \big\{(y_i \odot \Phi_i)^\top M_{ik} - c_\phi(M_{ik}) + d_\phi(y_i) \big\}$ with $\Phi_i = (\phi_1^{-1} {\textbf{1}_{n_i^1}}^\top \cdots \phi_L^{-1} {\textbf{1}_{n_i^L}}^\top)^\top \in \R^{n_i}$
-  \item Survival part:
-  \begin{align*}f(t_i, \delta_i| b_i, G_i = k ; \theta) = &\big[\lambda(t_i|\cM_k(t_i), G_i = k)\big]^{\delta_i} \\ & \times \exp \Big\{-\int_0^{t_i} \lambda(s|\cM_k(s), G_i = k) \dd s \Big\}
+  \item<1-> \scriptsize $\theta = \big(\xi_0^\top \cdots \xi_{K-1}^\top, \beta_0^\top \cdots \beta_{K-1}^\top, \phi^\top, \text{vech}(D), \lambda_0^\top, \gamma_0^\top \cdots \gamma_{K-1}^\top\big) \in \R^\vartheta$
+  \item<2-> $f(y_i|b_i, G_i=k) = \exp \big\{(y_i \odot \Phi_i)^\top M_{ik} - c_\phi(M_{ik}) + d_\phi(y_i) \big\}$ with $\Phi_i = (\phi_1^{-1} {\textbf{1}_{n_i^1}}^\top \cdots \phi_L^{-1} {\textbf{1}_{n_i^L}}^\top)^\top \in \R^{n_i}$
+  \item<3-> Survival part:
+  \begin{align*}f(t_i, \delta_i| G_i = k, \Psi_i ; \theta) = &\big[\lambda(t_i| G_i = k, \Psi_i)\big]^{\delta_i} \\ & \times \exp \Big\{-\int_0^{t_i} \lambda(s| G_i = k, \Psi_i) \dd s \Big\}
   \end{align*}
-  \item Then, the likelihood writes
-  \begin{align*}\ell_n(\theta) = n^{-1} \sum_{i=1}^n \log \int_{\R^r} \sum_{k=0}^{K-1} &\pi_{\xi_k}(x_i) f(t_i, \delta_i| b_i, G_i = k ; \theta) \\ & \times f(y_i | b_i, G_i = k ; \theta) f(b_i ; \theta) \dd b_i
+  \item<4-> Then, the likelihood writes
+  \begin{align*}
+  \ell_n(\theta) &= n^{-1} \sum_{i=1}^n \log \sum_{k=0}^{K-1} \int_{\R^r} \pi_{\xi_k}(x_i) f(t_i, \delta_i| b_i, G_i = k, \Psi_i ; \theta) \\ & \qquad\qquad\qquad\qquad \times f(y_i | b_i, G_i = k, \Psi_i; \theta) f(b_i ; \theta) \dd b_i \\
+  &= n^{-1} \sum_{i=1}^n \log \sum_{k=0}^{K-1} \pi_{\xi_k}(x_i) f(t_i, \delta_i| G_i = k, \Psi_i ; \theta) f(y_i | G_i = k; \theta) \dd b_i
   \end{align*}
 \end{itemize}
 
