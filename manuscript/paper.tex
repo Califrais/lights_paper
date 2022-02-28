@@ -57,13 +57,12 @@
 \newcommand{\dd}{\mathrm{d}}
 \newcommand{\ind}[1]{\mathds{1}_{#1}}
 \newcommand{\norm}[1]{\|#1\|}
-\newcommand{\cM}{\mathcal M}
+\newcommand{\cY}{\mathcal Y}
 \newcommand{\cD}{\mathcal D}
 \newcommand{\cC}{\mathcal C}
 \newcommand{\cG}{\mathcal G}
 \newcommand{\cN}{\mathcal N}
 \newcommand{\cA}{\mathcal A}
-\newcommand{\sA}{\mathscr A}
 \newcommand{\cQ}{\mathcal Q}
 \newcommand{\cU}{\mathcal U}
 \newcommand{\cR}{\mathcal R}
@@ -87,10 +86,11 @@
 
 \begin{abstract}
 
-This paper introduces a prognostic method called \textit{lights} to deal with the problem of joint modeling of longitudinal data and censored durations, where a large number of both longitudinal and time-independent features are available. Yet there is no standard model so far to learn from such high-dimensional multivariate longitudinal data in a survival analysis setting.
-Shared association features are learned from the longitudinal processes and included as potential risk factor in a group-specific Cox model. Appropriate penalties are then used during inference to allow flexibility in modeling the dependency between the longitudinal features and the event time.
+This paper introduces a prognostic method called \textit{lights} to deal with the problem of joint modeling of longitudinal data and censored durations, where a large number of both longitudinal and time-independent features are available. 
+In the literature, standard joint models are either of type shared random-effect or joint latent class ones ; where the association structure between the longitudinal and the time-to-event submodels takes respectively the form of either shared association features learned from the longitudinal processes and included as potential risk factor in the survival model, or latent classes modeling population heterogeneity.
+We pick modeling ideas from both worlds and use appropriate penalties during inference for being able to learn from a high-dimensional context.
 The statistical performance of the method is examined on an extensive Monte Carlo simulation study, and finally illustrated on a publicly available dataset.
-Our proposed method significantly outperforms the state-of-the-art survival models regarding risk prediction in terms of C-index, with a computing time orders of magnitude faster. In addition, it provides powerful interpretability by automatically pinpointing significant features being relevant from a practical perspective. Thus, we propose a powerfull tool with the ability of automatically determining significant prognostic longitudinal features, which is of increasing importance in many areas: for instance personalized medicine, or churn prediction in a customer profile and activity monitoring setting, to name but a few.\\
+Our proposed method significantly outperforms the state-of-the-art joint models regarding risk prediction in terms of C-index in a so-called real-time prediction paradigm, with a computing time orders of magnitude faster. In addition, it provides powerful interpretability by automatically pinpointing significant features being relevant from a practical perspective. Thus, we propose a powerfull tool with the ability of automatically determining significant prognostic longitudinal features, which is of increasing importance in many areas: for instance personalized medicine, or churn prediction in a customer profile and activity monitoring setting, to name but a few.\\
 
 \noindent
 \emph{Keywords.} High-dimensional estimation; Joint modeling; Multivariate longitudinal data; Survival analysis
@@ -136,7 +136,7 @@ From now on, all computations are done conditionally on features $x$.
 
 \paragraph{Main contribution.} 
 
-In this paper, we propose a method called \textit{lights} (generaLized joInt hiGH-dimensional longiTudinal Survival) which is from both JLCMs and SREMs, since we also include features extracted from the longitudinal processes as potential risk factor in the survival model, which is a group-specific Cox model~\citep{Cox1972JRSS} with high-dimensional shared associations.
+In this paper, we propose a method called \textit{lights} (generaLized joInt hiGH-dimensional longiTudinal Survival) which is inspired by both JLCMs and SREMs, since we also include features extracted from the longitudinal processes as potential risk factor in the survival model, which is a group-specific Cox model~\citep{Cox1972JRSS} with high-dimensional shared associations.
 To allow flexibility in modeling the dependency between the longitudinal features and the event time, we use appropriate penalties : elastic net~\citep{zou2005regularization}
 for time-independent feature selection in the latent class membership, and sparse group lasso~\citep{simon2013sparse} in the survival model : this penalty acts like the lasso at the trajectory level, namely an entire trajectory may drop out of the model, and yields sparsity for a given trajectory.
 Inference is achieved using an efficient and novel proximal Quasi-Newton Expectation Maximization algorithm (prox-QNEM).
@@ -165,36 +165,16 @@ Finally, we write, for short, $\mathbf{1}_m$  (resp. $\mathbf{0}_m$) for the vec
 
 In this section, we descibe the longitudinal and time-to-event submodels, as well as the required hypothesis in order to write a likelihood and draw inference for the lights model.
 
-\subsection{Group-specific risk of event}
-
-To quantify the effect of the longitudinal outcomes on the risk for an event, we use a Cox~\citep{Cox1972JRSS} relative risk model of the form
-\begin{equation}
-  \label{eq:intensity-model}
-  \lambda(t|\cM_k(t), G = k) = \lambda_0(t) \exp \Big\{\sum_{l=1}^L \sum_{a=1}^\cA {\gamma_{k,a}^l}^\top \Psi_a^l \Big\},
-\end{equation}
-where $\lambda_0(\cdot)$ is an unspecified baseline hazard function.
-
-For each $l$-th longitudinal outcome, we consider $\cA \in \N_+$ known features $\Psi_a$ defining a shared association with $\gamma_{k,a}^l \in \R^{\cA}$ the corresponding joint association parameters.  These features are extracted from $Y$ by the \texttt{Python} library \texttt{tsfresh}. This can be viewed as a generalization of SREMs~\citep{rizopoulos2010jm}. Let us finally denote
-\[\gamma_k= (\gamma_{k,1}^1, \ldots, \gamma_{k,\cA}^1, \ldots, \gamma_{k,1}^L, \ldots, \gamma_{k,\cA}^L )^\top \in \R^{L\cA}, \] so that
-\begin{equation}
-  \label{eq:def-asso-features}
-  \lambda(t|\Psi, G = k) = \lambda_0(t) \exp \big\{\gamma_k^\top \Psi \big\}.
-\end{equation}
-
 \subsection{Group-specific marker trajectories}
 
 We suppose a group-specific marker trajectory and a generalized linear mixed model for each longitudinal marker given subgroup $G$, so that for the $l$-th outcome at time $t \geq 0$ one has
 \begin{equation}
-	\label{eq:link-function}
- 	h_l\big(\E[Y^l(t)|b^l, G=k]\big) = m_k^l(t)
+  \label{eq:link-function}
+  h_l\big(\E[Y^l(t)|b^l, G=k]\big) = m_k^l(t)
  \end{equation}
 where $h_l$ denotes a known one-to-one link function, and $m_k^l$ the linear predictor such that
 \[ m_k^l(t) = u^l(t)^\top\beta_k^l + v^l(t)^\top b^l \]
-where $u^l(t) \in \R^{q_l}$ is a row vector of (possibly) time-varying features with corresponding unknown fixed effect parameters $\beta_k^l$, and $v^l(t) \in \R^{r_l}$ is a row vector of (possibly) time-varying features with $r_l \leq q_l$ and where the corresponding subject-and-longitudinal outcome specific random effects $b^l$ that does not depend on the group membership, which is not a strong modeling assumption.
-\begin{assumption}
-\label{assumption1}
-We suppose that the random effects are conditional independent of the group membership on the association features, and that the latter remain independent conditional on the observed data (namely $T$, $\Delta$ and $Y$).
-\end{assumption}
+where $u^l(t) \in \R^{q_l}$ is a row vector of (possibly) time-varying features with corresponding unknown fixed effect parameters $\beta_k^l$, and $v^l(t) \in \R^{r_l}$ is a row vector of (possibly) time-varying features with $r_l \leq q_l$.
 A suitable distributional assumption for the random effects component is a zero-mean multivariate normal distribution~\citep{hickey2016joint}, that is
 \begin{equation}
    \label{eq:random-effect-law}
@@ -212,8 +192,48 @@ To account for dependence between the different longitudinal outcome types, we l
 the global variance-covariance matrix.
 In the sequel of the paper, our aim is to associate the true and unobserved value $m_k^l(t)$ of the $l$-th longitudinal outcome at time $t$ with the event outcome $T^\star$.
 
+\subsection{Group-specific risk of event}
 
-\subsection{Graphical model for the lights}
+To quantify the effect of the longitudinal outcomes on the risk for an event, we use a Cox~\citep{Cox1972JRSS} relative risk model of the form
+\begin{equation}
+  \label{eq:intensity-model}
+  \lambda(t|\cY(t), G = k) = \lambda_0(t) \exp \Big\{\sum_{l=1}^L \sum_{a=1}^\cA {\gamma_{k,a}^l} \Psi_a^l(t) \Big\},
+\end{equation}
+where $\lambda_0(\cdot)$ is an unspecified baseline hazard function and given that $G = k$, we denote 
+\[\cY^l(t) = \{Y^l(u), 0 \leq u < t\} \quad \text{and} \quad \cY(t) = \bigcup_{l=1}^L \cY^l(t)\] 
+the history of the true longitudinal process up to time $t$.
+For each $l$-th longitudinal outcome, we consider $\cA \in \N_+$ known functionals $\Psi_a^l$ extracted from $\cY^l(t)$ through a given representation mapping, and $\gamma_{k,a}^l \in \R$ the corresponding joint representation parameters.  
+
+Let us finally denote
+\[\gamma_k= (\gamma_{k,1}^1, \ldots, \gamma_{k,\cA}^1, \ldots, \gamma_{k,1}^L, \ldots, \gamma_{k,\cA}^L )^\top \in \R^{L\cA}, \] so that
+\begin{equation}
+  \label{eq:def-asso-features}
+  \lambda(t|\cY(t), G = k) = \lambda_0(t) \exp \big\{\gamma_k^\top \Psi(t) \big\},
+\end{equation}
+where $\Psi(t) \in \R^{L\cA}$ denotes the representation features vector.
+
+\subsection{Generalization of SREMs and JLCMs}
+ 
+Our model is clearly of JLCMs type, and can be viewed as a generalization of SREMs type in a much more flexible way. Table~\ref{table:shared_associations} gives common parameterizations for shared associations that are only considered separately ($\cA=1$) in SREMs.
+\begin{table}[htb]
+\centering
+\begin{tabular}{cccc}
+\toprule
+Description & $\Psi_a^l(t, \beta_k^l, b^l)$  & Reference \\
+\midrule
+Linear predictor & $m_k^l(t)$ & \citet{chi2006joint} \\ [.15cm]
+Random effects & $b^l$  & \citet{hatfield2011joint} \\
+Time-dependent slope & $\dfrac{\dd}{\dd t} m_k^l(t)$ & \citet{rizopoulos2011bayesian} \\ [.3cm]
+Cumulative effect & $\int_0^t m_k^l(s) \dd s$ & \citet{andrinopoulou2017combined} \\ [.1cm]
+ \bottomrule
+\end{tabular}
+\caption[]{Examples of classical shared associations in SREMs.}
+\label{table:shared_associations}
+\end{table}
+
+Our proposition differs from standard SREMs in two respects: $(i)$ representation vector $\Psi(t)$ does not depend on the modeling assumptions in the longitudinal submodel and $(ii)$ it allows to choose multiple high-dimensional representation mappings that characterize time series and concatenate them, since we perform features selection through the regularization strategy described in Section~\ref{sec:penalized-obj}. Point $(i)$ is key since for instance the $\beta_k^l$ dependence in $\Psi_a^l$ would lead to complicated updates, while the $b^l$ dependence would lead to untracktable integrals that are common in SREMs and require approximation methods such as Monte Carlo~\citep{hickey2018joinerml}, being computationally intensive and not scalable in a high-dimensional context. For point $(ii)$ in practice, we use the \texttt{Python} library \texttt{tsfresh}~\citep{christ2018time} and include many extracted features, such as absolute energy of the time series, statistics on autocorrelation, or Fourier and wavelet basis projections, to name but a few.
+
+\subsection{Graphical model}
 Figure~\ref{fig:graphical-model} below gives the graphical representation for the lights model to get a beter view of the dependence structure for the model.
 \begin{figure}[!htb]
 \centering
@@ -233,7 +253,7 @@ Figure~\ref{fig:graphical-model} below gives the graphical representation for th
   \node[main, fill = white!100] (b) [above=of mu] {\Large$\bm{b_i^l}$};
   \node[var, fill = white!100] (phi) [above=of Y] {\Large$\bm{\phi_l}$};
   \node[var, fill = white!100] (Sigma) [left=of b] {\Large$\bm{D}$};
-  \node[main, fill = black!30] (W) [below=3cm of Y] {\Large$\bm{\Psi_i}$};
+  \node[main, fill = white!100] (W) [below=3cm of Y] {\Large$\bm{\Psi_i(t)}$};
   \node[main, fill = white!100] (lambda) [right=4cm of gamma] {\Large$\bm{\lambda_i(t)}$};
   \node[main, fill = black!30] (T) [right=of lambda] {\Large$\bm{T_i}$};
   \node[main, fill = black!30] (X) at (3, -8.3) {\Large$\bm{X_i}$};
@@ -263,14 +283,14 @@ Figure~\ref{fig:graphical-model} below gives the graphical representation for th
   \node[rectangle,inner sep=6mm, draw=black!100,  label=center:\rotatebox{90}{\color{white}\Large{\textbf{Time-to-event}}}, minimum width=1cm, minimum height = 6cm, fill = black!50] at (-2.7,-8.2) {};
   
 \end{tikzpicture}}
-\caption{Graphical representation of the lights model. Square boxes denote observed data while circles denote unobserved (including random) terms. The red-dashed box indicates that the association features and the random effects are correlated, which, in addition to the link with the latent group membership, gives rise to the joint model.}
+\caption{Graphical representation of the lights model. Square boxes denote observed data while circles denote unobserved (including random) terms. One can then observe the two links in blue between the submodels that gives rise to the joint model.}
 \label{fig:graphical-model}
 \end{figure}
  
 \subsection{Likelihood}
 
 Consider an independent and identically distributed (i.i.d.) cohort of $n$ subjects
-\[ \cD_n = \big\{ (x_1, y_1^1, \ldots, y_1^L, t_1, \delta_1, \Psi_1), \ldots, (x_n, y_n^1, \ldots, y_n^L, t_n, \delta_n, \Psi_n) \big\} \]
+\[ \cD_n = \big\{ (x_1, y_1^1, \ldots, y_1^L, t_1, \delta_1), \ldots, (x_n, y_n^1, \ldots, y_n^L, t_n, \delta_n) \big\} \]
 where for each subject $i=1, \ldots, n$, process $Y_i^l$ is measured $n_i^l$ times at $t_{i1}^l, \ldots, t_{in_i^l}^l$ (which can differ between subjects and outcomes) with $t_{ij}^l \leq t_{ij+1}^l$ for all $j=1, \ldots, n_i^l-1$ and such that
 \[ y_i^l=(y_{i1}^l, \ldots, y_{in_i^l}^l)^\top \in \R^{n_i^l} \quad \text{ with } \quad y_{ij}^l=Y_i^l(t_{ij}^l) \]
 for all $l=1, \ldots, L$. 
@@ -310,6 +330,13 @@ with $q = \sum_{l=1}^L q_l$ and where for all $l=1, \ldots, L$, one writes
 \right.
 \]
 From now on, all computations are done conditionally on the design matrices $(U_i)_{i=1, \dots, n}$ and $(V_i)_{i=1, \dots, n}$.
+Denoting $(t_1^u, \ldots, t_J^u)$ the $J \in \N_+$ unique failure times, we then extract all representation vectors $\big(\Psi_i(t_j^u)\big)_{j=1,\ldots,J}$ for all subjects $i=1, \dots, n$ before inference and from now on, all computations are also done conditionally on them.
+Now, let us make two first hypothesis.
+\begin{assumption}
+\label{assumption1}
+Suppose that the random effects are independent of the group membership, and that the latter remain independent conditional on the observed data (namely $T$, $\Delta$ and $Y$).
+\end{assumption}
+Assumption~\ref{assumption1} states that subject-and-longitudinal outcome specific random effects $b^l$ do not depend on the group membership, which is not a strong modeling assumption.
 \begin{assumption}
 \label{indep-hyp-2}
 Suppose that for a given subject $i$ and conditional on the random effects and the group membership, all $Y_i^l$ are independent for $l=1, \dots, L$.
@@ -351,31 +378,30 @@ The density described in~\eqref{eq:exp-family-density} encompasses several distr
 
 Let us denote 
 \[ \theta = \big(\xi_0^\top \cdots \xi_{K-1}^\top, \beta_0^\top \cdots \beta_{K-1}^\top, \phi^\top, \text{vech}(D), \lambda_0^\top, \gamma_0^\top \cdots \gamma_{K-1}^\top\big)^\top \in \R^\vartheta \]
-the collection of the $\vartheta \in \N_+$ unknown parameters to estimate. Note that we include $\lambda_0$ in $\theta$. Indeed, we will estimate the baseline using nonparametric maximum likelihood, as a function taking mass at each failure time. So in $\theta$, $\lambda_0$ represents the vector of these baseline hazard quantities, with a dimension equal to the number of unique failure times (denoted $J$ thereafter).
+the collection of the $\vartheta \in \N_+$ unknown parameters to estimate. Note that we include $\lambda_0$ in $\theta$. Indeed, we will estimate the baseline using nonparametric maximum likelihood, as a function taking mass at each failure time. So in $\theta$, $\lambda_0$ represents the vector of these baseline hazard quantities, with a dimension equal to $J$.
 To write the log-likelihood $\ell_n(\theta)$ (rescaled by $n^{-1}$)  for samples in $\cD_n$, corresponding to the joint distribution of the time-to-event and longitudinal outcomes, let us make the following hypothesis.
 \begin{assumption}
 \label{indep-hyp-3}
-Assume that the random effects vector $b_i$, the group membership account for the association between the longitudinal and event outcomes and the association features $\Psi_i$, that is
+Assume that
 \begin{equation}
   \label{eq:ind-hyp}
-  f(t_i, \delta_i, y_i | b_i, G_i = k, \Psi_i ; \theta) = f(t_i, \delta_i| G_i = k, \Psi_i ; \theta) f(y_i | b_i, G_i = k ; \theta)
+  f_\theta(t_i, \delta_i, y_i | b_i, G_i = k) = f_\theta(t_i, \delta_i| G_i = k) f_\theta(y_i | b_i, G_i = k)
 \end{equation}
 for all $i=1, \ldots, n$.
 \end{assumption}
-Assumption~\ref{indep-hyp-3} is a generalization of classical hypothesis used in SREMs and JLCMs~\citep{hickey2016joint}.
+Assumption~\ref{indep-hyp-3} is a generalization of classical hypothesis used in SREMs and JLCMs~\citep{hickey2016joint}. Remember that the densities are also conditionned by all the representation features $\big(\Psi_i(t_j^u)\big)_{j=1,\ldots,J}$. Hence Assumption~\ref{indep-hyp-3} says that the random effects vector $b_i$, the group membership and the representation features account for the association between the longitudinal and event outcomes, which makes sense given Figure~\ref{fig:graphical-model}.
 Then, one has
-\begin{align}
+\begin{equation}
 	\label{eq:log-lik}
-	\ell_n(\theta) &= \ell_n(\theta ; \cD_n) \nonumber \\
-	&= n^{-1} \sum_{i=1}^n \log \sum_{k=0}^{K-1} \pi_{\xi_k}(x_i) \int_{\R^r} f(t_i, \delta_i| b_i, G_i = k, \Psi_i ; \theta) f(y_i | b_i, G_i = k, \Psi_i; \theta) f(b_i ; \theta) \dd b_i \\
-  &= n^{-1} \sum_{i=1}^n \log \sum_{k=0}^{K-1} \pi_{\xi_k}(x_i) f(t_i, \delta_i| G_i = k, \Psi_i ; \theta) f(y_i | G_i = k; \theta) \dd b_i,
-\end{align}
+	\ell_n(\theta) = \ell_n(\theta ; \cD_n) = n^{-1} \sum_{i=1}^n \log \sum_{k=0}^{K-1} \pi_{\xi_k}(x_i) f_\theta(t_i, \delta_i| G_i = k) f_\theta(y_i | G_i = k),
+\end{equation}
 where 
-\[f(t_i, \delta_i| G_i = k, \Psi_i ; \theta) = \big[\lambda(t_i|G_i = k, \Psi_i)\big]^{\delta_i} \exp \Big\{-\int_0^{t_i} \lambda(s|G_i = k, \Psi_i) \dd s \Big\}. \]
+\[f_\theta(t_i, \delta_i| G_i = k) = \big[\lambda(t_i|\cY_i(t_i), G_i = k)\big]^{\delta_i} \exp \Big\{-\int_0^{t_i} \lambda(s|\cY_i(s), G_i = k) \dd s \Big\}. \]
+As expected, one has a JLCMs like log-likelihood.
 
 \paragraph{Specification of the design matrices.}
  
-In many practical applications, subjects show highly nonlinear longitudinal trajectories. In~\eqref{eq:log-lik}, the complete longitudinal history is required for the computation of the survival function. Hence, in order to produce a good estimate of $\cM_k(t)$, we consider a flexible representations for $u^l(t)$ using a high-dimensional vector of time monomials, namely 
+In many practical applications, subjects show highly nonlinear longitudinal trajectories. We consider a flexible representations for $u^l(t)$ using a high-dimensional vector of time monomials, namely 
 \begin{equation}
   \label{eq:alpha-def}
   u^l(t) = (1, t, t^2, \ldots, t^\alpha)^\top
@@ -411,7 +437,7 @@ One advantage of the considered regularization method is its ability to perform 
 On the other hand, the sparse group lasso allows to perform feature selection for each trajectory : the support of $\gamma_k^l$ informs on the features involved in the $k$-th group risk of event for the $l$-th longitudinal outcome.
 Note that in practice, the intercept is not regularized.
 
-\subsection{A Quasi-Newton EM}
+\subsection{A Proximal Quasi-Newton EM}
 \label{sec:prox-QNEM}
 
 In order to derive an algorithm for this objective, we introduce a so-called prox-QNEM algorithm, being a combination between an EM algorithm~\citep{dempster1977maximum}, an L-BFGS-B algorithm~\citep{zhu1997algorithm} and a proximal gradient descent algorithm~\citep{beck2009fast}. EM algorithm has already been used for multivariate data joint modeling (see~\citet{lin2002maximum} for instance), but here we face different original problems: for each subject $i$, the latent variables are the pairs $(G_i, b_i)$ (not only the random effects); and then, we want to minimize the penalized objective $\ell_n^\text{pen}$ (not ``only'' the negative log-likelihood).
@@ -523,10 +549,10 @@ Now, for the update of $\gamma_k^{(w)}$ for $k=0, \ldots, K-1$, we similarly den
 \begin{align*}
   Q^{(w)}_{n,k}(\gamma_k) = -n^{-1} \sum_{i=1}^n &\hat\pi_{ik}^{\theta^{(w)}} \Big[\delta_i \gamma_k^\top \Psi_i -  \exp \big\{\gamma_k^\top \Psi_i\big\} \sum_{j=1}^J \lambda_0^{(w)}(t_j^u) \ind{\{t_j^u \leq t_i\}} \Big]
 \end{align*}
-based on the quantities involved in $\cQ_n(\theta, \theta^{(w)})$ that depend on $\gamma_k$. The integration over the survival process has been replaced with a finite sum over the process evaluated at the distinct event times $(t_1^u, \ldots, t_J^u)$ with $J \in~\N_+$, since $\lambda_0^{(w)}$ defined in~\eqref{eq:update_lambda_0} is always zero except at observed event times. The update for $\gamma_k^{(w)}$ requires to solve the following minimization problem
+based on the quantities involved in $\cQ_n(\theta, \theta^{(w)})$ that depend on $\gamma_k$. The integration over the survival process has been replaced with a finite sum over the process evaluated at the $J$, since $\lambda_0^{(w)}$ defined in~\eqref{eq:update_lambda_0} is always zero except at observed event times. The update for $\gamma_k^{(w)}$ requires to solve the following minimization problem
 \begin{equation}
   \label{eq:minimization-gamma_k}
-  \gamma_k^{(w+1)} \in \argmin_{\gamma_k \in \R^{L\sA}} Q^{(w)}_{n,k}(\gamma_k) + \zeta_{2,k} \norm{\gamma_k}_{\text{sg} l_1, \tilde{\eta}}.
+  \gamma_k^{(w+1)} \in \argmin_{\gamma_k \in \R^{L\cA}} Q^{(w)}_{n,k}(\gamma_k) + \zeta_{2,k} \norm{\gamma_k}_{\text{sg} l_1, \tilde{\eta}}.
 \end{equation}
 
 The previous trick we used to handle the non-differentiability of the $\ell_1$ part in the elastic net is no longer sufficient for~\eqref{eq:minimization-gamma_k}, since the $\ell_2$ norm in the sparse group lasso is not squared, leading to a non-differentiability at 0 (which is precisely the criterion exploited by the penalty to set some groups of coefficients to exactly 0~\citep{simon2013sparse}). Then, we choose to solve problem~\eqref{eq:minimization-gamma_k} using the proximal gradient descent~\citep{boyd2004convex} described in Algorithm~\ref{alg:ISTA}, where we first define
@@ -595,7 +621,7 @@ Appendix~\ref{sec:prox-QNEM class} gives some details about the way we implement
 
 \paragraph*{Initialization.}
 Our algorithm gives a local minimum, and it is clever to choose an initial value $\theta^{(0)}$ close to the final solution $\hat \theta$, so that the number of iterations required to reach convergence is reduced. We then give some details about the starting point $\theta^{(0)}$ of Algorithm~\ref{alg:prox-QNEM}.
-For all $k = 0, \ldots, K-1$, we first choose $\xi_k^{(0)} = \mathbf{0}_d$ and ${\gamma_k}^{(0)} = \mathbf{0}_{L\sA}$. Then, we initialize $\lambda_0^{(0)}$ like if there is no subgroup ($\gamma_{0}^{(0)} = \cdots = \gamma_{K-1}^{(0)}$) with a standard Cox proportional hazards regression with time-independent features using the \texttt{Python} library \texttt{tick}. Finally, the longitudinal submodels parameters $\beta_k^{(0)}$, $D^{(0)}$ and $\phi^{(0)}$ are initialized -- again like if there is no subgroup ($\beta_0^{(0)} = \cdots = \beta_{K-1}^{(0)}$) -- using a multivariate linear mixed model with an explicit EM algorithm (details on the algorithm are given in Appendix~\ref{sec:MLMM}, and details on the implementation in Appendix~\ref{sec:MLMM class}), being itself initialized with univariates fits using the \texttt{Python} package \texttt{statsmodels}.
+For all $k = 0, \ldots, K-1$, we first choose $\xi_k^{(0)} = \mathbf{0}_d$ and ${\gamma_k}^{(0)} = \mathbf{0}_{L\cA}$. Then, we initialize $\lambda_0^{(0)}$ like if there is no subgroup ($\gamma_{0}^{(0)} = \cdots = \gamma_{K-1}^{(0)}$) with a standard Cox proportional hazards regression with time-independent features using the \texttt{Python} library \texttt{tick}. Finally, the longitudinal submodels parameters $\beta_k^{(0)}$, $D^{(0)}$ and $\phi^{(0)}$ are initialized -- again like if there is no subgroup ($\beta_0^{(0)} = \cdots = \beta_{K-1}^{(0)}$) -- using a multivariate linear mixed model with an explicit EM algorithm (details on the algorithm are given in Appendix~\ref{sec:MLMM}, and details on the implementation in Appendix~\ref{sec:MLMM class}), being itself initialized with univariates fits using the \texttt{Python} package \texttt{statsmodels}.
 
 \paragraph*{The prox-QNEM algorithm.}
 Algorithm~\ref{alg:prox-QNEM} describes the main steps of the resulting QNEM algorithm to solve the optimization problem~\eqref{eq:optim-pb}.
@@ -675,6 +701,9 @@ Denoting $t^{max}_i$ the time for subject $i$ when one wants to perform the risk
 \end{equation}
 with 
 \[ \hat f(t^{max}_i, y_i | G_i=k ; \hat \theta) = \dfrac{1}{2N} \sum_{\breve{b} \in \hat S} f(t^{max}_i, 0, y_i | \breve{b}, G_i = k ; \hat \theta), \]
+
+dire ici qu'on tronque $y$ à $t^{max}$ et le noter $|t^{max}$ 
+
 where $\hat S$ is obtained with Algorithm~\ref{alg:construct-set-S} using $\hat D$ (that is $S^{(w_{max})}$ for the last iteration $w_{max}$), and the density $f$ in the rigth hand side of the previous equation being defined in~\eqref{eq:ind-hyp}.
 Note that marker~\eqref{eq:marker-def} is in fact obtained from the definition of $\hat \pi_{ik}^{\hat\theta}$ in~\eqref{eq:hat_pi_ik-def} taking $(t_i, \delta_i) = (t^{max}_i, 0)$, and turns out to be an estimate of the following posterior probability 
 \[\P_\theta[G_i=k | T^\star_i > t^{max}_i, y_i].\]
@@ -767,9 +796,7 @@ For the generation of the time-independent features matrix, we take
 \[ [x_{ij}] \in \R^{n \times p} \sim \cN \big(0, \bSigma_1(\rho_1)\big),\] 
 with $\bSigma_1(\rho_1)$ a $(p \times p)$ Toeplitz covariance matrix \citep{mukherjee1988some} with correlation $\rho_1 \in (0, 1)$, that is $\bSigma_1(\rho_1)_{jj'} = \rho_1^{|j - j'|}$. 
 We then add a $gap \in \R^+$ value for subjects $i \in \cH$ and subtract it for subjects $i \notin \cH$, only on active features, that is
-\begin{center}
-$x_{ij} \leftarrow x_{ij} + (-1)^{\ind{\{i \notin \cH\}}} gap\ \text{for } j = 1, \dots, s$.
-\end{center}
+\[x_{ij} \leftarrow x_{ij} + (-1)^{\ind{\{i \notin \cH\}}} gap\ \text{for } j = 1, \dots, s.\]
 Note that this is equivalent to generate the time-independent features according to a gaussian mixture. We finally normalize each time-independent features for practical interpretations.
 Then, we generate $G_i \sim \cB\big(\pi_\xi(x_i)\big)$, where $\pi_\xi(x_i)$ is computed given Equation~\eqref{eq:pi-softmax} and $\cB(\alpha)$ denotes the Bernoulli distribution with parameter $\alpha \in [0,1]$.
 
@@ -805,6 +832,9 @@ and we choose a risk model~\eqref{eq:intensity-model} with
     \end{array}
   \right.
 \end{equation*}
+
+rmq : plus besoin du sk dans phi vu qu'on l'ajoute directement ds le Y non ?
+
 and 
 \begin{equation}
   \label{eq:gamma-sparse}
