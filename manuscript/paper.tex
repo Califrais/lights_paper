@@ -99,7 +99,7 @@ Our proposed method significantly outperforms the state-of-the-art joint models 
 \section{Introduction}
 
 With the increasing expectations to know their customers from account opening throughout the duration of the business relationship, web companies have the luxury of building elaborate systems to help them keep everything on track. The amount of recorded data per client is often tremendous and growing through time. There is no tool today to take into account simultaneously a huge number of longitudinal signals in a high-dimensional context to perform real-time churn (or satisfaction) risk prediction.
-Similarly, in many clinical studies, it has become increasingly common to record the values of longitudinal features (e.g., biomarkers) until the occurrence of an event of interest for a subject. The ``joint modeling'' approaches, namely modeling the longitudinal and survival outcomes through a joint likelihood model rather than separately, has received considerable attention during the past two decades~\citep{tsiatis2004joint}. Numerical studies suggest that these approaches are among the most satisfactory to combine information~\citep{yu2004joint}. They have the advantage of making more efficient use of the data since information about survival also goes into modeling the longitudinal features. In addition, they produce unbiased estimates and do not rely on approximations for incorporating conplex longitudinal trajectories. Most developments have either focused on shared random-effect models (SREMs)~\citep{wulfsohn1997joint}, in which characteristics of the longitudinal processes (for instance functions of the random effects) are included as features in the survival model ; or on joint latent class models (JLCMs)~\citep{vermunt2003latent}, in which the population is considered as heterogeneous, with the assumption that there exist homogeneous latent subgroups sharing the same marker trajectories and the same prognostic.
+Similarly, in many clinical studies, it has become increasingly common to record the values of longitudinal features (e.g., biomarkers) until the occurrence of an event of interest for a subject. The ``joint modeling'' approaches, namely modeling the longitudinal and survival outcomes through a joint likelihood model rather than separately, has received considerable attention during the past two decades~\citep{tsiatis2004joint}. Numerical studies suggest that these approaches are among the most satisfactory to combine information~\citep{yu2004joint}. They have the advantage of making more efficient use of the data since information about survival also goes into modeling the longitudinal features. In addition, they produce unbiased estimates and do not rely on approximations for incorporating conplex longitudinal trajectories. Most developments have either focused on shared random-effect models (SREMs)~\citep{wulfsohn1997joint}, in which characteristics of the longitudinal processes (for instance functions of the random effects) are included as features in the survival model ; or on joint latent class models (JLCMs)~\citep{vermunt2003latent}, in which the population is considered as heterogeneous, with the assumption that there exist homogeneous latent classes sharing the same marker trajectories and the same prognostic.
 
 \paragraph{The high-dimensional longitudinal data context.}
 With the exploding number of daily internet users, or with the development of electronic health records in a medical context, high-dimensional settings are becoming increasingly frequent in various contexts where the number of available features to consider as potential risk factors is tremendous.
@@ -121,7 +121,7 @@ Let $X$ denotes the $p$-dimensional vector of time-independent features (e.g., p
 
 \paragraph{Heterogeneity of the population.}
 
-An assumption of heterogeneity within the subject population is frequently relevant in medical research where several differing profiles of subjects are expected~\citep{bussy2019c}. To take account of this, we introduce a latent variable $G \in \{0, \ldots, K-1\}$ modeling the $K \geq 1$ subgroups of different risk, which is a classical modeling assumption in JLCMs~\citep{lin2002latent, proust2014joint}. Let us denote
+An assumption of heterogeneity within the subject population is frequently relevant in medical research where several differing profiles of subjects are expected~\citep{bussy2019c}. To take account of this, we introduce a latent variable $G \in \{0, \ldots, K-1\}$ modeling the $K \geq 1$ classes of different risk, which is a classical modeling assumption in JLCMs~\citep{lin2002latent, proust2014joint}. Let us denote
 \begin{equation}
   \label{eq:pi}
   \pi_{\xi_k}(x) = \P[G=k|X=x]
@@ -131,12 +131,12 @@ the latent class membership probability given time-independent features $x \in \
   \label{eq:pi-softmax} 
   \pi_{\xi_k}(x) = \dfrac{e^{x^\top\xi_k}}{\sum_{k=0}^{K-1}e^{x^\top\xi_k}}
 \end{equation}
-where $\xi_k \in \R^p$ denotes a vector of coefficients that quantifies the impact of each time-independent features on the probability that a subject belongs to the $k$-th group, with $\xi_0 = \mathbf{0}_p$ for overparameterization purpose, where $\mathbf{0}_p$ stands for the vector of $\R^p$ having all coordinates equal to zero. The intercept term is here omitted without loss of generality. 
+where $\xi_k \in \R^p$ denotes a vector of coefficients that quantifies the impact of each time-independent features on the probability that a subject belongs to the $k$-th latent class, with $\xi_0 = \mathbf{0}_p$ for overparameterization purpose, where $\mathbf{0}_p$ stands for the vector of $\R^p$ having all coordinates equal to zero. The intercept term is here omitted without loss of generality. 
 From now on, all computations are done conditionally on features $x$.
 
 \paragraph{Main contribution.} 
 
-In this paper, we propose a method called \textit{lights} (generaLized joInt hiGH-dimensional longiTudinal Survival) which is inspired by both JLCMs and SREMs, since we also include features extracted from the longitudinal processes as potential risk factor in the survival model, which is a group-specific Cox model~\citep{Cox1972JRSS} with high-dimensional shared associations.
+In this paper, we propose a method called \textit{lights} (generaLized joInt hiGH-dimensional longiTudinal Survival) which is inspired by both JLCMs and SREMs, since we also include features extracted from the longitudinal processes as potential risk factor in the survival model, which is a class-specific Cox model~\citep{Cox1972JRSS} with high-dimensional shared associations.
 To allow flexibility in modeling the dependency between the longitudinal features and the event time, we use appropriate penalties : elastic net~\citep{zou2005regularization}
 for time-independent feature selection in the latent class membership, and sparse group lasso~\citep{simon2013sparse} in the survival model : this penalty acts like the lasso at the trajectory level, namely an entire trajectory may drop out of the model, and yields sparsity for a given trajectory.
 Inference is achieved using an efficient and novel proximal Quasi-Newton Expectation Maximization algorithm (prox-QNEM).
@@ -165,9 +165,9 @@ Finally, we write, for short, $\mathbf{1}_m$  (resp. $\mathbf{0}_m$) for the vec
 
 In this section, we descibe the longitudinal and time-to-event submodels, as well as the required hypothesis in order to write a likelihood and draw inference for the lights model.
 
-\subsection{Group-specific marker trajectories}
+\subsection{Class-specific marker trajectories}
 
-We suppose a group-specific marker trajectory and a generalized linear mixed model for each longitudinal marker given subgroup $G$, so that for the $l$-th outcome at time $t \geq 0$ one has
+We suppose a class-specific marker trajectory and a generalized linear mixed model for each longitudinal marker given latent class $G$, so that for the $l$-th outcome at time $t \geq 0$ one has
 \begin{equation}
   \label{eq:link-function}
   h_l\big(\E[Y^l(t)|b^l, G=k]\big) = m_k^l(t)
@@ -192,7 +192,7 @@ To account for dependence between the different longitudinal outcome types, we l
 the global variance-covariance matrix.
 In the sequel of the paper, our aim is to associate the true and unobserved value $m_k^l(t)$ of the $l$-th longitudinal outcome at time $t$ with the event outcome $T^\star$.
 
-\subsection{Group-specific risk of event}
+\subsection{Class-specific risk of event}
 
 To quantify the effect of the longitudinal outcomes on the risk for an event, we use a Cox~\citep{Cox1972JRSS} relative risk model of the form
 \begin{equation}
@@ -334,12 +334,12 @@ Denoting $(t_1^u, \ldots, t_J^u)$ the $J \in \N_+$ unique failure times, we then
 Now, let us make two first hypothesis.
 \begin{assumption}
 \label{assumption1}
-Suppose that the random effects are independent of the group membership, and that the latter remain independent conditional on the observed data (namely $T$, $\Delta$ and $Y$).
+Suppose that the random effects are independent of the latent class membership, and that the latter remain independent conditional on the observed data (namely $T$, $\Delta$ and $Y$).
 \end{assumption}
-Assumption~\ref{assumption1} states that subject-and-longitudinal outcome specific random effects $b^l$ do not depend on the group membership, which is not a strong modeling assumption.
+Assumption~\ref{assumption1} states that subject-and-longitudinal outcome specific random effects $b^l$ do not depend on the latent class membership, which is not a strong modeling assumption.
 \begin{assumption}
 \label{indep-hyp-2}
-Suppose that for a given subject $i$ and conditional on the random effects and the group membership, all $Y_i^l$ are independent for $l=1, \dots, L$.
+Suppose that for a given subject $i$ and conditional on the random effects and the latent class membership, all $Y_i^l$ are independent for $l=1, \dots, L$.
 \end{assumption}
 Assumption~\ref{indep-hyp-2} is similar to standard modeling hypothesis, see for instance~\citet{tsiatis2004joint}.
 For all $k = 0, \ldots, K-1$, we denote 
@@ -389,7 +389,7 @@ Assume that
 \end{equation}
 for all $i=1, \ldots, n$.
 \end{assumption}
-Assumption~\ref{indep-hyp-3} is a generalization of classical hypothesis used in SREMs and JLCMs~\citep{hickey2016joint}. Remember that the densities are also conditionned by all the representation features $\big(\Psi_i(t_j^u)\big)_{j=1,\ldots,J}$. Hence Assumption~\ref{indep-hyp-3} says that the random effects vector $b_i$, the group membership and the representation features account for the association between the longitudinal and event outcomes, which makes sense given Figure~\ref{fig:graphical-model}.
+Assumption~\ref{indep-hyp-3} is a generalization of classical hypothesis used in SREMs and JLCMs~\citep{hickey2016joint}. Remember that the densities are also conditionned by all the representation features $\big(\Psi_i(t_j^u)\big)_{j=1,\ldots,J}$. Hence Assumption~\ref{indep-hyp-3} says that the random effects vector $b_i$, the latent class membership and the representation features account for the association between the longitudinal and event outcomes, which makes sense given Figure~\ref{fig:graphical-model}.
 Then, one has
 \begin{equation}
 	\label{eq:log-lik}
@@ -423,7 +423,7 @@ In order to avoid overfitting and improve the prediction power of our method, we
   \label{eq:pen-log-lik}
 	\ell_n^\text{pen}(\theta) = - \ell_n(\theta) + \sum_{k=0}^{K-1} \zeta_{1,k} \norm{\xi_k}_{\text{en}, \eta} + \zeta_{2,k} \norm{\gamma_k}_{\text{sg} l_1, \tilde{\eta}}
 \end{equation}
-where for all $k=0, \ldots, K-1$, we add an elastic net regularization~\citep{zou2005regularization} of the vector $\xi_k$ and a sparse group lasso regularization~\citep{simon2013sparse} of the vector $\gamma_k$, for tuning hyper-parameters $(\zeta_{1,k}, \zeta_{2,k})^\top \in \R_+^2$. Here, $(\eta, \tilde{\eta}) \in [0, 1]^2$ are fixed and we denote
+where for all $k=0, \ldots, K-1$, we add an elastic net regularization~\citep{zou2005regularization} of the vector $\xi_k$ and a sparse group lasso regularization~\citep{simon2013sparse} of the vector $\gamma_k$, for tuning hyper-parameters $(\zeta_{1,k}, \zeta_{2,k})^\top \in \R_+^2$. Here, for fixed $(\eta, \tilde{\eta}) \in [0, 1]^2$, one has
 \[ \norm{z}_{\text{en}, \eta} = (1-\eta)\norm{z}_1 + \dfrac\eta2 \norm{z}_2^2 \]
 for the elastic net penalty of any vector $z$, that is a linear combination of the lasso ($\ell_1$) and ridge (squared $\ell_2$) penalties, and
 \[ \norm{z}_{\text{sg} l_1, \tilde{\eta}} = (1-\tilde{\eta})\norm{z}_1 + \tilde{\eta} \sum_{l=1}^L\norm{z}_{2,l} \] for the sparse group lasso penalty of any vector $z$, with $\norm{z}_{2,l}=\norm{z^l}_2$, and for which we do not have to account for group sizes since they all have the same one. 
@@ -433,21 +433,22 @@ Hence, the resulting optimization problem is written
    \hat \theta \in \argmin_{\theta \in \R^\vartheta} \ell_n^\text{pen}(\theta).
  \end{equation}
 
-One advantage of the considered regularization method is its ability to perform feature selection (the lasso part) and pinpoint the most important features relatively to the prediction objective : the support of $\xi_k$ thus informs on the time-independent features involved in the $k$-th group membership. The ridge part allows to handle potential correlation between time-independent features.
-On the other hand, the sparse group lasso allows to perform feature selection for each trajectory : the support of $\gamma_k^l$ informs on the features involved in the $k$-th group risk of event for the $l$-th longitudinal outcome.
-Note that in practice, the intercept is not regularized.
+One advantage of the considered regularization strategy is its ability to perform feature selection and pinpoint the most important (time-dependent and time-independent) features relatively to the prediction objective. The support of $\hat \xi_k$ informs on the time-independent features involved in the $k$-th latent class membership. The ridge part allows to handle potential correlation between time-independent features.
+On the other hand, for the sparse group lasso penalty, a group $l$ corresponds to a trajectory, that is one longitudinal outcome. So if $\hat \gamma_k^l$ is entirely zeroed (thanks to the group lasso part), it means that the $l$-th longitudinal process is discarded by the model in terms of risk effect for the $k$-th latent class.
+Then, the sparse part of the penalty allows to perform representation features selection for each trajectory : for $\hat \gamma_k^l$ that are not entirely zeroed, its support informs on the representation features involved in the $k$-th latent class risk of event for the $l$-th longitudinal outcome.
+Note that in practice, the intercept terms are not regularized.
 
 \subsection{A Proximal Quasi-Newton EM}
 \label{sec:prox-QNEM}
 
-In order to derive an algorithm for this objective, we introduce a so-called prox-QNEM algorithm, being a combination between an EM algorithm~\citep{dempster1977maximum}, an L-BFGS-B algorithm~\citep{zhu1997algorithm} and a proximal gradient descent algorithm~\citep{beck2009fast}. EM algorithm has already been used for multivariate data joint modeling (see~\citet{lin2002maximum} for instance), but here we face different original problems: for each subject $i$, the latent variables are the pairs $(G_i, b_i)$ (not only the random effects); and then, we want to minimize the penalized objective $\ell_n^\text{pen}$ (not ``only'' the negative log-likelihood).
+In order to derive an algorithm for this objective, we introduce a so-called prox-QNEM algorithm, being a combination between an EM algorithm~\citep{dempster1977maximum}, an L-BFGS-B algorithm~\citep{zhu1997algorithm} and a proximal gradient descent algorithm~\citep{beck2009fast}. EM algorithm has already been used for multivariate data joint modeling (see~\citet{lin2002maximum} for instance), but here we face different and original problems: for each subject $i$, the latent variables are the pairs $(G_i, b_i)$ (not only the random effects); and then, we want to minimize the penalized objective $\ell_n^\text{pen}$ (not ``only'' the negative log-likelihood).
 
 We first need to compute the negative completed log-likelihood (here scaled by $n^{-1}$), namely the negative joint distribution of $\cD_n$, $\textbf{\textit{b}} = (b_1, \ldots, b_n)$ and $\textbf{\textit{G}} = (G_1, \ldots, G_n)$.
 It can be written
 \begin{align*}
   \ell_n^\text{comp}(\theta) &= \ell_n^\text{comp}(\theta ; \cD_n, \textbf{\textit{b}}, \textbf{\textit{G}}) \\ 
   &= - n^{-1} \sum_{i=1}^n -\dfrac12 (r \log 2\pi + \log|D| + b_i^\top D^{-1}b_i) + \sum_{k=0}^{K-1} \ind{\{G_i=k\}} \Big[ \log \pi_{\xi_k}(x_i) \\ 
-  & \quad + \delta_i \Big(\log \lambda_0(t_i) + \gamma_k^\top \Psi_i \Big) - \exp \big\{ \gamma_k^\top \Psi_i \big\} \int_0^{t_i} \lambda_0(s) \dd s \\
+  & \quad + \delta_i \Big(\log \lambda_0(t_i) + \gamma_k^\top \Psi_i(t_i) \Big) - \int_0^{t_i} \lambda_0(s) \exp \big\{ \gamma_k^\top \Psi_i(s) \big\} \dd s \\
   & \quad + (y_i \odot \Phi_i)^\top M_{ik} - c_\phi(M_{ik}) + d_\phi(y_i) \Big].
 \end{align*}
 Suppose that we are at step $w + 1$ of the algorithm, with current iterate denoted $\theta^{(w)}$. 
@@ -466,30 +467,30 @@ for different functions $g$, where we denote
   \pi_{ik}^{\theta^{(w)}} = \P_{\theta^{(w)}}[G_i = k | t_i, \delta_i, y_i] 
 \end{equation}
 the posterior probability of the latent class membership using parameters $\theta^{(w)}$. 
-Then, either $g(b_i, G_i) = \tilde g(b_i)$ (for instance $\tilde g: b_i \mapsto b_i^\top D^{-1}b_i$), or $g(b_i, G_i) = g_k(G_i)$ with $g_k~:~G_i \mapsto \ind{\{G_i=k\}}$.
+Then, either $g(b_i, G_i) = \tilde g(b_i)$ (either $\tilde g_1: b_i \mapsto b_i$ or $\tilde g_2: b_i \mapsto b_i b_i^\top$), or $g(b_i, G_i) = g_k(G_i)$ with $g_k~:~G_i \mapsto \ind{\{G_i=k\}}$.
 
 In the case $g(b_i, G_i) = \tilde g(b_i)$, one has
-\begin{equation}
-  \label{eq:def-E-g-tilde}
-  \E_{\theta^{(w)}}[ \tilde g(b_i) | t_i, \delta_i, y_i] = \int_{\R^r} \tilde g(b_i) f(b_i | t_i, \delta_i, y_i ; \theta^{(w)}) \dd b_i = \dfrac{ \sum_{k=0}^{K-1} \pi_{\xi_k^{(w)}}(x_i) \Lambda_{ik,\tilde g}^{\theta^{(w)}}}{\sum_{k=0}^{K-1} \pi_{\xi_k^{(w)}}(x_i) \Lambda_{ik,1}^{\theta^{(w)}}}
-\end{equation}
-with
-\begin{align}
-  \Lambda_{ik,\tilde g}^{\theta^{(w)}} &= \int_{\R^r} \tilde g(b_i) f(t_i, \delta_i | b_i, G_i = k, \Psi_i ; \theta^{(w)}) f(y_i | b_i, G_i = k, \Psi_i ; \theta^{(w)}) f(b_i | G_i = k, \Psi_i; \theta^{(w)}) \dd b_i \\
-  \label{eq:Lambda_ik-b_i}
-  &=  f(t_i, \delta_i | G_i = k, \Psi_i ; \theta^{(w)}) f(y_i | G_i = k ; \theta^{(w)}) \int_{\R^r} \tilde g(b_i) f(b_i | y_i, G_i = k ; \theta^{(w)}) \dd b_i,
-\end{align}
+\begin{equation*}
+  \E_{\theta^{(w)}}[ \tilde g(b_i) | t_i, \delta_i, y_i] = \int_{\R^r} \tilde g(b_i) f_{\theta^{(w)}}(b_i | t_i, \delta_i, y_i) \dd b_i = \dfrac{ \sum_{k=0}^{K-1} \pi_{\xi_k^{(w)}}(x_i) \Lambda_{ik,\tilde g}^{\theta^{(w)}}}{\sum_{k=0}^{K-1} \pi_{\xi_k^{(w)}}(x_i) \Lambda_{ik,1}^{\theta^{(w)}}}
+\end{equation*}
 where
+\begin{equation}
+  \label{eq:Lambda_ik-b_i}
+  \Lambda_{ik,\tilde g}^{\theta^{(w)}} =  f_{\theta^{(w)}}(t_i, \delta_i | G_i = k) f_{\theta^{(w)}}(y_i | G_i = k) \int_{\R^r} \tilde g(b_i) f_{\theta^{(w)}}(b_i | y_i, G_i = k) \dd b_i,
+\end{equation}
+and in the Gaussian case used in practice one has
 \begin{align*}
-  y_i | G_i = k &\sim \cN\big(U_i\beta_k, V_iDV_i^\top + \Sigma_i\big) \\
-  b_i | y_i, G_i=k &\sim \cN \big(W_iV_i^T\Sigma_i^{-1}(y_i - U_i\beta_k), W_i\big)  
+  y_i | G_i = k ; \theta^{(w)} &\sim \cN\big(U_i\beta_k^{(w)}, V_iD^{(w)}V_i^\top + \Sigma_i^{(w)}\big), \\
+  b_i | y_i, G_i=k ; \theta^{(w)} &\sim \cN \big(O_{i,k}^{(w)}, W_i^{(w)}\big),  
 \end{align*}
-with $W_i = (V_i^\top\Sigma_i^{-1}V_i + D^{-1})^{-1}$.
+with $O_{i,k}^{(w)}=W_i^{(w)}V_i^T{\Sigma_i^{(w)}}^{-1}(y_i - U_i\beta_k^{(w)})$ and $W_i^{(w)} = (V_i^\top{\Sigma_i^{(w)}}^{-1}V_i + {D^{(w)}}^{-1})^{-1}$. Hence, what is interesting here is that~\eqref{eq:Lambda_ik-b_i} is actually closed-formed since 
+\[ \E_{\theta^{(w)}}[ \tilde g_1(b_i) | y_i, G_i = k] = O_{i,k}^{(w)} \quad \text{and} \quad \E_{\theta^{(w)}}[ \tilde g_2(b_i) | y_i, G_i = k] = W_i^{(w)} + O_{i,k}^{(w)}{O_{i,k}^{(w)}}^\top\]
+and then tractable analytically. Whereas in classical SREMs, some form of approximation must be used in practice to compute this quantity, like numerical integration techniques (for instance Gaussian quadrature) or Monte Carlo approximation.
 
-Now in the case $g = g_k$, one has $\E_{\theta^{(w)}}[g_k(Gi) | t_i, \delta_i, y_i] = \pi_{ik}^{\theta^{(w)}}$ and we compute its approximation given
+Now in the case $g = g_k$, one has
 \begin{equation}
 \label{eq:hat_pi_ik-def}
-  \hat \pi_{ik}^{\theta^{(w)}} = \dfrac{\pi_{\xi_k^{(w)}}(x_i) \hat \Lambda_{ik,1}^{\theta^{(w)}}}{\sum_{k=0}^{K-1} \pi_{\xi_k^{(w)}}(x_i) \hat \Lambda_{ik,1}^{\theta^{(w)}}}.
+  \E_{\theta^{(w)}}[g_k(Gi) | t_i, \delta_i, y_i] = \pi_{ik}^{\theta^{(w)}} = \dfrac{\pi_{\xi_k^{(w)}}(x_i) \Lambda_{ik,1}^{\theta^{(w)}}}{\sum_{k=0}^{K-1} \pi_{\xi_k^{(w)}}(x_i) \Lambda_{ik,1}^{\theta^{(w)}}}.
 \end{equation}
 
 \paragraph*{Proximal Quasi-Newton M-step.}
@@ -498,7 +499,7 @@ We then present the parameters updates in the order given in Algorithm~\ref{alg:
 First, the update of $D^{(w)}$ is naturally given in closed-form by
 \begin{equation}
   \label{eq:update_D}
-  D^{(w+1)} = n^{-1} \sum_{i=1}^n \hat \E_{\theta^{(w)}}[ b_i b_i^\top | t_i, \delta_i, y_i].
+  D^{(w+1)} = n^{-1} \sum_{i=1}^n \E_{\theta^{(w)}}[ b_i b_i^\top | t_i, \delta_i, y_i].
 \end{equation}
 Then, let us focus on the update of $\xi_k^{(w)}$ for $k=0, \ldots, K-1$. We denote
 \[ P^{(w)}_{n, k}(\xi_k) = -n^{-1} \sum_{i=1}^n \sum_{k=0}^{K-1} \hat \pi_{ik}^{\theta^{(w)}} \log \pi_{\xi_k}(x_i) \]
@@ -621,7 +622,7 @@ Appendix~\ref{sec:prox-QNEM class} gives some details about the way we implement
 
 \paragraph*{Initialization.}
 Our algorithm gives a local minimum, and it is clever to choose an initial value $\theta^{(0)}$ close to the final solution $\hat \theta$, so that the number of iterations required to reach convergence is reduced. We then give some details about the starting point $\theta^{(0)}$ of Algorithm~\ref{alg:prox-QNEM}.
-For all $k = 0, \ldots, K-1$, we first choose $\xi_k^{(0)} = \mathbf{0}_d$ and ${\gamma_k}^{(0)} = \mathbf{0}_{L\cA}$. Then, we initialize $\lambda_0^{(0)}$ like if there is no subgroup ($\gamma_{0}^{(0)} = \cdots = \gamma_{K-1}^{(0)}$) with a standard Cox proportional hazards regression with time-independent features using the \texttt{Python} library \texttt{tick}. Finally, the longitudinal submodels parameters $\beta_k^{(0)}$, $D^{(0)}$ and $\phi^{(0)}$ are initialized -- again like if there is no subgroup ($\beta_0^{(0)} = \cdots = \beta_{K-1}^{(0)}$) -- using a multivariate linear mixed model with an explicit EM algorithm (details on the algorithm are given in Appendix~\ref{sec:MLMM}, and details on the implementation in Appendix~\ref{sec:MLMM class}), being itself initialized with univariates fits using the \texttt{Python} package \texttt{statsmodels}.
+For all $k = 0, \ldots, K-1$, we first choose $\xi_k^{(0)} = \mathbf{0}_d$ and ${\gamma_k}^{(0)} = \mathbf{0}_{L\cA}$. Then, we initialize $\lambda_0^{(0)}$ like if there is no latent classes ($\gamma_{0}^{(0)} = \cdots = \gamma_{K-1}^{(0)}$) with a standard Cox proportional hazards regression with time-independent features using the \texttt{Python} library \texttt{tick}. Finally, the longitudinal submodels parameters $\beta_k^{(0)}$, $D^{(0)}$ and $\phi^{(0)}$ are initialized -- again like if there is no latent classes ($\beta_0^{(0)} = \cdots = \beta_{K-1}^{(0)}$) -- using a multivariate linear mixed model with an explicit EM algorithm (details on the algorithm are given in Appendix~\ref{sec:MLMM}, and details on the implementation in Appendix~\ref{sec:MLMM class}), being itself initialized with univariates fits using the \texttt{Python} package \texttt{statsmodels}.
 
 \paragraph*{The prox-QNEM algorithm.}
 Algorithm~\ref{alg:prox-QNEM} describes the main steps of the resulting QNEM algorithm to solve the optimization problem~\eqref{eq:optim-pb}.
@@ -639,6 +640,7 @@ Compute the starting parameters $\theta^{(0)} \in \R^\vartheta$ \\
 \For{$w = 1,\ldots,$ until convergence}    
 { 
   \tcc{E-step}
+  A RE-ECRIRE
   Compute $\hat \Lambda_{ik,\tilde g}^{\theta^{(w)}}$ using~\eqref{eq:Lambda_ik-b_i} for the required functions $\tilde g$\\
   Compute $\hat \pi_{ik}^{\theta^{(w)}}$ using~\eqref{eq:hat_pi_ik-def}\\
   \If{Condition}
@@ -665,8 +667,8 @@ is satisfied for 3 consecutive iterations.
 \subsection{The case $K=2$}
 \label{sec:K=2}
 
-In many practical applications -- including those addressed in Section~\ref{sec:application} -- we are interested in identifying one subgroup of the population with a high risk of adverse event compared to the others. Then, in the following, we consider $G \in \{ 0, 1\}$ where $G=1$ means high-risk of early adverse event and $G=0$ means low risk.
-To simplify notations, let us set $\xi = \xi_1$, $\pi_\xi(x)$ the conditional probability that a subject belongs to the group with high risk of adverse event given its time-independent features $x$, and $\zeta_1 = \zeta_{1,1}$.
+In many practical applications -- including those addressed in Section~\ref{sec:application} -- we are interested in identifying one latent class of the population with a high risk of adverse event compared to the others. Then, in the following, we consider $G \in \{ 0, 1\}$ where $G=1$ means high-risk of early adverse event and $G=0$ means low risk.
+To simplify notations, let us set $\xi = \xi_1$, $\pi_\xi(x)$ the conditional probability that a subject belongs to the latent class with high risk of adverse event given its time-independent features $x$, and $\zeta_1 = \zeta_{1,1}$.
 In this context, which is the one we consider in practice in Sections~\ref{sec:simulation study} and~\ref{sec:application}, we suppose that the ``right'' penalty strength for $\gamma_k$ does not depend on $k$, so that we denote $\zeta_2 = \zeta_{2,0} = \zeta_{2,1}$. 
 
 \paragraph{Cross-validation procedure.}
@@ -691,10 +693,10 @@ Developments in the field of joint modeling have primarily focused on modeling a
 
 The question now is to choose a discriminative marker rule for risk prediction to be used in the cross-validation procedure for selecting the best regularization hyper-parameters, and of course to be used as final risk prediction after hyper-parameters fine-tuning.
 The lights model has the ability to produce prognostic predictions that can be dynamically updated according to the observed trajectory of the features. 
-Once the model is trained (so that one obtains $\hat\theta$ from~\eqref{eq:optim-pb} using our prox-QNEM algorithm introduced in Section~\ref{sec:prox-QNEM}), posterior risk classification for subject $i$ and group $k$ can be made through $\hat \pi_{ik}^{\hat\theta}$ (see~\eqref{eq:hat_pi_ik-def}). Similar posterior probabilities have been considered for goodness-of-fit evaluation in other JLCMs models, see~\citet{proust2014joint} for instance.
+Once the model is trained (so that one obtains $\hat\theta$ from~\eqref{eq:optim-pb} using our prox-QNEM algorithm introduced in Section~\ref{sec:prox-QNEM}), posterior risk classification for subject $i$ and latent class $k$ can be made through $\hat \pi_{ik}^{\hat\theta}$ (see~\eqref{eq:hat_pi_ik-def}). Similar posterior probabilities have been considered for goodness-of-fit evaluation in other JLCMs models, see~\citet{proust2014joint} for instance.
 
 But in the real-time prediction paradigm, it makes no sense from a practical point of view to use this marker rule as is for risk prediction, since the latter requires to know the survival labels $(t_i, \delta_i)$, being intrinsically unknow in a context where we want to perform real-time risk prediction. 
-Denoting $t^{max}_i$ the time for subject $i$ when one wants to perform the risk prediction -- so in practice, the time up to which one has data measurements for $Y_i$, say the ``present'' time for prediction -- a natural and appropriate marker rule of the lights model for subject $i$ being in subgroup $k$ would rather be 
+Denoting $t^{max}_i$ the time for subject $i$ when one wants to perform the risk prediction -- so in practice, the time up to which one has data measurements for $Y_i$, say the ``present'' time for prediction -- a natural and appropriate marker rule of the lights model for subject $i$ being in latent class $k$ would rather be 
 \begin{equation}
   \label{eq:marker-def}
   \hat \cR_{ik} = \dfrac{\pi_{\hat \xi_k}(x_i) \hat f(t^{max}_i, y_i | G_i=k ; \hat \theta)}{\sum_{k=0}^{K-1} \pi_{\hat \xi_k}(x_i) \hat f(t^{max}_i, y_i | G_i=k ; \hat \theta)},
@@ -765,7 +767,7 @@ We use the \texttt{survival} \texttt{R} package~\citep{zhang2018time}, and we co
 \paragraph*{Multivariate joint latent class model.} 
 
 We consider a multivariate version of JLCMs implemented in the \texttt{R} package \texttt{lcmm}~\citep{2017_lcmm}.
-Contrary to the lights model, there is no shared associations between the longitudinal models and the survival model. Given the group membership, each submodel is assumed to be independent. In this context, the predictive marker for subject $i$ is
+Contrary to the lights model, there is no shared associations between the longitudinal models and the survival model. Given the latent class membership, each submodel is assumed to be independent. In this context, the predictive marker for subject $i$ is
 \[\hat \cR_i^\text{lcmm} = \dfrac{\pi_{\hat \xi}(x_i) f(t^{max}_i, y_i | G_i=1 ; \hat \theta)}{\pi_{\hat \xi}(x_i) f(t^{max}_i, y_i | G_i=1 ; \hat \theta) + \big(1 - \pi_{\hat \xi}(x_i)\big) f(t^{max}_i, y_i | G_i=0 ; \hat \theta)}.\]
 
 \paragraph*{Multivariate shared random effect model.}
@@ -840,7 +842,7 @@ and
   \label{eq:gamma-sparse}
   \gamma_{k,a}^l = \varsigma_2 \mathbf{1}_{\imath_a} \ind{\big\{l \in \cS_k,\ a\in \{1, 2\} \big\}}
 \end{equation}
-for the choice of the association parameters, with $\cA = 3 + 3(1-r_s)/r_s$ so that $(i)$ there is a proportion $r_s$ of active longitudinal features among the $L$ (with the $\cS_k$), $(ii)$ we induce sparsity within each group adding a proportion of $(1-r_s)$ non-active association features ($a \geq 3$) in each group (similarly to~\eqref{eq:xi-sparse} for the time-independent features), and $(iii)$ the longitudinal effects are distinct for each subgroup $k=0, \ldots, K-1$ (thanks to the $\cS_k$ definition).
+for the choice of the association parameters, with $\cA = 3 + 3(1-r_s)/r_s$ so that $(i)$ there is a proportion $r_s$ of active longitudinal features among the $L$ (with the $\cS_k$), $(ii)$ we induce sparsity within each latent class adding a proportion of $(1-r_s)$ non-active association features ($a \geq 3$) in each latent class (similarly to~\eqref{eq:xi-sparse} for the time-independent features), and $(iii)$ the longitudinal effects are distinct for each latent class $k=0, \ldots, K-1$ (thanks to the $\cS_k$ definition).
 
 In terms of active association features, it corresponds to~\eqref{eq:intensity-model} taking the first two functionals described in Table~\ref{table:shared_associations} as shared associations with $\alpha = 1$ in~\eqref{eq:alpha-def} so that one can write
 \[ \lambda_i(t|G_i = k) = \lambda_0(t) \exp \big\{ \iota_{i,k,1} + \iota_{i,k,2} t \big\},\]
@@ -1050,7 +1052,7 @@ $\hfill\square$
 \section{Multivariate linear mixed model}
 \label{sec:MLMM}
 
-Let us derive here the explicit EM algorithm for the multivariate linear mixed model used to initialized the longitudinal parameters $\beta_k^{(0)}$, $D^{(0)}$ and $\phi^{(0)}$ in the prox-QNEM algorithm in Section~\ref{sec:prox-QNEM}, acting as if there is no subgroup ($\beta_0^{(0)} = \cdots = \beta_{K-1}^{(0)}$).
+Let us derive here the explicit EM algorithm for the multivariate linear mixed model used to initialized the longitudinal parameters $\beta_k^{(0)}$, $D^{(0)}$ and $\phi^{(0)}$ in the prox-QNEM algorithm in Section~\ref{sec:prox-QNEM}, acting as if there is no latent classes ($\beta_0^{(0)} = \cdots = \beta_{K-1}^{(0)}$).
 For the sake of simplicity, let us denote here 
 \[\theta = (\beta^\top, \text{vech}(D), \phi^\top)^\top \in \R^\vartheta\]
 the parameter vector to infer.
