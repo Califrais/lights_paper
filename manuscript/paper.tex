@@ -504,13 +504,13 @@ First, the update of $D^{(w)}$ is naturally given in closed-form by
   D^{(w+1)} = n^{-1} \sum_{i=1}^n \E_{\theta^{(w)}}[ b_i b_i^\top | t_i, \delta_i, y_i].
 \end{equation}
 Then, let us focus on the update of $\xi_k^{(w)}$ for $k=0, \ldots, K-1$. We denote
-\[ P^{(w)}_{n, k}(\xi_k) = -n^{-1} \sum_{i=1}^n \sum_{k=0}^{K-1} \hat \pi_{ik}^{\theta^{(w)}} \log \pi_{\xi_k}(x_i) \]
+\[ P^{(w)}_{n, k}(\xi_k) = -n^{-1} \sum_{i=1}^n \sum_{k=0}^{K-1} \pi_{ik}^{\theta^{(w)}} \log \pi_{\xi_k}(x_i) \]
 based on the quantities involved in $\cQ_n(\theta, \theta^{(w)})$ that depend on $\xi_k$. The update for $\xi_k^{(w)}$ therefore requires to solve the following convex minimization problem
 \begin{equation}
   \label{eq:minimization-xi_k}
   \xi_k^{(w+1)} \in \argmin_{\xi_k \in \R^p} P^{(w)}_{n,k}(\xi_k) + \zeta_{1,k} \norm{\xi_k}_{\text{en}, \eta}.
 \end{equation}
-It looks like the logistic regression objective, where labels are not fixed but softly encoded by the expectation step (computation of $\hat \pi_{ik}^{\theta^{(w)}}$ in~\eqref{eq:hat_pi_ik-def}). We then choose to solve~\eqref{eq:minimization-xi_k} using the L-BFGS-B algorithm~\citep{zhu1997algorithm} which belongs to the class of quasi-Newton optimization routines and solves the given minimization problem by computing approximations
+It looks like the logistic regression objective, where labels are not fixed but softly encoded by the expectation step (computation of $\pi_{ik}^{\theta^{(w)}}$ in~\eqref{eq:hat_pi_ik-def}). We then choose to solve~\eqref{eq:minimization-xi_k} using the L-BFGS-B algorithm~\citep{zhu1997algorithm} which belongs to the class of quasi-Newton optimization routines and solves the given minimization problem by computing approximations
 of the inverse Hessian matrix of the objective function. It can deal with differentiable convex objectives with box constraints.
 In order to use it with $\ell_1$ penalization, which is not differentiable, we use the trick borrowed from \citet{andrew2007scalable}: for $a \in \R$, write $|a| = a^+ + a^-$, where $a^+$ and $a^-$ are respectively the positive and negative part of $a$, and add the constraints $a^+ \geq 0$ and $a^- \geq 0$.
 Namely, we rewrite the minimization problem~\eqref{eq:minimization-xi_k} as the following differentiable problem with box constraints
@@ -524,13 +524,13 @@ Namely, we rewrite the minimization problem~\eqref{eq:minimization-xi_k} as the 
 where $\xi_k^\pm = (\xi_{k,1}^\pm, \ldots, \xi_{k,p}^\pm)^\top$. The L-BFGS-B solver requires the exact value of the gradient, which is easily given by
 \begin{equation}
   \label{eq:grad-xi_k}
-  \frac{\partial P_{n,k}^{(w)}(\xi_k)}{\partial \xi_k} = -n^{-1} \sum_{i=1}^n  \big( \hat \pi_{ik}^{\theta^{(w)}} - \pi_{\xi_k}(x_i) \big) x_i.
+  \frac{\partial P_{n,k}^{(w)}(\xi_k)}{\partial \xi_k} = -n^{-1} \sum_{i=1}^n  \big(\pi_{ik}^{\theta^{(w)}} - \pi_{\xi_k}(x_i) \big) x_i.
 \end{equation}
-In practice, we use the \texttt{Python} solver \texttt{fmin\_l\_bfgs\_b} from \texttt{scipy.optimize}~\citep{virtanen2020scipy}. Similarly to the strategy of increasing $N$ with the iterations $w$ for computational reasons, it is not clever to use a too small solver tolerance in the early steps of the algorithm, where we call tolerance the value for which iterations stop when the stopping criterion is below it. We then decrease the L-BFGS-B tolerance (which we denote $tol$ in Algorithm~\ref{alg:prox-QNEM}) with every increase of $N$.
+In practice, we use the \texttt{Python} solver \texttt{fmin\_l\_bfgs\_b} from \texttt{scipy.optimize}~\citep{virtanen2020scipy}. Note that for computational reasons, it is not clever to use a too small solver tolerance in the early steps of the overall algorithm, where we call tolerance the value for which iterations stop when the stopping criterion is below it. To speed up the overall algorithm, we then decrease the L-BFGS-B tolerance with the iterations $w$.
 
 Concerning the update of $\beta_k^{(w)}$ for $k=0, \ldots, K-1$, let us follow the same strategy by denoting
 \begin{equation*}
-  R^{(w)}_{n,k}(\beta_k) = -n^{-1} \sum_{i=1}^n \hat \pi_{ik}^{\theta^{(w)}} \Big[ (y_i \odot \Phi_i^{(w)})^\top \hat \E_{\theta^{(w)}}[ M_{ik} | t_i, \delta_i, y_i] - \hat \E_{\theta^{(w)}}[ c_{\phi^{(w)}}(M_{ik}) | t_i, \delta_i, y_i] \Big]
+  R^{(w)}_{n,k}(\beta_k) = -n^{-1} \sum_{i=1}^n \pi_{ik}^{\theta^{(w)}} \Big[ (y_i \odot \Phi_i^{(w)})^\top \E_{\theta^{(w)}}[ M_{ik} | t_i, \delta_i, y_i] - \E_{\theta^{(w)}}[ c_{\phi^{(w)}}(M_{ik}) | t_i, \delta_i, y_i] \Big]
 \end{equation*}
 based on the quantities involved in $\cQ_n(\theta, \theta^{(w)})$ depending on $\beta_k$. The update for $\beta_k^{(w)}$ therefore requires to solve the following convex minimization problem
 \begin{equation}
@@ -540,19 +540,17 @@ based on the quantities involved in $\cQ_n(\theta, \theta^{(w)})$ depending on $
 The gradient of $R_{n,k}^{(w)}$ for the Gaussian case is here given by
 \begin{equation}
   \label{eq:grad-beta_k}
-  \frac{\partial R_{n,k}^{(w)}(\beta_k)}{\partial \beta_k} = -n^{-1} \sum_{i=1}^n \hat \pi_{ik}^{\theta^{(w)}} \Big[ U_{i}^\top \Sigma_i^{(w)} I_{n_{i}} (y_i - U_{i}\beta_k - V_{i}\hat \E_{\theta^{(w)}}[ b_i | t_i, \delta_i, y_i])\Big].
+  \frac{\partial R_{n,k}^{(w)}(\beta_k)}{\partial \beta_k} = -n^{-1} \sum_{i=1}^n \pi_{ik}^{\theta^{(w)}} \Big[ U_{i}^\top \Sigma_i^{(w)} I_{n_{i}} \big(y_i - U_{i}\beta_k - V_{i} \E_{\theta^{(w)}}[ b_i | t_i, \delta_i, y_i]\big)\Big].
 \end{equation}
 The closed-form update is then given by
 
 \begin{equation}
   \label{eq:update_beta}
-  {\beta_k}^{(w+1)}= \dfrac{\sum_{i=1}^n\hat \pi_{ik}^{\theta^{(w)}} \Big[U_i^\top I_{n_i} (y_i - V_i\hat \E_{\theta^{(w)}}[ b_i | t_i, \delta_i, y_i])\Big]}{\sum_{i=1}^n \hat \pi_{ik}^{\theta^{(w)}} U_i^\top I_{n_i} U_i}.
+  {\beta_k}^{(w+1)}= \dfrac{\sum_{i=1}^n \pi_{ik}^{\theta^{(w)}} \Big[U_i^\top I_{n_i} (y_i - V_i \E_{\theta^{(w)}}[ b_i | t_i, \delta_i, y_i])\Big]}{\sum_{i=1}^n \pi_{ik}^{\theta^{(w)}} U_i^\top I_{n_i} U_i}.
 \end{equation}
 Now, for the update of $\gamma_k^{(w)}$ for $k=0, \ldots, K-1$, we similarly denote
-\begin{align*}
-  Q^{(w)}_{n,k}(\gamma_k) = -n^{-1} \sum_{i=1}^n &\hat\pi_{ik}^{\theta^{(w)}} \Big[\delta_i \gamma_k^\top \Psi_i -  \exp \big\{\gamma_k^\top \Psi_i\big\} \sum_{j=1}^J \lambda_0^{(w)}(t_j^u) \ind{\{t_j^u \leq t_i\}} \Big]
-\end{align*}
-based on the quantities involved in $\cQ_n(\theta, \theta^{(w)})$ that depend on $\gamma_k$. The integration over the survival process has been replaced with a finite sum over the process evaluated at the $J$, since $\lambda_0^{(w)}$ defined in~\eqref{eq:update_lambda_0} is always zero except at observed event times. The update for $\gamma_k^{(w)}$ requires to solve the following minimization problem
+\[Q^{(w)}_{n,k}(\gamma_k) = -n^{-1} \sum_{i=1}^n \pi_{ik}^{\theta^{(w)}} \Big[\delta_i \gamma_k^\top \Psi_i(t_i) - \sum_{j=1}^J \lambda_0^{(w)}(t_j^u) \exp \big\{\gamma_k^\top \Psi_i(t_j^u)\big\} \ind{\{t_j^u \leq t_i\}} \Big]\]
+based on the quantities involved in $\cQ_n(\theta, \theta^{(w)})$ that depend on $\gamma_k$. The integration over the survival process has been replaced with a finite sum over the process evaluated at the $J$, since $\lambda_0^{(w)}$ defined in~\eqref{eq:update_lambda_0} is always zero except at observed event times. The update for $\gamma_k^{(w)}$ requires to solve the following convex minimization problem
 \begin{equation}
   \label{eq:minimization-gamma_k}
   \gamma_k^{(w+1)} \in \argmin_{\gamma_k \in \R^{L\cA}} Q^{(w)}_{n,k}(\gamma_k) + \zeta_{2,k} \norm{\gamma_k}_{\text{sg} l_1, \tilde{\eta}}.
@@ -593,7 +591,7 @@ The proximal operator of the sparse group lasso can be expressed as the composit
   \text{prox}_{\text{sg} l_1,\tilde \eta, \zeta} = \text{prox}_{\zeta \tilde \eta \sum_{l=1}^L \norm{\cdot}_{2,l}} \circ \text{prox}_{\zeta (1 - \tilde \eta) \norm{\cdot}_1}.
 \end{equation*}
 \end{lemma}
-The two proximal operators on the right hand side of Lemma~\ref{lemma:prox-sgl1} are both well known analytically~\citep{bach2011optimization} and tractable. We used the \texttt{Python} library \texttt{copt} for the implementation of proximal gradient descent~\citep{copt} and we propose in our package an implementation for the proximal operator of the sparse group lasso based on Lemma~\ref{lemma:prox-sgl1}.
+The two proximal operators on the right hand side of Lemma~\ref{lemma:prox-sgl1} are both well known analytically~\citep{bach2011optimization} and tractable. We used the \texttt{Python} library \texttt{copt} for the implementation of proximal gradient descent~\citep{copt} and we propose in our \texttt{lights} package a first \texttt{Python} implementation for the proximal operator of the sparse group lasso based on Lemma~\ref{lemma:prox-sgl1}.
 A proof of Lemma~\ref{lemma:prox-sgl1} is proposed in Appendix~\ref{sec:proof-lemma-prox-sgl1}.
 Hence, we update $\gamma_k^{(w)}$ with the following step
 \begin{equation}
@@ -603,22 +601,22 @@ Hence, we update $\gamma_k^{(w)}$ with the following step
 Note that the warmstart initialization is left to the user's choice, as well as the ISTA acceleration~\citep{beck2009fast}, since warmstart can diminish acceleration effectiveness~\citep{tibshirani2010proximal}. The gradient of $Q_{n,k}^{(w)}$ is here given by
 \begin{align}
   \label{eq:grad-Q}
-  &\frac{\partial Q_{n,k}^{(w)}(\gamma_k)}{\partial \gamma_{k,a}^l} = -n^{-1} \sum_{i=1}^n \hat \pi_{ik}^{\theta^{(w)}} \Psi_{i, a}^l  \Big[ \delta_i - \exp \big\{\gamma_k^\top \Psi_i\big\} \sum_{j=1}^J \lambda_0^{(w)}(t_j^u) \ind{\{t_j^u \leq t_i\}} \Big]
+  &\frac{\partial Q_{n,k}^{(w)}(\gamma_k)}{\partial \gamma_{k,a}^l} = -n^{-1} \sum_{i=1}^n \pi_{ik}^{\theta^{(w)}} \Psi_{i, a}^l(t_i) \Big[ \delta_i - \sum_{j=1}^J \lambda_0^{(w)}(t_j^u) \exp \big\{\gamma_k^\top \Psi_i(t_j^u) \big\} \ind{\{t_j^u \leq t_i\}} \Big]
 \end{align}
 for all $a = 1, \ldots, \mathcal{A}$ and $l = 1, \ldots, L$.
 
 For the update of $\lambda_0^{(w)}$, we treat the jump size at each uncensored observed event times as parameters to be estimated~\citep{klein1992semiparametric}, and the closed-form update obtained by cancelling the gradient is given by
 \begin{equation}
   \label{eq:update_lambda_0}
-  \lambda_0^{(w+1)}(t)= \dfrac{\sum_{i=1}^n \delta_i \ind{\{t=t_i\}}}{\sum_{i=1}^n \sum_{k=0}^{K-1} \hat \pi_{ik}^{\theta^{(w)}} \exp \big\{{\gamma_k^{(w+1)}}^\top \Psi_i\big\} \ind{\{t_i \geq t\}} },
+  \lambda_0^{(w+1)}(t)= \dfrac{\sum_{i=1}^n \delta_i \ind{\{t=t_i\}}}{\sum_{i=1}^n \sum_{k=0}^{K-1} \pi_{ik}^{\theta^{(w)}} \exp \big\{{\gamma_k^{(w+1)}}^\top \Psi_i(t)\big\} \ind{\{t_i \geq t\}} },
 \end{equation}
 for all $t \geq 0$, which is a Breslow like estimator~\citep{breslow1972contribution} adapted to our model. 
 
 Finally, for the update of $\phi^{(w)}$ and regarding Table~\ref{table:glm}, we focus on the Gaussian case being particularly useful in practice. It is obtained in closed-form by
 \begin{align}
   \label{eq:update_phi}
-  \phi_l^{(w+1)} = \big(\sum_{i=1}^n n_i^l \big)^{-1} &\sum_{i=1}^n \sum_{k=0}^{K-1} \hat \pi_{ik}^{\theta^{(w)}} \Big[ \big(y_i^l - U_{il} {\beta_k^l}^{(w+1)}\big)^\top \Big(y_i^l - U_{il} {\beta_k^l}^{(w+1)} \nonumber \\
-  & - 2V_{il} \hat \E_{\theta^{(w)}}[ b_i^l | t_i, \delta_i, y_i]\Big) + \Tr\big(V_{il}^\top V_{il}\hat \E_{\theta^{(w)}}[ b_i^l {b_i^l}^\top | t_i, \delta_i, y_i]\big) \Big].
+  \phi_l^{(w+1)} = \big(\sum_{i=1}^n n_i^l \big)^{-1} &\sum_{i=1}^n \sum_{k=0}^{K-1} \pi_{ik}^{\theta^{(w)}} \Big[ \big(y_i^l - U_{il} {\beta_k^l}^{(w+1)}\big)^\top \Big(y_i^l - U_{il} {\beta_k^l}^{(w+1)} \nonumber \\
+  & - 2V_{il} \E_{\theta^{(w)}}[ b_i^l | t_i, \delta_i, y_i]\Big) + \Tr\big(V_{il}^\top V_{il} \E_{\theta^{(w)}}[ b_i^l {b_i^l}^\top | t_i, \delta_i, y_i]\big) \Big].
 \end{align}
 Appendix~\ref{sec:prox-QNEM class} gives some details about the way we implement the equations and their computation in practice.
 
@@ -627,7 +625,7 @@ Our algorithm gives a local minimum, and it is clever to choose an initial value
 For all $k = 0, \ldots, K-1$, we first choose $\xi_k^{(0)} = \mathbf{0}_d$ and ${\gamma_k}^{(0)} = \mathbf{0}_{L\cA}$. Then, we initialize $\lambda_0^{(0)}$ like if there is no latent classes ($\gamma_{0}^{(0)} = \cdots = \gamma_{K-1}^{(0)}$) with a standard Cox proportional hazards regression with time-independent features using the \texttt{Python} library \texttt{tick}. Finally, the longitudinal submodels parameters $\beta_k^{(0)}$, $D^{(0)}$ and $\phi^{(0)}$ are initialized -- again like if there is no latent classes ($\beta_0^{(0)} = \cdots = \beta_{K-1}^{(0)}$) -- using a multivariate linear mixed model with an explicit EM algorithm (details on the algorithm are given in Appendix~\ref{sec:MLMM}, and details on the implementation in Appendix~\ref{sec:MLMM class}), being itself initialized with univariates fits using the \texttt{Python} package \texttt{statsmodels}.
 
 \paragraph*{The prox-QNEM algorithm.}
-Algorithm~\ref{alg:prox-QNEM} describes the main steps of the resulting QNEM algorithm to solve the optimization problem~\eqref{eq:optim-pb}.
+Algorithm~\ref{alg:prox-QNEM} describes the main steps of the resulting prox-QNEM algorithm to solve the optimization problem~\eqref{eq:optim-pb}. 
 
 % \vspace{.5cm}
 
@@ -635,22 +633,16 @@ Algorithm~\ref{alg:prox-QNEM} describes the main steps of the resulting QNEM alg
 \DontPrintSemicolon
 \caption{prox-QNEM algorithm for the lights model inference}
 \label{alg:prox-QNEM}
-\KwInput{Training data $\cD_n$; initialize $N=50L$; tuning hyper-parameters $(\zeta_{1,k}, \zeta_{2,k})_{k=0,\ldots,K-1}$}
+\KwInput{Training data $\cD_n$; tuning hyper-parameters $(\zeta_{1,k}, \zeta_{2,k})_{k=0,\ldots,K-1}$}
 \KwOutput{Last parameters $\hat \theta \in \R^\vartheta$}
 \tcc{Initialization}
 Compute the starting parameters $\theta^{(0)} \in \R^\vartheta$ \\
 \For{$w = 1,\ldots,$ until convergence}    
 { 
   \tcc{E-step}
-  A RE-ECRIRE
-  Compute $\hat \Lambda_{ik,\tilde g}^{\theta^{(w)}}$ using~\eqref{eq:Lambda_ik-b_i} for the required functions $\tilde g$\\
-  Compute $\hat \pi_{ik}^{\theta^{(w)}}$ using~\eqref{eq:hat_pi_ik-def}\\
-  \If{Condition}
-  {
-      $N \leftarrow N + $\\
-      $tol \leftarrow tol - $
-  }
-  \tcc{Quasi-Newton M-step}
+  Compute $\Lambda_{ik,\tilde g}^{\theta^{(w)}}$ using~\eqref{eq:Lambda_ik-b_i} for $\tilde g_1$ and $\tilde g_2$\\
+  Compute $\pi_{ik}^{\theta^{(w)}}$ using~\eqref{eq:hat_pi_ik-def}\\
+  \tcc{Proximal Quasi-Newton M-step}
   Update $D^{(w+1)}$ using~\eqref{eq:update_D}\\
   Update $(\xi_k^{(w+1)})_{k=0,\ldots,K-1}$ by solving~\eqref{eq:sub-problem-xi_k} \\
   Update $(\beta_k^{(w+1)})_{k=0,\ldots,K-1}$ by solving~\eqref{eq:update_beta} \\
@@ -660,11 +652,8 @@ Compute the starting parameters $\theta^{(0)} \in \R^\vartheta$ \\
 }
 \textbf{Return:} {$\hat \theta$}
 \end{algorithm}
-Let us define the relative difference at step $(w+1)$ as
-\[\Delta_{\text{rel}}^{(w+1)} = \max_{j=1,\ldots,\vartheta} \Big\{\dfrac{|\theta^{(w+1)}_j - \theta^{(w)}_j|}{|\theta^{(w)}_j| + \epsilon_1 } \Big\}.\]
-Then in practice, the convergence for Algorithm~\ref{alg:prox-QNEM} is declared when the condition
-\[\Delta_{\text{rel}}^{(w+1)} < \epsilon_2\]
-is satisfied for 3 consecutive iterations.
+
+Then in practice, the convergence for Algorithm~\ref{alg:prox-QNEM} is declared when the relative objective $\big(\ell_n^\text{pen}(\theta^{(w+1)}) - \ell_n^\text{pen}(\hat\theta^{(w)}) \big) / \ell_n^\text{pen}(\hat\theta^{(w)})$ goes below a chosen threshold.
 
 \subsection{The case $K=2$}
 \label{sec:K=2}
@@ -675,8 +664,8 @@ In this context, which is the one we consider in practice in Sections~\ref{sec:s
 
 \paragraph{Cross-validation procedure.}
 
-The hyper-parameters $(\zeta_1, \zeta_2)^\top \in \R_+^2$ are then tuned during a 10-fold randomized search cross-validation procedure~\citep{bergstra2012random} using predictive marker defined in Section~\ref{sec:evaluation strategy} and the C-index score defined in Section~\ref{sec:Metrics}.
-Random search is indeed more efficient in terms of computing times than classical grid search for hyper-parameters optimization and finds better models by effectively searching in a larger configuration space, which is appropriate to our high-dimensional problem. Moreover, the search interval for hyper-parameter $\zeta_1$ is automatically computed in a data driven way described in Appendix~\ref{sec:auto-grid-cv}, while the search intervals for $\zeta_2$ is determined empirically.
+The hyper-parameters $(\zeta_1, \zeta_2)^\top \in \R_+^2$ are then tuned using a Bayesian optimization method~\citep{snoek2012practical}, with predictive marker defined in Section~\ref{sec:evaluation strategy} and the C-index score defined in Section~\ref{sec:Metrics}. In practice, we use the snoek2012practical\texttt{Python} package \texttt{Hyperopt}~\citep{bergstra2013hyperopt} and the Tree-structured Parzen Estimator~\citep{bergstra2011algorithms}, which is a sequential model-based optimization (SMBO) approach. SMBO methods sequentially construct models to approximate the performance of hyperparameters based on historical measurements, and then subsequently choose new hyperparameters to test based on this model.
+Moreover, the search interval for hyper-parameter $\zeta_1$ is automatically computed in a data driven way described in Appendix~\ref{sec:auto-grid-cv}, while the search intervals for $\zeta_2$ is determined empirically.
 % TODO: Figure de visualisation de la CV de (\zeta_1, \zeta_2) en 3D
 
 
@@ -689,16 +678,24 @@ In this section, we first present the proposed evaluation strategy to assess rea
 \label{sec:evaluation strategy}
 
 When validating predictions or comparing performances of competing models in a survival context, one can be interested either in the discriminative power of the predictive rule and use concordance measures such as the C-index~\citep{heagerty2005survival} (defined in Section~\ref{sec:Metrics}), or in the predictive accuracy of the rule~\citep{schemper2000predictive}.
-Developments in the field of joint modeling have primarily focused on modeling and estimation, and most studies do not consider goodness-of-fit nor generalization power in a prognostic prediction perspective~\citep{hickey2016joint}. However, with the prospect of using prognostic prediction in real-time on a daily basis, practitioners will naturally require predictive prognostic tools to evaluate models fit and compare models in terms of discriminative power. So we choose to put ourselves in this paradigm.
+Developments in the field of joint modeling have primarily focused on modeling and estimation, and most studies do not consider goodness-of-fit nor generalization power in a prognostic prediction perspective~\citep{hickey2016joint}. However, with the prospect of using prognostic prediction in real-time on a daily basis, practitioners will naturally require predictive prognostic tools to evaluate models fit and compare models in terms of discriminative power. So we choose to put ourselves in what we call a ``real-time prediction paradigm''.
+
+\paragraph{Real-time prediction paradigm.}
+
+Once the learning phase is achieved for the model on a training set (so that one obtains $\hat\theta$ from~\eqref{eq:optim-pb} using our prox-QNEM algorithm introduced in Section~\ref{sec:prox-QNEM}), we want to assess real-time risk prediction performances on a test set.
+
+Denoting $t^{max}_i$ the time for subject $i$ when one wants to perform the risk prediction -- so in practice, the time up to which one has data measurements for $Y_i$, say the ``present'' time for prediction --
 
 \paragraph{Predictive marker.}
 
 The question now is to choose a discriminative marker rule for risk prediction to be used in the cross-validation procedure for selecting the best regularization hyper-parameters, and of course to be used as final risk prediction after hyper-parameters fine-tuning.
-The lights model has the ability to produce prognostic predictions that can be dynamically updated according to the observed trajectory of the features. 
-Once the model is trained (so that one obtains $\hat\theta$ from~\eqref{eq:optim-pb} using our prox-QNEM algorithm introduced in Section~\ref{sec:prox-QNEM}), posterior risk classification for subject $i$ and latent class $k$ can be made through $\hat \pi_{ik}^{\hat\theta}$ (see~\eqref{eq:hat_pi_ik-def}). Similar posterior probabilities have been considered for goodness-of-fit evaluation in other JLCMs models, see~\citet{proust2014joint} for instance.
 
-But in the real-time prediction paradigm, it makes no sense from a practical point of view to use this marker rule as is for risk prediction, since the latter requires to know the survival labels $(t_i, \delta_i)$, being intrinsically unknow in a context where we want to perform real-time risk prediction. 
-Denoting $t^{max}_i$ the time for subject $i$ when one wants to perform the risk prediction -- so in practice, the time up to which one has data measurements for $Y_i$, say the ``present'' time for prediction -- a natural and appropriate marker rule of the lights model for subject $i$ being in latent class $k$ would rather be 
+
+posterior risk classification for subject $i$ and latent class $k$ can be made through $\pi_{ik}^{\hat\theta}$ (see~\eqref{eq:hat_pi_ik-def}). Similar posterior probabilities have been considered for goodness-of-fit evaluation in other JLCMs models, see~\citet{proust2014joint} for instance.
+
+But in the real-time prediction paradigm, it makes no sense from a practical point of view to use this marker rule as is for risk prediction, since the latter requires to know the survival labels $(t_i, \delta_i)$, being intrinsically unknow 
+
+ a natural and appropriate marker rule of the lights model for subject $i$ being in latent class $k$ would rather be 
 \begin{equation}
   \label{eq:marker-def}
   \hat \cR_{ik} = \dfrac{\pi_{\hat \xi_k}(x_i) \hat f(t^{max}_i, y_i | G_i=k ; \hat \theta)}{\sum_{k=0}^{K-1} \pi_{\hat \xi_k}(x_i) \hat f(t^{max}_i, y_i | G_i=k ; \hat \theta)},
