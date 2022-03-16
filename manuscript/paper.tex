@@ -491,7 +491,7 @@ and then tractable analytically. Whereas in classical SREMs, some form of approx
 
 Now in the case $g = g_k$, one has
 \begin{equation}
-\label{eq:hat_pi_ik-def}
+\label{eq:pi_ik-def}
   \E_{\theta^{(w)}}[g_k(Gi) | t_i, \delta_i, y_i] = \pi_{ik}^{\theta^{(w)}} = \dfrac{\pi_{\xi_k^{(w)}}(x_i) \Lambda_{ik,1}^{\theta^{(w)}}}{\sum_{k=0}^{K-1} \pi_{\xi_k^{(w)}}(x_i) \Lambda_{ik,1}^{\theta^{(w)}}}.
 \end{equation}
 
@@ -510,7 +510,7 @@ based on the quantities involved in $\cQ_n(\theta, \theta^{(w)})$ that depend on
   \label{eq:minimization-xi_k}
   \xi_k^{(w+1)} \in \argmin_{\xi_k \in \R^p} P^{(w)}_{n,k}(\xi_k) + \zeta_{1,k} \norm{\xi_k}_{\text{en}, \eta}.
 \end{equation}
-It looks like the logistic regression objective, where labels are not fixed but softly encoded by the expectation step (computation of $\pi_{ik}^{\theta^{(w)}}$ in~\eqref{eq:hat_pi_ik-def}). We then choose to solve~\eqref{eq:minimization-xi_k} using the L-BFGS-B algorithm~\citep{zhu1997algorithm} which belongs to the class of quasi-Newton optimization routines and solves the given minimization problem by computing approximations
+It looks like the logistic regression objective, where labels are not fixed but softly encoded by the expectation step (computation of $\pi_{ik}^{\theta^{(w)}}$ in~\eqref{eq:pi_ik-def}). We then choose to solve~\eqref{eq:minimization-xi_k} using the L-BFGS-B algorithm~\citep{zhu1997algorithm} which belongs to the class of quasi-Newton optimization routines and solves the given minimization problem by computing approximations
 of the inverse Hessian matrix of the objective function. It can deal with differentiable convex objectives with box constraints.
 In order to use it with $\ell_1$ penalization, which is not differentiable, we use the trick borrowed from \citet{andrew2007scalable}: for $a \in \R$, write $|a| = a^+ + a^-$, where $a^+$ and $a^-$ are respectively the positive and negative part of $a$, and add the constraints $a^+ \geq 0$ and $a^- \geq 0$.
 Namely, we rewrite the minimization problem~\eqref{eq:minimization-xi_k} as the following differentiable problem with box constraints
@@ -641,7 +641,7 @@ Compute the starting parameters $\theta^{(0)} \in \R^\vartheta$ \\
 { 
   \tcc{E-step}
   Compute $\Lambda_{ik,\tilde g}^{\theta^{(w)}}$ using~\eqref{eq:Lambda_ik-b_i} for $\tilde g_1$ and $\tilde g_2$\\
-  Compute $\pi_{ik}^{\theta^{(w)}}$ using~\eqref{eq:hat_pi_ik-def}\\
+  Compute $\pi_{ik}^{\theta^{(w)}}$ using~\eqref{eq:pi_ik-def}\\
   \tcc{Proximal Quasi-Newton M-step}
   Update $D^{(w+1)}$ using~\eqref{eq:update_D}\\
   Update $(\xi_k^{(w+1)})_{k=0,\ldots,K-1}$ by solving~\eqref{eq:sub-problem-xi_k} \\
@@ -664,7 +664,7 @@ In this context, which is the one we consider in practice in Sections~\ref{sec:s
 
 \paragraph{Cross-validation procedure.}
 
-The hyper-parameters $(\zeta_1, \zeta_2)^\top \in \R_+^2$ are then tuned using a Bayesian optimization method~\citep{snoek2012practical}, with predictive marker defined in Section~\ref{sec:evaluation strategy} and the C-index score defined in Section~\ref{sec:Metrics}. In practice, we use the snoek2012practical\texttt{Python} package \texttt{Hyperopt}~\citep{bergstra2013hyperopt} and the Tree-structured Parzen Estimator~\citep{bergstra2011algorithms}, which is a sequential model-based optimization (SMBO) approach. SMBO methods sequentially construct models to approximate the performance of hyperparameters based on historical measurements, and then subsequently choose new hyperparameters to test based on this model.
+The hyper-parameters $(\zeta_1, \zeta_2)^\top \in \R_+^2$ are then tuned using a Bayesian optimization method~\citep{snoek2012practical}, with predictive marker defined in Section~\ref{sec:evaluation strategy} and the C-index score defined in Section~\ref{sec:Metrics}. In practice, we use the \texttt{Python} package \texttt{Hyperopt}~\citep{bergstra2013hyperopt} and the Tree-structured Parzen Estimator~\citep{bergstra2011algorithms}, which is a sequential model-based optimization (SMBO) approach. SMBO methods sequentially construct models to approximate the performance of hyperparameters based on historical measurements, and then subsequently choose new hyperparameters to test based on this model.
 Moreover, the search interval for hyper-parameter $\zeta_1$ is automatically computed in a data driven way described in Appendix~\ref{sec:auto-grid-cv}, while the search intervals for $\zeta_2$ is determined empirically.
 % TODO: Figure de visualisation de la CV de (\zeta_1, \zeta_2) en 3D
 
@@ -691,7 +691,7 @@ Denoting $t^{max}_i$ the time for subject $i$ when one wants to perform the risk
 The question now is to choose a discriminative marker rule for risk prediction to be used in the cross-validation procedure for selecting the best regularization hyper-parameters, and of course to be used as final risk prediction after hyper-parameters fine-tuning.
 
 
-posterior risk classification for subject $i$ and latent class $k$ can be made through $\pi_{ik}^{\hat\theta}$ (see~\eqref{eq:hat_pi_ik-def}). Similar posterior probabilities have been considered for goodness-of-fit evaluation in other JLCMs models, see~\citet{proust2014joint} for instance.
+posterior risk classification for subject $i$ and latent class $k$ can be made through $\pi_{ik}^{\hat\theta}$ (see~\eqref{eq:pi_ik-def}). Similar posterior probabilities have been considered for goodness-of-fit evaluation in other JLCMs models, see~\citet{proust2014joint} for instance.
 
 But in the real-time prediction paradigm, it makes no sense from a practical point of view to use this marker rule as is for risk prediction, since the latter requires to know the survival labels $(t_i, \delta_i)$, being intrinsically unknow 
 
@@ -706,7 +706,7 @@ with
 dire ici qu'on tronque $y$ à $t^{max}$ et le noter $|t^{max}$ 
 
 where $\hat S$ is obtained with Algorithm~\ref{alg:construct-set-S} using $\hat D$ (that is $S^{(w_{max})}$ for the last iteration $w_{max}$), and the density $f$ in the rigth hand side of the previous equation being defined in~\eqref{eq:ind-hyp}.
-Note that marker~\eqref{eq:marker-def} is in fact obtained from the definition of $\hat \pi_{ik}^{\hat\theta}$ in~\eqref{eq:hat_pi_ik-def} taking $(t_i, \delta_i) = (t^{max}_i, 0)$, and turns out to be an estimate of the following posterior probability 
+Note that marker~\eqref{eq:marker-def} is in fact obtained from the definition of $\hat \pi_{ik}^{\hat\theta}$ in~\eqref{eq:pi_ik-def} taking $(t_i, \delta_i) = (t^{max}_i, 0)$, and turns out to be an estimate of the following posterior probability 
 \[\P_\theta[G_i=k | T^\star_i > t^{max}_i, y_i].\]
 
 \subsection{The C-index metric}
@@ -728,7 +728,7 @@ In our case,  $T^\star$ is subject to right censoring, so one would typically co
 with $\tau$ corresponding to the fixed and prespecified follow-up period duration \citep{heagerty2005survival}. A Kaplan-Meier estimator for the censoring distribution leads to a nonparametric and consistent estimator of $\cC_\tau$ \citep{uno2011c}, already implemented in the \texttt{Python} package \texttt{lifelines}.
 Hence in the following, we consider the C-index metric to assess performances.
 
-Note that other metrics have been proposed to compare individual risk predictions. In~\citet{blanche2015quantifying} for instance, authors use dynamic prediction accuracy curves (of AUC or Brier score) with the idea of moving what is called the ``landmark time'', that is the time at which predictions are made and on which the amount of available information depends, corresponding to our $t^{max}$. But comparing curves in an automatic way (in a cross-validation process for instance) is never easy, plus the comparisons proposed in the aforementioned paper require \textit{a priori} choices of time window thresholds (in particular to get back to binary predictions, being always questionable in survival analysis~\citep{bussy2019comparison}), which is not the case of the C-index metric.
+Note that other metrics have been proposed to compare individual risk predictions. In~\citet{blanche2015quantifying} for instance, authors use dynamic prediction accuracy curves (of AUC or Brier score) with the idea of moving what is called the ``landmark time'', that is the time at which predictions are made and on which the amount of available information depends, corresponding to our $t^{max}$. But comparing curves in an automatic way (in a cross-validation process for instance) is never easy, plus the comparisons proposed in the aforementioned paper require \textit{a priori} choices of time window thresholds (in particular to get back to binary predictions, being always questionable in survival analysis~-v\citep{bussy2019comparison}), which is not the case of the C-index metric.
 Nevertheless, the idea of chosing $t^{max}$ when it comes to simulate data for models performances comparisons will be discussed in Section~\ref{sec:simulation study}, and it is an interesting notion to consider since it can be sensed that the closer $t^{max}$ gets to $T^\star$, the easier it will be for a model to make good predictions.
 
 \subsection{Competing models}
