@@ -1,0 +1,106 @@
+\documentclass[11pt]{article}
+
+\usepackage{xcolor}
+\definecolor{darkpastelgreen}{rgb}{0.01, 0.75, 0.24}
+
+\usepackage[colorlinks=true,
+            linkcolor=red,
+            urlcolor=darkpastelgreen,
+            citecolor=blue,
+            breaklinks=true]{hyperref}
+\usepackage{breakurl} 
+\usepackage[a4paper, left=3cm, right=3cm, top=3cm, bottom=3cm]{geometry}
+\RequirePackage{amsmath,amsfonts, amssymb,amsthm}
+
+\hypersetup{pdfauthor = {Simon Bussy}}
+
+\usepackage{authblk}
+\title{\vspace{-.5cm} Lights: a generalized joint model for high-dimensional multivariate longitudinal data and censored durations \vspace{.5cm}}
+\author[1,2]{Simon Bussy\thanks{Corresponding author: \href{mailto:simon.bussy@gmail.com}{\texttt{simon.bussy@gmail.com}}}}
+\author[2,3]{Van Tuan Nguyen}
+\author[4]{Antoine Barbieri}
+\author[1]{Sarah Zohar}
+\author[1,5]{Anne-Sophie Jannot}
+\affil[1]{INSERM, UMRS 1138, Centre de Recherche des Cordeliers, Paris, France}
+\affil[2]{LOPF, Califrais' Machine Learning Lab, Paris, France}
+\affil[3]{LPSM, UMR 8001, CNRS, Sorbonne University, Paris, France}
+\affil[4]{INSERM, UMR 1219, Bordeaux Population Health Research Center, Univ. Bordeaux, France}
+\affil[5]{Biomedical Informatics and Public Health Department, EGPH, APHP, Paris, France}
+\setcounter{Maxaffil}{0}
+\renewcommand\Affilfont{\itshape\small}
+
+\usepackage{mathtools}
+\usepackage{mathrsfs}
+\usepackage{mathrsfs} 
+\usepackage{natbib}
+\usepackage{setspace}
+\usepackage{dsfont}
+\usepackage{caption}
+\usepackage{booktabs}
+\usepackage{subfigure}
+\usepackage{bm}
+\usepackage{tikz}
+\usetikzlibrary{fit,shapes,shadows,arrows,positioning,graphs}
+\usepackage{algpseudocode}
+\usepackage[linesnumbered,ruled,vlined]{algorithm2e}
+\newcommand\mycommfont[1]{\footnotesize\ttfamily\textcolor{orange}{#1}}
+\SetCommentSty{mycommfont}
+\SetKwInput{KwInput}{Input} 
+\SetKwInput{KwOutput}{Output}
+
+\newtheorem{assumption}{Assumption}{\bf}{\rm} 
+\newtheorem{lemma}{Lemma}
+
+\DeclareMathOperator{\argmin}{argmin}
+\DeclareMathOperator{\Tr}{Tr}
+
+\newcommand{\dd}{\mathrm{d}}
+\newcommand{\ind}[1]{\mathds{1}_{#1}}
+\newcommand{\norm}[1]{\|#1\|}
+\newcommand{\cY}{\mathcal Y}
+\newcommand{\cD}{\mathcal D}
+\newcommand{\cC}{\mathcal C}
+\newcommand{\cG}{\mathcal G}
+\newcommand{\cN}{\mathcal N}
+\newcommand{\cA}{\mathcal A}
+\newcommand{\cQ}{\mathcal Q}
+\newcommand{\cU}{\mathcal U}
+\newcommand{\cR}{\mathcal R}
+\newcommand{\cH}{\mathcal H}
+\newcommand{\cB}{\mathcal B}
+\newcommand{\cS}{\mathcal S}
+\newcommand{\cI}{\mathcal I}
+\newcommand{\R}{\mathds R}
+\newcommand{\N}{\mathds N}
+\newcommand{\E}{\mathds E}
+\renewcommand{\P}{\mathds P}
+\newcommand{\bSigma}{\textbf{$\Sigma$}}
+
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\vspace{-.5cm}
+
+\begin{abstract}
+
+This paper introduces a prognostic method called \textit{lights} to deal with the problem of joint modeling of longitudinal data and censored durations, where a large number of both longitudinal and time-independent features are available. 
+In the literature, standard joint models are either of type shared random-effect or joint latent class ones ; where the association structure between the longitudinal and the time-to-event submodels takes respectively the form of either shared association features learned from the longitudinal processes and included as potential risk factor in the survival model, or latent classes modeling population heterogeneity.
+We pick modeling ideas from both worlds and use appropriate penalties during inference for being able to learn from a high-dimensional context.
+The statistical performance of the method is examined on an extensive Monte Carlo simulation study, and finally illustrated on a publicly available dataset.
+Our proposed method significantly outperforms the state-of-the-art joint models regarding risk prediction in terms of C-index in a so-called real-time prediction paradigm, with a computing time orders of magnitude faster. In addition, it provides powerful interpretability by automatically pinpointing significant features being relevant from a practical perspective. Thus, we propose a powerfull tool with the ability of automatically determining significant prognostic longitudinal features, which is of increasing importance in many areas: for instance personalized medicine, or churn prediction in a customer profile and activity monitoring setting, to name but a few.\\
+
+\noindent
+\emph{Keywords.} High-dimensional estimation; Joint modeling; Multivariate longitudinal data; Survival analysis
+\end{abstract}
+
+\section{section 1}
+
+
+
+
+\bibliography{biblio}
+\bibliographystyle{plainnat}{}
+\end{document}
