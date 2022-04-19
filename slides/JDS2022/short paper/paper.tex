@@ -83,7 +83,6 @@
 \maketitle
 
 \vspace{-.5cm}
-
 \begin{abstract}
 
 This paper introduces a prognostic method called \textit{lights} to deal with the problem of joint modeling of longitudinal data and censored durations, where a large number of both longitudinal and time-independent features are available. 
@@ -91,18 +90,15 @@ In the literature, standard joint models are either of type shared random-effect
 We pick modeling ideas from both worlds and use appropriate penalties during inference for being able to learn from a high-dimensional context.
 The statistical performance of the method is examined on an extensive Monte Carlo simulation study, and finally illustrated on a publicly available dataset.
 Our proposed method significantly outperforms the state-of-the-art joint models regarding risk prediction in terms of C-index in a so-called real-time prediction paradigm, with a computing time orders of magnitude faster. In addition, it provides powerful interpretability by automatically pinpointing significant features being relevant from a practical perspective. Thus, we propose a powerfull tool with the ability of automatically determining significant prognostic longitudinal features, which is of increasing importance in many areas: for instance personalized medicine, or churn prediction in a customer profile and activity monitoring setting, to name but a few.\\
-
 \noindent
 \emph{Keywords.} High-dimensional estimation; Joint modeling; Multivariate longitudinal data; Survival analysis
 \end{abstract}
 
 \section{Introduction}
 
-
 \paragraph{General framework.}
 
-The setting of this paper is such that we want to incorporate high-dimensional time-dependent (longitudinal) features measured with error in a survival model. Let us consider the usual survival analysis framework.
-Following~\citet{andersen2012statistical}, let non-negative random variables $T^\star$ and $C$ stand for the times of the event of interest and censoring times respectively.
+With classical setting of survival analysis where we denote $T^\star$ and $C$ are the times of the event of interest and censoring times respectively.
 We then denote $T$ the right-censored time and $\Delta$ the censoring indicator, defined as 
 \begin{equation*}
 T = T^\star \wedge C \quad \text{and} \quad \Delta = \ind{\{T^\star \leq C\}}
@@ -268,8 +264,6 @@ Then, the log-likelihood of joint model in type of JLCMs based on these 2 above 
 \section{Inference}
 \label{sec:inference}
 
-In this section, we describe the procedure for estimating the parameters of the lights model. Let us first present the considered penalized objective, and then focus on the algorithm proposed for inference.
-
 \subsection{Penalized objective}
 \label{sec:penalized-obj}
 
@@ -322,32 +316,27 @@ First, the update of $D^{(w)}$ is naturally given in closed-form by
   \label{eq:update_D}
   D^{(w+1)} = n^{-1} \sum_{i=1}^n \E_{\theta^{(w)}}[ b_i b_i^\top | t_i, \delta_i, y_i].
 \end{equation}
-Then, let us focus on the update of $\xi_k^{(w)}$ for $k=0, \ldots, K-1$. We denote
-\[ P^{(w)}_{n, k}(\xi_k) = -n^{-1} \sum_{i=1}^n \sum_{k=0}^{K-1} \pi_{ik}^{\theta^{(w)}} \log \pi_{\xi_k}(x_i) \]
-based on the quantities involved in $\cQ_n(\theta, \theta^{(w)})$ that depend on $\xi_k$. The update for $\xi_k^{(w)}$ therefore requires to solve the following convex minimization problem
+For the update of $\xi_k^{(w)}$, we choose the L-BFGS-B algorithm to solve the following convex minimization problem
 \begin{equation}
   \label{eq:minimization-xi_k}
   \xi_k^{(w+1)} \in \argmin_{\xi_k \in \R^p} P^{(w)}_{n,k}(\xi_k) + \zeta_{1,k} \norm{\xi_k}_{\text{en}, \eta}.
 \end{equation}
-We then choose to solve using the L-BFGS-B algorithm  which belongs to the class of quasi-Newton optimization routines.
+where
+\[ P^{(w)}_{n, k}(\xi_k) = -n^{-1} \sum_{i=1}^n \sum_{k=0}^{K-1} \pi_{ik}^{\theta^{(w)}} \log \pi_{\xi_k}(x_i) .\]
 The update of $\beta_k^{(w)}$ for $k=0, \ldots, K-1$ is obtained in closed-form given by
 \begin{equation}
   \label{eq:update_beta}
   {\beta_k}^{(w+1)}= \dfrac{\sum_{i=1}^n \pi_{ik}^{\theta^{(w)}} \Big[U_i^\top I_{n_i} (y_i - V_i \E_{\theta^{(w)}}[ b_i | t_i, \delta_i, y_i])\Big]}{\sum_{i=1}^n \pi_{ik}^{\theta^{(w)}} U_i^\top I_{n_i} U_i}.
 \end{equation}
-Now, we use proximal gradient (ISTA) for the $\gamma_k^{(w+1)}$ update, based on Lemma 1 that states $\text{prox}_{\text{sg} l_1,\tilde \eta, \zeta} = \text{prox}_{\zeta \tilde \eta \sum_{l=1}^L \norm{\cdot}_{2,l}} \circ \text{prox}_{\zeta (1 - \tilde \eta) \norm{\cdot}_1}$. 
-The closed-form update of $\lambda_0^{(w)}$ is given by
+Now, we use proximal gradient (ISTA) for the $\gamma_k^{(w+1)}$ update, based on Lemma 1 that states $\text{prox}_{\text{sg} l_1,\tilde \eta, \zeta} = \text{prox}_{\zeta \tilde \eta \sum_{l=1}^L \norm{\cdot}_{2,l}} \circ \text{prox}_{\zeta (1 - \tilde \eta) \norm{\cdot}_1}$.
+
+\noindent The closed-form update of $\lambda_0^{(w)}$ is given by
 \begin{equation}
   \label{eq:update_lambda_0}
   \lambda_0^{(w+1)}(t)= \dfrac{\sum_{i=1}^n \delta_i \ind{\{t=t_i\}}}{\sum_{i=1}^n \sum_{k=0}^{K-1} \pi_{ik}^{\theta^{(w)}} \exp \big\{{\gamma_k^{(w+1)}}^\top \Psi_i(t)\big\} \ind{\{t_i \geq t\}} },
 \end{equation}
 for all $t \geq 0$, which is a Breslow like estimator~\citep{breslow1972contribution} adapted to our model. 
-Finally, the update of $\phi^{(w)}$ is obtained in closed-form by
-\begin{align}
-  \label{eq:update_phi}
-  \phi_l^{(w+1)} = \big(\sum_{i=1}^n n_i^l \big)^{-1} &\sum_{i=1}^n \sum_{k=0}^{K-1} \pi_{ik}^{\theta^{(w)}} \Big[ \big(y_i^l - U_{il} {\beta_k^l}^{(w+1)}\big)^\top \Big(y_i^l - U_{il} {\beta_k^l}^{(w+1)} \nonumber \\
-  & - 2V_{il} \E_{\theta^{(w)}}[ b_i^l | t_i, \delta_i, y_i]\Big) + \Tr\big(V_{il}^\top V_{il} \E_{\theta^{(w)}}[ b_i^l {b_i^l}^\top | t_i, \delta_i, y_i]\big) \Big].
-\end{align}
+
 
 \section{Performance evaluation}
 
@@ -356,23 +345,30 @@ Finally, the update of $\phi^{(w)}$ is obtained in closed-form by
 Once the learning phase is achieved for the model on a training set (so that  $\hat\theta$ is obtained, we want to assess real-time risk prediction performances on a test set. Denoting $t^{max}_i$ the time for subject $i$ when one wants to perform the risk prediction -- so in practice, the time up to which one has data measurements for $Y_i$, say the ``present'' time for prediction.
 
 \paragraph{Predictive marker.}
-
 Posterior risk classification for subject $i$ and latent class $k$ is chosen to be marker rule of the lights 
 \begin{equation}
   \label{eq:marker-def}
-  \hat \cR_{ik} = \dfrac{\pi_{\hat \xi_k}(x_i) \hat f(t^{max}_i, y_i | G_i=k ; \hat \theta)}{\sum_{k=0}^{K-1} \pi_{\hat \xi_k}(x_i) \hat f(t^{max}_i, y_i | G_i=k ; \hat \theta)},
+  \P_{\hat \theta}[G_i=k | T_i > t^{max}_i, \tilde y_i] = \dfrac{\pi_{\hat \xi_k}(x_i) f_{\hat \theta}(t^{max}_i, \delta_i=0, \tilde y_i | G_i=k)}{\sum_{k=0}^{K-1} \pi_{\hat \xi_k}(x_i) f_{\hat \theta}(t^{max}_i, \delta_i=0, \tilde y_i | G_i=k)}
 \end{equation}
-with 
-\[ \hat f(t^{max}_i, y_i | G_i=k ; \hat \theta) = \dfrac{1}{2N} \sum_{\breve{b} \in \hat S} f(t^{max}_i, 0, y_i | \breve{b}, G_i = k ; \hat \theta), \]
 
 \subsection{The C-index metric}
 \label{sec:Metrics}
-
 We use concordance index (C-index) to evaluate risk prediction performances
 \begin{equation*}
   \cC_\tau =\P[\hat \cR_i > \hat \cR_j | T_i < T_j , T_i < \tau],
 \end{equation*}
 with $\tau$ corresponding to the fixed and prespecified follow-up period duration \citep{heagerty2005survival}.
+
+\subsection{Simulation}
+The below figures are obtained on simulated data with 2 latent groups. They are  learning curve over time of log-likelihood function, estimation of parameters compare to the true ones.
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=.9\textwidth]{./figures/obj_vcg}
+\includegraphics[width=.45\textwidth]{./figures/xi_estimation}
+\includegraphics[width=.4\textwidth]{./figures/baseline_estimation}
+\includegraphics[width=.9\textwidth]{./figures/beta_estimation}
+\includegraphics[width=.9\textwidth]{./figures/gamma_estimation}
+\end{figure}
 
 \bibliography{biblio}
 \bibliographystyle{plainnat}{}
