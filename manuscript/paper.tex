@@ -298,7 +298,10 @@ Consider an independent and identically distributed (i.i.d.) cohort of $n$ subje
   \cD_n = \big\{ (x_1, y_1^1, \ldots, y_1^L, t_1, \delta_1), \ldots, (x_n, y_n^1, \ldots, y_n^L, t_n, \delta_n) \big\}
 \end{equation}
 where for each subject $i=1, \ldots, n$, process $Y_i^l$ is measured $n_i^l$ times at $t_{i1}^l, \ldots, t_{in_i^l}^l$ (which can differ between subjects and outcomes) with $t_{ij}^l \leq t_{ij+1}^l$ for all $j=1, \ldots, n_i^l-1$ and such that
-\[ y_i^l=(y_{i1}^l, \ldots, y_{in_i^l}^l)^\top \in \R^{n_i^l} \quad \text{ with } \quad y_{ij}^l=Y_i^l(t_{ij}^l) \]
+\begin{equation}
+  \label{eq:def-yil}
+  y_i^l=(y_{i1}^l, \ldots, y_{in_i^l}^l)^\top \in \R^{n_i^l} \quad \text{ with } \quad y_{ij}^l=Y_i^l(t_{ij}^l) 
+\end{equation}
 for all $l=1, \ldots, L$. 
 For the $i$-th subject, let us denote 
 \[
@@ -756,28 +759,30 @@ Note that other metrics have been proposed to compare individual risk prediction
 Finally, the question of the choice of $t^{max}_i$ in a study to assess a model performances, or to compare models, is discussed in the following paragraph. It can be sensed that the closer $t^{max}_i$ gets to $T^\star_i$, the easier it will be for a model to make good predictions.
 
 \paragraph{Procedure.}
-Let us describe here the procedure we follow to evaluate model performances on simulated data in Section~\ref{sec:simulation study} and on real data in Section~\ref{sec:application}.
+Let us describe now in Algorithm~\ref{alg:evaluation} the procedure we follow to evaluate model performances on simulated data in Section~\ref{sec:simulation study} and on real data in Section~\ref{sec:application}. Here we do not give details on the cross-validation step, but it follows the same idea : for each fold, we sample the $t_i^{max}$ and truncate $y_i$ for $i$ in the test set of the fold.
 \begin{algorithm}[!htb]
 \DontPrintSemicolon
-\caption{Procedure followed to assess model performances in our real-time prediction paradigm.}
+\caption{Procedure followed to assess performances of a given model in our real-time prediction paradigm.}
 \label{alg:evaluation}
 \KwInput{Dataset $\cD_n$~\eqref{eq:dataset-def} \textbf{only if} \textit{\texttt{simulation = false}} ; a \texttt{model} under study}
+\KwOutput{Confidence intervals on C-index metric as well as on running time.}
 \tcc{We run $\breve{R}=100$ independant experiments}
 $seed_0 = 0$ \\
 \For{$\breve{r} = 1,\ldots,\breve{R}$}
 {
+  $\texttt{start\_time} = \texttt{time}()$ \\
   $seed_{\breve{r}} = seed_{\breve{r}-1} + 1$ \\
   \If{\texttt{simulation = true}}
   {
     {$\cD_n \leftarrow \texttt{simulate}(seed_{\breve{r}})$ \tcc{Sample a new dataset at each round $\breve{r}$}}
   }
   $(\cD_{n_{train}}, \cD_{n_{test}}) \leftarrow \texttt{split\_train\_test}(\cD_n, seed_{\breve{r}})$ \\
-  \tcc{For simplicity, we do not detail the cross-validation procedure here}
-  $\hat \theta \leftarrow$ \texttt{model.fit}$(\cD_{n_{train}})$ \\
+  $\texttt{model.cross\_validate}(\cD_{n_{train}})$ \tcc{Select the best hyper parameters}
+  \texttt{model.fit}$(\cD_{n_{train}})$ \tcc{Learn $\hat \theta$}
   \For{$i = 1,\ldots,n_{test}$}
   {
     $t_i^{max} \sim t_i \times \big(1 - \text{Beta}(2, 5)\big)$ \tcc{See Figure~\ref{fig:timax-pdf}}
-    \tcc{Truncate $y_i$}
+    $y_i \leftarrow \big(Y_i^l(t_{ij}^l) \big)_{\substack{j=1, \ldots, n_i^l-1 \\ l=1, \ldots, L \ \ \ }} \text{ with } t_{ij}^l \leq t_i^{max}$ \tcc{Truncate $y_i$, see~\eqref{eq:def-yil}}
     $\mathcal{X}_i = (x_i, y_i)$ \\
     \If{\normalfont \texttt{model = lights}}
     {
@@ -786,8 +791,11 @@ $seed_0 = 0$ \\
     }
     $\hat \cR_{i,\breve{r}} \leftarrow \texttt{model.predict}(\mathcal{X}_i)$
   }
+  $\texttt{score}_{\breve{r}} \leftarrow \texttt{c\_index}\big((\hat \cR_{i,\breve{r}}, t_i, \delta_i)_{i=1,\ldots,n_{test}} \big)$ \\
+  $\texttt{end\_time} = \texttt{time}()$ \\
+  $\texttt{running\_time}_{\breve{r}} = \texttt{end\_time} - \texttt{start\_time}$ \\
 }
-\textbf{Return:} {$\big[\hat \cR_{i,\breve{r}}\big]_{\substack{i=1,\ldots,n_{test} \\ \breve{r}=1,\ldots,\breve{R} \ \ \ }}\ , \ \big[\texttt{time}_{i,\breve{r}}\big]_{\substack{i=1,\ldots,n_{test} \\ \breve{r}=1,\ldots,\breve{R} \ \ \ }}$}
+\textbf{Return:} {$\big[\texttt{score}_{\breve{r}}\big]_{\breve{r}=1,\ldots,\breve{R}}\ , \ \big[\texttt{running\_time}_{\breve{r}}\big]_{\breve{r}=1,\ldots,\breve{R}}$}
 \end{algorithm}
 
 \begin{figure}[!htb]
