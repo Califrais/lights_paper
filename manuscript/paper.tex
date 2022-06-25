@@ -104,13 +104,13 @@ Similarly, in many clinical studies, it has become increasingly common to record
 
 \paragraph{The high-dimensional longitudinal data context.}
 With the exploding number of daily internet users, or with the development of electronic health records in a medical context, high-dimensional settings are becoming increasingly frequent in various contexts where the number of available features to consider as potential risk factors is tremendous.
-Moreover, with an increased focus on personalised medicine, the need to implement multivariate models that account for a large number of longitudinal outcomes is critical. Despite this, joint models have predominantly focused on univariate data, with attempts to fit multiple univariate joint models separately~\citep{wang2012joint}, which is inefficient~\citep{lin2002maximum}. 
+Moreover, with an increased focus on personalised medicine, the need to implement multivariate models that account for a large number of longitudinal outcomes is critical. Despite this, joint models have predominantly focused on univariate data, with attempts to fit multiple joint models separately each one with univariate longitudinal outcome~\citep{wang2012joint}, which is inefficient~\citep{lin2002maximum}. 
 Despite many multivariate models being presented in full generality, questions arrising from the high-dimensional context -- e.g., computational power, limits in numerical estimation, or sample size -- are never considered in analyses (to the best of our knowledge), and the number of longitudinal outcomes considered in numerical studies are often very low (see~\citet{hickey2016joint} for a complete review). For instance,~\citet{jaffa2014joint} only considers 3 longitudinal outcomes in the simulation study while mentioning a ``high-dimensional multivariate longitudinal data'' context.
 
 
 \paragraph{General framework.}
 
-The setting of this paper is such that we want to incorporate high-dimensional time-dependent (longitudinal) features measured with error in a survival model. Let us consider the usual survival analysis framework.
+The setting of this paper is such that we want to incorporate high-dimensional trajectories, or longitudinal features, measured with error in a survival model. Let us consider the usual survival analysis framework.
 Following~\citet{andersen2012statistical}, let non-negative random variables $T^\star$ and $C$ stand for the times of the event of interest and censoring times respectively. The event of interest could be for instance the time when a client stops using a company's product or service in a churn prediction setting~ ; or survival time, re-hospitalization, relapse or disease progression in a medical context.
 We then denote $T$ the right-censored time and $\Delta$ the censoring indicator, defined as 
 \begin{equation*}
@@ -190,8 +190,7 @@ To account for dependence between the different longitudinal outcome types, we l
   D_{1L}^\top & \cdots & D_{LL}
 \end{bmatrix}
 \]
-the global variance-covariance matrix.
-In the sequel of the paper, our aim is to associate the true and unobserved value $m_k^l(t)$ of the $l$-th longitudinal outcome at time $t$ with the event outcome $T^\star$.
+the global variance-covariance matrix, which is not class-specific.
 
 \subsection{Class-specific risk of event}
 
@@ -200,10 +199,10 @@ To quantify the effect of the longitudinal outcomes on the risk for an event, we
   \label{eq:intensity-model}
   \lambda(t|\cY(t), G = k) = \lambda_0(t) \exp \Big\{\sum_{l=1}^L \sum_{a=1}^\cA {\gamma_{k,a}^l} \Psi_a^l(t) \Big\},
 \end{equation}
-where $\lambda_0(\cdot)$ is an unspecified baseline hazard function and given that $G = k$, we denote 
+where $\lambda_0(\cdot)$ is an unspecified baseline hazard function that does not depend on $k$, and we denote 
 \[\cY^l(t) = \{Y^l(u), 0 \leq u < t\} \quad \text{and} \quad \cY(t) = \bigcup_{l=1}^L \cY^l(t)\] 
 the history of the true longitudinal process up to time $t$.
-For each $l$-th longitudinal outcome, we consider $\cA \in \N_+$ known functionals $\Psi_a^l$ extracted from $\cY^l(t)$ through a given representation mapping, and $\gamma_{k,a}^l \in \R$ the corresponding joint representation parameters.  
+Then for each $l$-th longitudinal outcome, we consider $\cA \in \N_+$ known functionals $\Psi_a^l$ extracted from $\cY^l(t)$ through a given representation mapping (also independent from $k$), and $\gamma_{k,a}^l \in \R$ the corresponding joint representation parameters, being the only class-specific object in the risk of event submodel.
 
 Let us finally denote
 \[\gamma_k= (\gamma_{k,1}^1, \ldots, \gamma_{k,\cA}^1, \ldots, \gamma_{k,1}^L, \ldots, \gamma_{k,\cA}^L )^\top \in \R^{L\cA}, \] so that
@@ -215,7 +214,19 @@ where $\Psi(t) \in \R^{L\cA}$ denotes the representation features vector.
 
 \subsection{Generalization of SREMs and JLCMs}
  
-Our model is clearly of JLCMs type, and can be viewed as a generalization of SREMs type in a much more flexible way. Table~\ref{table:shared_associations} gives common parameterizations for shared associations that are only considered separately ($\cA=1$) in SREMs.
+Our model is clearly of JLCMs type, and can be viewed as a generalization of SREMs type in a much more flexible way. Table~\ref{table:shared_associations} gives common parameterizations for shared associations in SREMs. It is now common to include several of these in the survival sub-model, see for instance~\citet{}, but as far as we know, there is no method to consider simultaneously a huge number of associations and let the model learn which one is predictive for the underlying task it is trained for.
+
+
+TODO : add REF :
+
+Andrinopoulou, E.-R. and Rizopoulos, D. (2016). Bayesian shrinkage approach for a joint model of
+longitudinal and survival outcomes assuming different association structures. Statistics in Medicine,
+35(26):4813–4823.
+
+Ferrer, L., Rondeau, V., Dignam, J., Pickles, T., Jacqmin-Gadda, H., \& Proust-Lima, C. (2016). Joint modelling of longitudinal and multi-state processes: application to clinical progressions in prostate cancer. Statistics in medicine, 35(22), 3933–3948. https://doi.org/10.1002/sim.6972
+
+
+
 \begin{table}[htb]
 \centering
 \begin{tabular}{cccc}
@@ -260,6 +271,7 @@ Figure~\ref{fig:graphical-model} below gives the graphical representation for th
   
   \path [->,draw,ultra thick, blue]
         (G) edge (mu)
+        (G) edge (lambda)
         (Y) edge (W);
   \path [->,draw,ultra thick]
         (beta) edge (mu)
@@ -271,7 +283,6 @@ Figure~\ref{fig:graphical-model} below gives the graphical representation for th
         (X) edge (G)
         (gamma) edge (lambda)
         (W) edge (lambda)
-        (G) edge (lambda)
         (lambda) edge (T)
         ;
 
@@ -286,7 +297,7 @@ Figure~\ref{fig:graphical-model} below gives the graphical representation for th
   \node[rectangle,inner sep=6mm, draw=black!100,  label=center:{\color{white}\Large{\textbf{Time-to-event}}}, minimum width=5cm, minimum height = 1cm, fill = black!50] at (12,2.8) {};
   
 \end{tikzpicture}}
-\caption{Graphical representation of the lights model. Square boxes denote observed data while circles denote unobserved (including random) terms. One can then observe the two links in blue between the submodels that gives rise to the joint model.}
+\caption{Graphical representation of the lights model, with $\phi_l$ being defined in~\eqref{eq:def-Phi_i} below. Square boxes denote observed data while circles denote unobserved (including random) terms. One can then observe the two links in blue between the submodels that gives rise to the joint model.}
 \label{fig:graphical-model}
 \end{figure}
  
@@ -412,7 +423,7 @@ and
   S_k(t_i) = \exp \Big\{-\int_0^{t_i} \lambda(s|\cY_i(s), G_i = k) \dd s \Big\}
 \end{equation}
 is the survival probability of subject $i$ given that it belongs to latent class $k$.
-As expected,~\eqref{eq:log-lik} is a JLCMs like log-likelihood.
+As expected,~\eqref{eq:log-lik} is a JLCMs like log-likelihood. Note that to write~\eqref{eq:log-lik}, one could simplify Assumption~\ref{indep-hyp-3} by removing the $b_i$ both in the left and right side of Equation~\eqref{eq:ind-hyp} to get a classical JLCMs hypothesis, but the $b_i$ mention is useful later on in the E-step of the inference algorithm, for instance to compute Equation~\eqref{eq:E_g}.
 
 \paragraph{Specification of the design matrices.}
  
@@ -448,7 +459,7 @@ Hence, the resulting optimization problem is written
    \hat \theta \in \argmin_{\theta \in \R^\vartheta} \ell_n^\text{pen}(\theta).
  \end{equation}
 
-One advantage of the considered regularization strategy is its ability to perform feature selection and pinpoint the most important (time-dependent and time-independent) features relatively to the prediction objective. The support of $\hat \xi_k$ informs on the time-independent features involved in the $k$-th latent class membership. The ridge part allows to handle potential correlation between time-independent features.
+One advantage of the considered regularization strategy is its ability to perform feature selection and pinpoint the most important features (trajectories and time-independent) relatively to the prediction objective. The support of $\hat \xi_k$ informs on the time-independent features involved in the $k$-th latent class membership. The ridge part allows to handle potential correlation between time-independent features.
 On the other hand, for the sparse group lasso penalty, a group $l$ corresponds to a trajectory, that is one longitudinal outcome. So if $\hat \gamma_k^l$ is entirely zeroed (thanks to the group lasso part), it means that the $l$-th longitudinal process is discarded by the model in terms of risk effect for the $k$-th latent class.
 Then, the sparse part of the penalty allows to perform representation features selection for each trajectory : for $\hat \gamma_k^l$ that are not entirely zeroed, its support informs on the representation features involved in the $k$-th latent class risk of event for the $l$-th longitudinal outcome.
 Note that in practice, the intercept terms are not regularized.
@@ -458,7 +469,7 @@ Note that in practice, the intercept terms are not regularized.
 
 In order to derive an algorithm for this objective, we introduce a so-called prox-QNEM algorithm, being a combination between an EM algorithm~\citep{dempster1977maximum}, an L-BFGS-B algorithm~\citep{zhu1997algorithm} and a proximal gradient descent algorithm~\citep{beck2009fast}. EM algorithm has already been used for multivariate data joint modeling (see~\citet{lin2002maximum} for instance), but here we face different and original problems: for each subject $i$, the latent variables are the pairs $(G_i, b_i)$ (not only the random effects); and then, we want to minimize the penalized objective $\ell_n^\text{pen}$ (not ``only'' the negative log-likelihood).
 
-We first need to compute the negative completed log-likelihood (here scaled by $n^{-1}$), namely the negative joint distribution of $\cD_n$, $\textbf{\textit{b}} = (b_1, \ldots, b_n)$ and $\textbf{\textit{G}} = (G_1, \ldots, G_n)$.
+We first need to compute the negative completed log-likelihood (here scaled by $n^{-1}$), namely the negative joint distribution of $\cD_n$, $\textbf{\textit{b}} = (b_1^\top, \ldots, b_n^\top)$ and $\textbf{\textit{G}} = (G_1, \ldots, G_n)$.
 It can be written
 \begin{align*}
   \ell_n^\text{comp}(\theta) &= \ell_n^\text{comp}(\theta ; \cD_n, \textbf{\textit{b}}, \textbf{\textit{G}}) \\ 
@@ -486,15 +497,17 @@ the posterior probability of the latent class membership using parameters $\thet
 Then, either $g(b_i, G_i) = \tilde g(b_i)$ (either $\tilde g_1: b_i \mapsto b_i$ or $\tilde g_2: b_i \mapsto b_i b_i^\top$), or $g(b_i, G_i) = g_k(G_i)$ with $g_k~:~G_i \mapsto \ind{\{G_i=k\}}$.
 
 In the case $g(b_i, G_i) = \tilde g(b_i)$, one has
-\begin{equation*}
+\begin{equation}
+  \label{eq:E_g}
   \E_{\theta^{(w)}}[ \tilde g(b_i) | t_i, \delta_i, y_i] = \int_{\R^r} \tilde g(b_i) f_{\theta^{(w)}}(b_i | t_i, \delta_i, y_i) \dd b_i = \dfrac{ \sum_{k=0}^{K-1} \pi_{\xi_k^{(w)}}(x_i) \Lambda_{ik,\tilde g}^{\theta^{(w)}}}{\sum_{k=0}^{K-1} \pi_{\xi_k^{(w)}}(x_i) \Lambda_{ik,1}^{\theta^{(w)}}}
-\end{equation*}
+\end{equation}
 where
 \begin{equation}
   \label{eq:Lambda_ik-b_i}
   \Lambda_{ik,\tilde g}^{\theta^{(w)}} =  f_{\theta^{(w)}}(t_i, \delta_i | G_i = k) f_{\theta^{(w)}}(y_i | G_i = k) \int_{\R^r} \tilde g(b_i) f_{\theta^{(w)}}(b_i | y_i, G_i = k) \dd b_i,
 \end{equation}
-and in the Gaussian case used in practice one has
+and $\Lambda_{ik,1}^{\theta^{(w)}}$ obtained from $\Lambda_{ik,\tilde g}^{\theta^{(w)}}$ taking $\tilde g: b_i \mapsto 1$. 
+In the Gaussian case used in practice one has
 \begin{align*}
   y_i | G_i = k ; \theta^{(w)} &\sim \cN\big(U_i\beta_k^{(w)}, V_iD^{(w)}V_i^\top + \Sigma_i^{(w)}\big), \\
   b_i | y_i, G_i=k ; \theta^{(w)} &\sim \cN \big(O_{i,k}^{(w)}, W_i^{(w)}\big),  
@@ -546,7 +559,7 @@ where $\xi_k^\pm = (\xi_{k,1}^\pm, \ldots, \xi_{k,p}^\pm)^\top$. The L-BFGS-B so
   \label{eq:grad-xi_k}
   \frac{\partial P_{n,k}^{(w)}(\xi_k)}{\partial \xi_k} = -n^{-1} \sum_{i=1}^n  \big(\pi_{ik}^{\theta^{(w)}} - \pi_{\xi_k}(x_i) \big) x_i.
 \end{equation}
-In practice, we use the \texttt{Python} solver \texttt{fmin\_l\_bfgs\_b} from \texttt{scipy.optimize}~\citep{virtanen2020scipy}. Note that for computational reasons, it is not clever to use a too small solver tolerance in the early steps of the overall algorithm, where we call tolerance the value for which iterations stop when the stopping criterion is below it. To speed up the overall algorithm, we then decrease the L-BFGS-B tolerance with the iterations $w$.
+In practice, we use the \texttt{Python} solver \texttt{fmin\_l\_bfgs\_b} from \texttt{scipy.optimize}~\citep{virtanen2020scipy}. Note that for computational reasons, it is not clever to use a too small solver tolerance in the early steps of the overall algorithm, where we call tolerance the value for which iterations stop when the stopping criterion is below it. To speed up the overall algorithm, we then increase the L-BFGS-B tolerance with the iterations $w$.
 
 Concerning the update of $\beta_k^{(w)}$ for $k=0, \ldots, K-1$, let us follow the same strategy by denoting
 \begin{equation*}
@@ -718,7 +731,7 @@ In this section, we first present the proposed evaluation strategy to assess rea
 \subsection{Evaluation strategy}
 \label{sec:evaluation strategy}
 
-When validating predictions or comparing performances of competing models in a survival context, one can be interested either in the discriminative power of the predictive rule and use concordance measures such as the C-index~\citep{heagerty2005survival} (defined in Section~\ref{sec:evaluation strategy}), or in the predictive accuracy of the rule~\citep{schemper2000predictive}.
+When validating predictions or comparing performances of competing models in a survival context, one can be interested either in the discriminative power of the predictive rule and use concordance measures such as the C-index~\citep{heagerty2005survival} (defined in~\eqref{eq:c-index-def}), or in the predictive accuracy of the rule~\citep{schemper2000predictive}.
 Developments in the field of joint modeling have primarily focused on modeling and estimation, and most studies do not consider goodness-of-fit nor generalization power in a prognostic prediction perspective~\citep{hickey2016joint}. However, with the prospect of using prognostic prediction in real-time on a daily basis, practitioners will naturally require predictive prognostic tools to evaluate models fit and compare models in terms of discriminative power. So we choose to put ourselves in what we call a ``real-time prediction paradigm''. 
 
 \paragraph{Real-time prediction paradigm.}
@@ -749,9 +762,10 @@ A common concordance measure that does not depend on time is the C-index~\citep{
 \end{equation*}
 with $i \neq j$ two independent subjects (which does not depend on $i, j$ under the i.i.d. sample hypothesis). 
 In our case,  $T^\star$ is subject to right censoring, so one would typically consider the modified $\cC_\tau$ defined by
-\begin{equation*}
+\begin{equation}
+  \label{eq:c-index-def}
   \cC_\tau =\P[\hat \cR_i > \hat \cR_j | T_i < T_j , T_i < \tau],
-\end{equation*}
+\end{equation}
 with $\tau$ corresponding to the fixed and prespecified follow-up period duration \citep{heagerty2005survival}. A Kaplan-Meier estimator for the censoring distribution leads to a nonparametric and consistent estimator of $\cC_\tau$ \citep{uno2011c}, already implemented in the \texttt{Python} package \texttt{lifelines}.
 Hence in the following, we consider the C-index metric to assess performances.
 
@@ -840,15 +854,14 @@ We use the \texttt{survival} \texttt{R} package~\citep{zhang2018time}, and we co
 \paragraph*{Multivariate joint latent class model.} 
 
 We consider a multivariate version of JLCMs implemented in the \texttt{R} package \texttt{lcmm}~\citep{2017_lcmm}.
-Contrary to the lights model, there is no shared associations between the longitudinal models and the survival model. Given the latent class membership, each submodel is assumed to be independent. In this context, the predictive marker for subject $i$ is
+There is no shared associations between the longitudinal models and the survival model. Given the latent class membership, each submodel is assumed to be independent. In this context, the predictive marker for subject $i$ is
 \[\hat \cR_i^\text{lcmm} = \dfrac{\pi_{\hat \xi}(x_i) f(t^{max}_i, y_i | G_i=1 ; \hat \theta)}{\pi_{\hat \xi}(x_i) f(t^{max}_i, y_i | G_i=1 ; \hat \theta) + \big(1 - \pi_{\hat \xi}(x_i)\big) f(t^{max}_i, y_i | G_i=0 ; \hat \theta)}.\]
 
 \paragraph*{Multivariate shared random effect model.}
 
 In this context, we consider the \texttt{JMbayes} package~\citep{2017_JMbayes}. The predictive marker associated with this model for subject $i$ is naturally given by the corresponding risk score
-\[\hat \cR_i^\text{JMbayes} = \exp \Big\{ x_i^\top \hat\gamma_0 + \sum_{l=1}^L \sum_{a=1}^\cA {\widehat{\gamma_{k,a}^l}}^\top \varphi_{k,a}(t_i^{max}, b_i^l) \Big\}.\] 
-
-\texttt{@Antoine : est-ce qu'il peut prendre des time-indep feat ? et quelles sont les assos ?}
+\[\hat \cR_i^\text{JMbayes} = \exp \Big\{ x_i^\top \hat\gamma_0 + \sum_{l=1}^L \sum_{a=1}^\cA {\widehat{\gamma_{k,a}^l}}^\top \varphi_{k,a}(t_i^{max}, b_i^l) \Big\},\] 
+where the shared associations $\varphi_{k,a}$ are the four given in Table~\ref{table:shared_associations}.
 
 
 \section{High-dimensional simulation study}
@@ -969,7 +982,7 @@ Following the real-time prediction paradigm presented in Section~\ref{sec:evalua
 We also want to assess the stability of the lights model in terms of feature selection, but we do not compare this aspect with state-of-the-art since other models are not designed to perform feature selection, and comparisons would be unfair. 
 To this end, we follow the same simulation procedure explained in the previous lines and for each simulation case, we use the following approach to evaluate the variable selection power of the model. Denoting 
 \[\tilde{\xi}_j = \dfrac{|\hat{\xi}_j|}{\max_{j=1,\ldots,p}{|\hat{\xi}_j|}} \qquad \text{and} \qquad \tilde{\gamma}_{k,a}^l = \dfrac{|\hat{\gamma}_{k,a}^l|}{\max_{a=1, \ldots, \cA}{|\hat{\gamma}_{k,a}^l|}}\] 
-for $k=0,\ldots,K-1$ and $l=1, \ldots, L$, and considering that $\tilde{\xi}_j$ and $\tilde{\gamma}_{k,a}^l$ are the predicted probability that the true $\xi_j$ equals $\varsigma_1$ and the predicted probability that the true $\gamma_{k,a}^l$ equals $\varsigma_2$ respectively, then we are in a binary prediction setting and we use the two resulting AUC scores of this problem to evaluate the selection power of the time-independent and the time-dependent features respectively.
+for $k=0,\ldots,K-1$ and $l=1, \ldots, L$, and considering that $\tilde{\xi}_j$ and $\tilde{\gamma}_{k,a}^l$ are the predicted probability that the true $\xi_j$ equals $\varsigma_1$ and the predicted probability that the true $\gamma_{k,a}^l$ equals $\varsigma_2$ respectively, then we are in a binary prediction setting and we use the two resulting AUC scores of this problem to evaluate the selection power of the time-independent features and the trajectories respectively.
 
 \subsection{Results of simulation}
 \label{sec:simulation results}
