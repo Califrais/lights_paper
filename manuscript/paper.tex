@@ -214,19 +214,7 @@ where $\Psi(t) \in \R^{L\cA}$ denotes the representation features vector.
 
 \subsection{Generalization of SREMs and JLCMs}
  
-Our model is clearly of JLCMs type, and can be viewed as a generalization of SREMs type in a much more flexible way. Table~\ref{table:shared_associations} gives common parameterizations for shared associations in SREMs. It is now common to include several of these in the survival sub-model, see for instance~\citet{}, but as far as we know, there is no method to consider simultaneously a huge number of associations and let the model learn which one is predictive for the underlying task it is trained for.
-
-
-TODO : add REF :
-
-Andrinopoulou, E.-R. and Rizopoulos, D. (2016). Bayesian shrinkage approach for a joint model of
-longitudinal and survival outcomes assuming different association structures. Statistics in Medicine,
-35(26):4813–4823.
-
-Ferrer, L., Rondeau, V., Dignam, J., Pickles, T., Jacqmin-Gadda, H., \& Proust-Lima, C. (2016). Joint modelling of longitudinal and multi-state processes: application to clinical progressions in prostate cancer. Statistics in medicine, 35(22), 3933–3948. https://doi.org/10.1002/sim.6972
-
-
-
+Our model is clearly of JLCMs type, and can be viewed as a generalization of SREMs type in a much more flexible way. Table~\ref{table:shared_associations} gives common parameterizations for shared associations in SREMs. It is now common to include several of these in the survival sub-model, see for instance~\citet{andrinopoulou2016bayesian, ferrer2016joint}, but as far as we know, there is no method to consider simultaneously a huge number of associations and let the model learn which one is predictive for the underlying task it is trained for.
 \begin{table}[htb]
 \centering
 \begin{tabular}{cccc}
