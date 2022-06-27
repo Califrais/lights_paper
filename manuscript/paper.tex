@@ -50,6 +50,7 @@
 
 \newtheorem{assumption}{Assumption}{\bf}{\rm} 
 \newtheorem{lemma}{Lemma}
+\newtheorem{theorem}{Theorem}
 
 \DeclareMathOperator{\argmin}{argmin}
 \DeclareMathOperator{\Tr}{Tr}
@@ -103,13 +104,13 @@ Similarly, in many clinical studies, it has become increasingly common to record
 
 \paragraph{The high-dimensional longitudinal data context.}
 With the exploding number of daily internet users, or with the development of electronic health records in a medical context, high-dimensional settings are becoming increasingly frequent in various contexts where the number of available features to consider as potential risk factors is tremendous.
-Moreover, with an increased focus on personalised medicine, the need to implement multivariate models that account for a large number of longitudinal outcomes is critical. Despite this, joint models have predominantly focused on univariate data, with attempts to fit multiple univariate joint models separately~\citep{wang2012joint}, which is inefficient~\citep{lin2002maximum}. 
+Moreover, with an increased focus on personalised medicine, the need to implement multivariate models that account for a large number of longitudinal outcomes is critical. Despite this, joint models have predominantly focused on univariate data, with attempts to fit multiple joint models separately each one with univariate longitudinal outcome~\citep{wang2012joint}, which is inefficient~\citep{lin2002maximum}. 
 Despite many multivariate models being presented in full generality, questions arrising from the high-dimensional context -- e.g., computational power, limits in numerical estimation, or sample size -- are never considered in analyses (to the best of our knowledge), and the number of longitudinal outcomes considered in numerical studies are often very low (see~\citet{hickey2016joint} for a complete review). For instance,~\citet{jaffa2014joint} only considers 3 longitudinal outcomes in the simulation study while mentioning a ``high-dimensional multivariate longitudinal data'' context.
 
 
 \paragraph{General framework.}
 
-The setting of this paper is such that we want to incorporate high-dimensional time-dependent (longitudinal) features measured with error in a survival model. Let us consider the usual survival analysis framework.
+The setting of this paper is such that we want to incorporate high-dimensional trajectories, or longitudinal features, measured with error in a survival model. Let us consider the usual survival analysis framework.
 Following~\citet{andersen2012statistical}, let non-negative random variables $T^\star$ and $C$ stand for the times of the event of interest and censoring times respectively. The event of interest could be for instance the time when a client stops using a company's product or service in a churn prediction setting~ ; or survival time, re-hospitalization, relapse or disease progression in a medical context.
 We then denote $T$ the right-censored time and $\Delta$ the censoring indicator, defined as 
 \begin{equation*}
@@ -189,8 +190,7 @@ To account for dependence between the different longitudinal outcome types, we l
   D_{1L}^\top & \cdots & D_{LL}
 \end{bmatrix}
 \]
-the global variance-covariance matrix.
-In the sequel of the paper, our aim is to associate the true and unobserved value $m_k^l(t)$ of the $l$-th longitudinal outcome at time $t$ with the event outcome $T^\star$.
+the global variance-covariance matrix, which is not class-specific.
 
 \subsection{Class-specific risk of event}
 
@@ -199,10 +199,10 @@ To quantify the effect of the longitudinal outcomes on the risk for an event, we
   \label{eq:intensity-model}
   \lambda(t|\cY(t), G = k) = \lambda_0(t) \exp \Big\{\sum_{l=1}^L \sum_{a=1}^\cA {\gamma_{k,a}^l} \Psi_a^l(t) \Big\},
 \end{equation}
-where $\lambda_0(\cdot)$ is an unspecified baseline hazard function and given that $G = k$, we denote 
+where $\lambda_0(\cdot)$ is an unspecified baseline hazard function that does not depend on $k$, and we denote 
 \[\cY^l(t) = \{Y^l(u), 0 \leq u < t\} \quad \text{and} \quad \cY(t) = \bigcup_{l=1}^L \cY^l(t)\] 
 the history of the true longitudinal process up to time $t$.
-For each $l$-th longitudinal outcome, we consider $\cA \in \N_+$ known functionals $\Psi_a^l$ extracted from $\cY^l(t)$ through a given representation mapping, and $\gamma_{k,a}^l \in \R$ the corresponding joint representation parameters.  
+Then for each $l$-th longitudinal outcome, we consider $\cA \in \N_+$ known functionals $\Psi_a^l$ extracted from $\cY^l(t)$ through a given representation mapping (also independent from $k$), and $\gamma_{k,a}^l \in \R$ the corresponding joint representation parameters, being the only class-specific object in the risk of event submodel.
 
 Let us finally denote
 \[\gamma_k= (\gamma_{k,1}^1, \ldots, \gamma_{k,\cA}^1, \ldots, \gamma_{k,1}^L, \ldots, \gamma_{k,\cA}^L )^\top \in \R^{L\cA}, \] so that
@@ -214,7 +214,7 @@ where $\Psi(t) \in \R^{L\cA}$ denotes the representation features vector.
 
 \subsection{Generalization of SREMs and JLCMs}
  
-Our model is clearly of JLCMs type, and can be viewed as a generalization of SREMs type in a much more flexible way. Table~\ref{table:shared_associations} gives common parameterizations for shared associations that are only considered separately ($\cA=1$) in SREMs.
+Our model is clearly of JLCMs type, and can be viewed as a generalization of SREMs type in a much more flexible way. Table~\ref{table:shared_associations} gives common parameterizations for shared associations in SREMs. It is now common to include several of these in the survival sub-model, see for instance~\citet{andrinopoulou2016bayesian, ferrer2016joint}, but as far as we know, there is no method to consider simultaneously a huge number of associations and let the model learn which one is predictive for the underlying task it is trained for.
 \begin{table}[htb]
 \centering
 \begin{tabular}{cccc}
@@ -259,6 +259,7 @@ Figure~\ref{fig:graphical-model} below gives the graphical representation for th
   
   \path [->,draw,ultra thick, blue]
         (G) edge (mu)
+        (G) edge (lambda)
         (Y) edge (W);
   \path [->,draw,ultra thick]
         (beta) edge (mu)
@@ -270,7 +271,6 @@ Figure~\ref{fig:graphical-model} below gives the graphical representation for th
         (X) edge (G)
         (gamma) edge (lambda)
         (W) edge (lambda)
-        (G) edge (lambda)
         (lambda) edge (T)
         ;
 
@@ -285,16 +285,22 @@ Figure~\ref{fig:graphical-model} below gives the graphical representation for th
   \node[rectangle,inner sep=6mm, draw=black!100,  label=center:{\color{white}\Large{\textbf{Time-to-event}}}, minimum width=5cm, minimum height = 1cm, fill = black!50] at (12,2.8) {};
   
 \end{tikzpicture}}
-\caption{Graphical representation of the lights model. Square boxes denote observed data while circles denote unobserved (including random) terms. One can then observe the two links in blue between the submodels that gives rise to the joint model.}
+\caption{Graphical representation of the lights model, with $\phi_l$ being defined in~\eqref{eq:def-Phi_i} below. Square boxes denote observed data while circles denote unobserved (including random) terms. One can then observe the two links in blue between the submodels that gives rise to the joint model.}
 \label{fig:graphical-model}
 \end{figure}
  
 \subsection{Likelihood}
 
 Consider an independent and identically distributed (i.i.d.) cohort of $n$ subjects
-\[ \cD_n = \big\{ (x_1, y_1^1, \ldots, y_1^L, t_1, \delta_1), \ldots, (x_n, y_n^1, \ldots, y_n^L, t_n, \delta_n) \big\} \]
+\begin{equation}
+  \label{eq:dataset-def}
+  \cD_n = \big\{ (x_1, y_1^1, \ldots, y_1^L, t_1, \delta_1), \ldots, (x_n, y_n^1, \ldots, y_n^L, t_n, \delta_n) \big\}
+\end{equation}
 where for each subject $i=1, \ldots, n$, process $Y_i^l$ is measured $n_i^l$ times at $t_{i1}^l, \ldots, t_{in_i^l}^l$ (which can differ between subjects and outcomes) with $t_{ij}^l \leq t_{ij+1}^l$ for all $j=1, \ldots, n_i^l-1$ and such that
-\[ y_i^l=(y_{i1}^l, \ldots, y_{in_i^l}^l)^\top \in \R^{n_i^l} \quad \text{ with } \quad y_{ij}^l=Y_i^l(t_{ij}^l) \]
+\begin{equation}
+  \label{eq:def-yil}
+  y_i^l=(y_{i1}^l, \ldots, y_{in_i^l}^l)^\top \in \R^{n_i^l} \quad \text{ with } \quad y_{ij}^l=Y_i^l(t_{ij}^l) 
+\end{equation}
 for all $l=1, \ldots, L$. 
 For the $i$-th subject, let us denote 
 \[
@@ -381,7 +387,7 @@ The density described in~\eqref{eq:exp-family-density} encompasses several distr
 Let us denote 
 \[ \theta = \big(\xi_0^\top \cdots \xi_{K-1}^\top, \beta_0^\top \cdots \beta_{K-1}^\top, \phi^\top, \text{vech}(D), \lambda_0^\top, \gamma_0^\top \cdots \gamma_{K-1}^\top\big)^\top \in \R^\vartheta \]
 the collection of the $\vartheta \in \N_+$ unknown parameters to estimate. Note that we include $\lambda_0$ in $\theta$. Indeed, we will estimate the baseline using nonparametric maximum likelihood, as a function taking mass at each failure time. So in $\theta$, $\lambda_0$ represents the vector of these baseline hazard quantities, with a dimension equal to $J$.
-To write the log-likelihood $\ell_n(\theta)$ (rescaled by $n^{-1}$)  for samples in $\cD_n$, corresponding to the joint distribution of the time-to-event and longitudinal outcomes, let us make the following hypothesis.
+To write the log-likelihood $\ell_n(\theta)$ (rescaled by $n^{-1}$)  for samples in $\cD_n$ (defined in~\eqref{eq:dataset-def}), corresponding to the joint distribution of the time-to-event and longitudinal outcomes, let us make the following hypothesis.
 \begin{assumption}
 \label{indep-hyp-3}
 Assume that
@@ -398,8 +404,14 @@ Then, one has
 	\ell_n(\theta) = \ell_n(\theta ; \cD_n) = n^{-1} \sum_{i=1}^n \log \sum_{k=0}^{K-1} \pi_{\xi_k}(x_i) f_\theta(t_i, \delta_i| G_i = k) f_\theta(y_i | G_i = k),
 \end{equation}
 where 
-\[f_\theta(t_i, \delta_i| G_i = k) = \big[\lambda(t_i|\cY_i(t_i), G_i = k)\big]^{\delta_i} \exp \Big\{-\int_0^{t_i} \lambda(s|\cY_i(s), G_i = k) \dd s \Big\}. \]
-As expected, one has a JLCMs like log-likelihood.
+\[f_\theta(t_i, \delta_i| G_i = k) = \big[\lambda(t_i|\cY_i(t_i), G_i = k)\big]^{\delta_i} S_k(t_i) , \]
+and
+\begin{equation}
+  \label{eq:survival-k-def}
+  S_k(t_i) = \exp \Big\{-\int_0^{t_i} \lambda(s|\cY_i(s), G_i = k) \dd s \Big\}
+\end{equation}
+is the survival probability of subject $i$ given that it belongs to latent class $k$.
+As expected,~\eqref{eq:log-lik} is a JLCMs like log-likelihood. Note that to write~\eqref{eq:log-lik}, one could simplify Assumption~\ref{indep-hyp-3} by removing the $b_i$ both in the left and right side of Equation~\eqref{eq:ind-hyp} to get a classical JLCMs hypothesis, but the $b_i$ mention is useful later on in the E-step of the inference algorithm, for instance to compute Equation~\eqref{eq:E_g}.
 
 \paragraph{Specification of the design matrices.}
  
@@ -415,7 +427,7 @@ We then let \[v^l(t) = (1, t)^\top\] so that each trajectory of each subject get
 \section{Inference}
 \label{sec:inference}
 
-In this section, we describe the procedure for estimating the parameters of the lights model. Let us first present the considered penalized objective, and then focus on the algorithm proposed for inference.
+In this section, we describe the procedure for estimating the parameters of the lights model. Let us first present the considered penalized objective, then focus on the algorithm proposed for inference, and on its convergence properties.
 
 \subsection{Penalized objective}
 \label{sec:penalized-obj}
@@ -435,7 +447,7 @@ Hence, the resulting optimization problem is written
    \hat \theta \in \argmin_{\theta \in \R^\vartheta} \ell_n^\text{pen}(\theta).
  \end{equation}
 
-One advantage of the considered regularization strategy is its ability to perform feature selection and pinpoint the most important (time-dependent and time-independent) features relatively to the prediction objective. The support of $\hat \xi_k$ informs on the time-independent features involved in the $k$-th latent class membership. The ridge part allows to handle potential correlation between time-independent features.
+One advantage of the considered regularization strategy is its ability to perform feature selection and pinpoint the most important features (trajectories and time-independent) relatively to the prediction objective. The support of $\hat \xi_k$ informs on the time-independent features involved in the $k$-th latent class membership. The ridge part allows to handle potential correlation between time-independent features.
 On the other hand, for the sparse group lasso penalty, a group $l$ corresponds to a trajectory, that is one longitudinal outcome. So if $\hat \gamma_k^l$ is entirely zeroed (thanks to the group lasso part), it means that the $l$-th longitudinal process is discarded by the model in terms of risk effect for the $k$-th latent class.
 Then, the sparse part of the penalty allows to perform representation features selection for each trajectory : for $\hat \gamma_k^l$ that are not entirely zeroed, its support informs on the representation features involved in the $k$-th latent class risk of event for the $l$-th longitudinal outcome.
 Note that in practice, the intercept terms are not regularized.
@@ -445,7 +457,7 @@ Note that in practice, the intercept terms are not regularized.
 
 In order to derive an algorithm for this objective, we introduce a so-called prox-QNEM algorithm, being a combination between an EM algorithm~\citep{dempster1977maximum}, an L-BFGS-B algorithm~\citep{zhu1997algorithm} and a proximal gradient descent algorithm~\citep{beck2009fast}. EM algorithm has already been used for multivariate data joint modeling (see~\citet{lin2002maximum} for instance), but here we face different and original problems: for each subject $i$, the latent variables are the pairs $(G_i, b_i)$ (not only the random effects); and then, we want to minimize the penalized objective $\ell_n^\text{pen}$ (not ``only'' the negative log-likelihood).
 
-We first need to compute the negative completed log-likelihood (here scaled by $n^{-1}$), namely the negative joint distribution of $\cD_n$, $\textbf{\textit{b}} = (b_1, \ldots, b_n)$ and $\textbf{\textit{G}} = (G_1, \ldots, G_n)$.
+We first need to compute the negative completed log-likelihood (here scaled by $n^{-1}$), namely the negative joint distribution of $\cD_n$, $\textbf{\textit{b}} = (b_1^\top, \ldots, b_n^\top)$ and $\textbf{\textit{G}} = (G_1, \ldots, G_n)$.
 It can be written
 \begin{align*}
   \ell_n^\text{comp}(\theta) &= \ell_n^\text{comp}(\theta ; \cD_n, \textbf{\textit{b}}, \textbf{\textit{G}}) \\ 
@@ -458,9 +470,10 @@ Suppose that we are at step $w + 1$ of the algorithm, with current iterate denot
 \paragraph*{E-step.}
 
 We need to compute the expected negative log-likelihood of the complete data conditional on the observed data and the current estimate of the parameters given by 
-\begin{equation*}
+\begin{equation}
+  \label{eq:Q-def}
   \cQ_n(\theta, \theta^{(w)}) = \E_{\theta^{(w)}}[\ell_n^\text{comp}(\theta) | \cD_n].
-\end{equation*}
+\end{equation}
 Given Assumption~\ref{assumption1}, the previous expression requires to compute expectations of the form
 \[ \E_{\theta^{(w)}}[ g(b_i, G_i) | t_i, \delta_i, y_i] = \sum_{k=0}^{K-1} \pi_{ik}^{\theta^{(w)}} \int_{\R^r} g(b_i, G_i) f(b_i | t_i, \delta_i, y_i ; \theta^{(w)}) \dd b_i \]
 for different functions $g$, where we denote 
@@ -472,15 +485,17 @@ the posterior probability of the latent class membership using parameters $\thet
 Then, either $g(b_i, G_i) = \tilde g(b_i)$ (either $\tilde g_1: b_i \mapsto b_i$ or $\tilde g_2: b_i \mapsto b_i b_i^\top$), or $g(b_i, G_i) = g_k(G_i)$ with $g_k~:~G_i \mapsto \ind{\{G_i=k\}}$.
 
 In the case $g(b_i, G_i) = \tilde g(b_i)$, one has
-\begin{equation*}
+\begin{equation}
+  \label{eq:E_g}
   \E_{\theta^{(w)}}[ \tilde g(b_i) | t_i, \delta_i, y_i] = \int_{\R^r} \tilde g(b_i) f_{\theta^{(w)}}(b_i | t_i, \delta_i, y_i) \dd b_i = \dfrac{ \sum_{k=0}^{K-1} \pi_{\xi_k^{(w)}}(x_i) \Lambda_{ik,\tilde g}^{\theta^{(w)}}}{\sum_{k=0}^{K-1} \pi_{\xi_k^{(w)}}(x_i) \Lambda_{ik,1}^{\theta^{(w)}}}
-\end{equation*}
+\end{equation}
 where
 \begin{equation}
   \label{eq:Lambda_ik-b_i}
   \Lambda_{ik,\tilde g}^{\theta^{(w)}} =  f_{\theta^{(w)}}(t_i, \delta_i | G_i = k) f_{\theta^{(w)}}(y_i | G_i = k) \int_{\R^r} \tilde g(b_i) f_{\theta^{(w)}}(b_i | y_i, G_i = k) \dd b_i,
 \end{equation}
-and in the Gaussian case used in practice one has
+and $\Lambda_{ik,1}^{\theta^{(w)}}$ obtained from $\Lambda_{ik,\tilde g}^{\theta^{(w)}}$ taking $\tilde g: b_i \mapsto 1$. 
+In the Gaussian case used in practice one has
 \begin{align*}
   y_i | G_i = k ; \theta^{(w)} &\sim \cN\big(U_i\beta_k^{(w)}, V_iD^{(w)}V_i^\top + \Sigma_i^{(w)}\big), \\
   b_i | y_i, G_i=k ; \theta^{(w)} &\sim \cN \big(O_{i,k}^{(w)}, W_i^{(w)}\big),  
@@ -496,7 +511,13 @@ Now in the case $g = g_k$, one has
 \end{equation}
 
 \paragraph*{Proximal Quasi-Newton M-step.}
-Here, we need to compute \[\theta^{(w+1)} \in \argmin_{\theta \in \R^\vartheta} \cQ_n(\theta, \theta^{(w)}) + \sum_{k=0}^{K-1} \zeta_{1,k} \norm{\xi_k}_{\text{en}, \eta} + \zeta_{2,k} \norm{\gamma_k}_{\text{sg} l_1, \tilde{\eta}}.\]
+Let us denote
+\begin{equation}
+  \label{eq:M-step-obj}
+  \cQ_n^\text{pen}(\theta, \theta^{(w)}) = \cQ_n(\theta, \theta^{(w)}) + \sum_{k=0}^{K-1} \zeta_{1,k} \norm{\xi_k}_{\text{en}, \eta} + \zeta_{2,k} \norm{\gamma_k}_{\text{sg} l_1, \tilde{\eta}}.
+\end{equation}
+Here, we need to compute 
+\[\theta^{(w+1)} \in \argmin_{\theta \in \R^\vartheta} \cQ_n^\text{pen}(\theta, \theta^{(w)}).\]
 We then present the parameters updates in the order given in Algorithm~\ref{alg:prox-QNEM}.
 First, the update of $D^{(w)}$ is naturally given in closed-form by
 \begin{equation}
@@ -526,7 +547,7 @@ where $\xi_k^\pm = (\xi_{k,1}^\pm, \ldots, \xi_{k,p}^\pm)^\top$. The L-BFGS-B so
   \label{eq:grad-xi_k}
   \frac{\partial P_{n,k}^{(w)}(\xi_k)}{\partial \xi_k} = -n^{-1} \sum_{i=1}^n  \big(\pi_{ik}^{\theta^{(w)}} - \pi_{\xi_k}(x_i) \big) x_i.
 \end{equation}
-In practice, we use the \texttt{Python} solver \texttt{fmin\_l\_bfgs\_b} from \texttt{scipy.optimize}~\citep{virtanen2020scipy}. Note that for computational reasons, it is not clever to use a too small solver tolerance in the early steps of the overall algorithm, where we call tolerance the value for which iterations stop when the stopping criterion is below it. To speed up the overall algorithm, we then decrease the L-BFGS-B tolerance with the iterations $w$.
+In practice, we use the \texttt{Python} solver \texttt{fmin\_l\_bfgs\_b} from \texttt{scipy.optimize}~\citep{virtanen2020scipy}. Note that for computational reasons, it is not clever to use a too small solver tolerance in the early steps of the overall algorithm, where we call tolerance the value for which iterations stop when the stopping criterion is below it. To speed up the overall algorithm, we then increase the L-BFGS-B tolerance with the iterations $w$.
 
 Concerning the update of $\beta_k^{(w)}$ for $k=0, \ldots, K-1$, let us follow the same strategy by denoting
 \begin{equation*}
@@ -626,18 +647,15 @@ For all $k = 0, \ldots, K-1$, we first choose $\xi_k^{(0)} = \mathbf{0}_d$ and $
 
 \paragraph*{The prox-QNEM algorithm.}
 Algorithm~\ref{alg:prox-QNEM} describes the main steps of the resulting prox-QNEM algorithm to solve the optimization problem~\eqref{eq:optim-pb}. 
-
-% \vspace{.5cm}
-
 \begin{algorithm}[!htb]
 \DontPrintSemicolon
 \caption{prox-QNEM algorithm for the lights model inference}
 \label{alg:prox-QNEM}
-\KwInput{Training data $\cD_n$; tuning hyper-parameters $(\zeta_{1,k}, \zeta_{2,k})_{k=0,\ldots,K-1}$}
+\KwInput{Training data $\cD_n$~\eqref{eq:dataset-def}; tuning hyper-parameters $(\zeta_{1,k}, \zeta_{2,k})_{k=0,\ldots,K-1}$}
 \KwOutput{Last parameters $\hat \theta \in \R^\vartheta$}
 \tcc{Initialization}
 Compute the starting parameters $\theta^{(0)} \in \R^\vartheta$ \\
-\For{$w = 1,\ldots,$ until convergence}    
+\For{$w = 1,\ldots,$ until convergence}  
 { 
   \tcc{E-step}
   Compute $\Lambda_{ik,\tilde g}^{\theta^{(w)}}$ using~\eqref{eq:Lambda_ik-b_i} for $\tilde g_1$ and $\tilde g_2$\\
@@ -655,6 +673,30 @@ Compute the starting parameters $\theta^{(0)} \in \R^\vartheta$ \\
 
 Then in practice, the convergence for Algorithm~\ref{alg:prox-QNEM} is declared when the relative objective $\big(\ell_n^\text{pen}(\theta^{(w+1)}) - \ell_n^\text{pen}(\hat\theta^{(w)}) \big) / \ell_n^\text{pen}(\hat\theta^{(w)})$ goes below a chosen threshold.
 
+\subsection{Convergence to a stationary point}
+
+Let us address here convergence properties of the prox-QNEM algorithm described in the previous section. Since in~\eqref{eq:M-step-obj} we only minimize $\cQ_n^\text{pen}(\theta, \theta^{(w)})$ and not directly $\cQ_n(\theta, \theta^{(w)})$ defined in~\eqref{eq:Q-def} as in a classical EM~\citep{wu1983convergence}, we are in a generalized EM (GEM) setting~\citep{dempster1977maximum}. For such algorithm, one has the descent property saying that the objective function~\eqref{eq:pen-log-lik} decreases at each iteration, namely 
+\[\ell^{\text{pen}}_n(\theta^{(w+1)}) \leq \ell^{\text{pen}}_n(\theta^{(w)}),\]
+which can be observed in Figure ?.
+Now, let us make a classical hypothesis.
+\begin{assumption}
+  \label{hyp:bounded}
+  Suppose that $\ell^{\text{pen}}_n$ is bounded for all $\theta$.
+\end{assumption}
+Assumption~\ref{hyp:bounded} implies that $w \mapsto \ell^{\text{pen}}_n(\theta^{(w)})$ decreases monotically to a finite limit. Then, one has the following convexity property with the Gaussian case used in practice.
+\begin{lemma}
+\label{lem:strictly-convex}
+$\cQ_n^{\text{pen}}(\theta, \theta^{(w)})$ is continuous in $\theta$ and $\theta^{(w)}$, and for any fixed $\theta^{(w)}$, it is a convex function in $\theta$, and strictly convex in each coordinate of $\theta$.
+\end{lemma}
+Hence, one can state the following theorem about the convergence of the prox-QNEM algorithm to a stationary point, being here a local minimum.
+\begin{theorem}
+\label{th:cvg}
+Under Assumption~\ref{hyp:bounded}, every cluster point $\bar{\theta}$ of the sequence $\{ \theta^{(w)}\}_{w \geq 1}$ generated by the prox-QNEM algorithm is a stationary point of the objective function~\eqref{eq:pen-log-lik}, that is
+\[\forall \varepsilon > 0, V_\varepsilon(\bar{\theta}) \cap \{ \theta^{(w)}\}_{w \geq 1} \setminus \{\bar{\theta}\} \neq \varnothing \implies \forall \tilde \theta \in \R^\vartheta, \underset{u \rightarrow 0}{\lim} \frac{\ell^{\text{pen}}_n(\bar{\theta} + \tilde \theta u) - \ell^{\text{pen}}_n(\bar{\theta})}{u} \geq 0 ,\]
+with $V_\varepsilon(\bar{\theta})$ the epsilon-neighbourhood of $\bar{\theta}$.
+\end{theorem}
+The proof of Lemma~\ref{lem:strictly-convex} is straightforward, and we follow the proof of Theorem 1 in~\citet{bussy2019c} to prove Theorem~\ref{th:cvg}.
+
 \subsection{The case $K=2$}
 \label{sec:K=2}
 
@@ -664,7 +706,7 @@ In this context, which is the one we consider in practice in Sections~\ref{sec:s
 
 \paragraph{Cross-validation procedure.}
 
-The hyper-parameters $(\zeta_1, \zeta_2)^\top \in \R_+^2$ are then tuned using a Bayesian optimization method~\citep{snoek2012practical}, with predictive marker defined in Section~\ref{sec:evaluation strategy} and the C-index score defined in Section~\ref{sec:Metrics}. In practice, we use the \texttt{Python} package \texttt{Hyperopt}~\citep{bergstra2013hyperopt} and the Tree-structured Parzen Estimator~\citep{bergstra2011algorithms}, which is a sequential model-based optimization (SMBO) approach. SMBO methods sequentially construct models to approximate the performance of hyperparameters based on historical measurements, and then subsequently choose new hyperparameters to test based on this model.
+The hyper-parameters $(\zeta_1, \zeta_2)^\top \in \R_+^2$ are then tuned using a Bayesian optimization method~\citep{snoek2012practical}, with the C-index score and the predictive marker both defined in Section~\ref{sec:evaluation strategy}. In practice, we use the \texttt{Python} package \texttt{hyperopt}~\citep{bergstra2013hyperopt} and the Tree-structured Parzen Estimator~\citep{bergstra2011algorithms}, which is a sequential model-based optimization (SMBO) approach. SMBO methods sequentially construct models to approximate the performance of hyperparameters based on historical measurements, and then subsequently choose new hyperparameters to test based on this model.
 Moreover, the search interval for hyper-parameter $\zeta_1$ is automatically computed in a data driven way described in Appendix~\ref{sec:auto-grid-cv}, while the search intervals for $\zeta_2$ is determined empirically.
 % TODO: Figure de visualisation de la CV de (\zeta_1, \zeta_2) en 3D
 
@@ -672,64 +714,98 @@ Moreover, the search interval for hyper-parameter $\zeta_1$ is automatically com
 \section{Performance evaluation}
 \label{sec:Performance evaluation}
 
-In this section, we first present the proposed evaluation strategy to assess real-time prognostic prediction performances. We then introduce the appropriate metric used to this end: the C-index ; and finally, the considered models for performance comparisons.
+In this section, we first present the proposed evaluation strategy to assess real-time prognostic prediction performances. We then introduce the considered models for performance comparisons.
 
-\subsection{Evaluation strategy: the real-time prediction paradigm}
+\subsection{Evaluation strategy}
 \label{sec:evaluation strategy}
 
-When validating predictions or comparing performances of competing models in a survival context, one can be interested either in the discriminative power of the predictive rule and use concordance measures such as the C-index~\citep{heagerty2005survival} (defined in Section~\ref{sec:Metrics}), or in the predictive accuracy of the rule~\citep{schemper2000predictive}.
-Developments in the field of joint modeling have primarily focused on modeling and estimation, and most studies do not consider goodness-of-fit nor generalization power in a prognostic prediction perspective~\citep{hickey2016joint}. However, with the prospect of using prognostic prediction in real-time on a daily basis, practitioners will naturally require predictive prognostic tools to evaluate models fit and compare models in terms of discriminative power. So we choose to put ourselves in what we call a ``real-time prediction paradigm''.
+When validating predictions or comparing performances of competing models in a survival context, one can be interested either in the discriminative power of the predictive rule and use concordance measures such as the C-index~\citep{heagerty2005survival} (defined in~\eqref{eq:c-index-def}), or in the predictive accuracy of the rule~\citep{schemper2000predictive}.
+Developments in the field of joint modeling have primarily focused on modeling and estimation, and most studies do not consider goodness-of-fit nor generalization power in a prognostic prediction perspective~\citep{hickey2016joint}. However, with the prospect of using prognostic prediction in real-time on a daily basis, practitioners will naturally require predictive prognostic tools to evaluate models fit and compare models in terms of discriminative power. So we choose to put ourselves in what we call a ``real-time prediction paradigm''. 
 
 \paragraph{Real-time prediction paradigm.}
 
 Once the learning phase is achieved for the model on a training set (so that one obtains $\hat\theta$ from~\eqref{eq:optim-pb} using our prox-QNEM algorithm introduced in Section~\ref{sec:prox-QNEM}), we want to assess real-time risk prediction performances on a test set.
-
-Denoting $t^{max}_i$ the time for subject $i$ when one wants to perform the risk prediction -- so in practice, the time up to which one has data measurements for $Y_i$, say the ``present'' time for prediction --
+Denoting $t^{max}_i$ the time for subject $i$ in the test set when one wants to perform the risk prediction -- so in practice, the time up to which one has data measurements for $Y_i$, say the ``present'' time for prediction -- one wants then to predict a prognostic marker for subject $i$ using all data available up to $t^{max}_i$, but without using the supervision labels $(t_i, \delta_i)$.
 
 \paragraph{Predictive marker.}
 
-The question now is to choose a discriminative marker rule for risk prediction to be used in the cross-validation procedure for selecting the best regularization hyper-parameters, and of course to be used as final risk prediction after hyper-parameters fine-tuning.
+The question is now to choose a discriminative marker rule for risk prediction to be used in the cross-validation procedure for selecting the best regularization hyper-parameters, and of course to be used as final risk prediction after hyper-parameters fine-tuning.
+Posterior risk classification for subject $i$ and latent class $k$ can be made through $\pi_{ik}^{\hat\theta}$ (see~\eqref{eq:pi_ik-def}), and such posterior probabilities have been considered for goodness-of-fit evaluation in other JLCMs models, see~\citet{proust2014joint} for instance.
 
-
-posterior risk classification for subject $i$ and latent class $k$ can be made through $\pi_{ik}^{\hat\theta}$ (see~\eqref{eq:pi_ik-def}). Similar posterior probabilities have been considered for goodness-of-fit evaluation in other JLCMs models, see~\citet{proust2014joint} for instance.
-
-But in the real-time prediction paradigm, it makes no sense from a practical point of view to use this marker rule as is for risk prediction, since the latter requires to know the survival labels $(t_i, \delta_i)$, being intrinsically unknow 
-
- a natural and appropriate marker rule of the lights model for subject $i$ being in latent class $k$ would rather be 
+But in the real-time prediction paradigm, it makes no sense from a practical point of view to use this marker rule as is, since the latter requires to know the survival labels $(t_i, \delta_i)$, being intrinsically unknow in the paradigm. A natural and appropriate marker rule of the lights model for subject $i$ being in latent class $k$ in our context would rather be 
 \begin{equation}
   \label{eq:marker-def}
-  \hat \cR_{ik} = \dfrac{\pi_{\hat \xi_k}(x_i) \hat f(t^{max}_i, y_i | G_i=k ; \hat \theta)}{\sum_{k=0}^{K-1} \pi_{\hat \xi_k}(x_i) \hat f(t^{max}_i, y_i | G_i=k ; \hat \theta)},
+  \hat \cR_{ik} = \P_{\hat \theta}[G_i=k | T^\star_i > t^{max}_i, y_i] = \dfrac{\pi_{\hat \xi_k}(x_i) S_k(t^{max}_i) f_{\hat \theta}(y_i | G_i=k)}{\sum_{k=0}^{K-1} \pi_{\hat \xi_k}(x_i) S_k(t^{max}_i) f_{\hat \theta}(y_i | G_i=k)},
 \end{equation}
-with 
-\[ \hat f(t^{max}_i, y_i | G_i=k ; \hat \theta) = \dfrac{1}{2N} \sum_{\breve{b} \in \hat S} f(t^{max}_i, 0, y_i | \breve{b}, G_i = k ; \hat \theta), \]
+where $S_k$ is defined in~\eqref{eq:survival-k-def}.
+Note that marker~\eqref{eq:marker-def} is obtained from $\pi_{ik}^{\hat\theta}$ in~\eqref{eq:pi_ik-def} taking $(t_i, \delta_i) = (t^{max}_i, 0)$. Let us recall that in practice, one considers the case $K=2$ for the lights, see Section~\ref{sec:K=2}.
 
-dire ici qu'on tronque $y$ à $t^{max}$ et le noter $|t^{max}$ 
+\paragraph{The C-index metric}
 
-where $\hat S$ is obtained with Algorithm~\ref{alg:construct-set-S} using $\hat D$ (that is $S^{(w_{max})}$ for the last iteration $w_{max}$), and the density $f$ in the rigth hand side of the previous equation being defined in~\eqref{eq:ind-hyp}.
-Note that marker~\eqref{eq:marker-def} is in fact obtained from the definition of $\hat \pi_{ik}^{\hat\theta}$ in~\eqref{eq:pi_ik-def} taking $(t_i, \delta_i) = (t^{max}_i, 0)$, and turns out to be an estimate of the following posterior probability 
-\[\P_\theta[G_i=k | T^\star_i > t^{max}_i, y_i].\]
-
-\subsection{The C-index metric}
-\label{sec:Metrics}
-
-We detail in this section the metric considered to evaluate risk prediction performances. Let us recall that in practice, one considers the case $K=2$, see Section~\ref{sec:K=2}. 
-In this context, the predictive marker for the lights model is
-\[\hat \cR_i^\text{lights} = \dfrac{\pi_{\hat \xi}(x_i) \hat f(t^{max}_i, y_i | G_i=1 ; \hat \theta)}{\pi_{\hat \xi}(x_i) \hat f(t^{max}_i, y_i | G_i=1 ; \hat \theta) + \big(1 - \pi_{\hat \xi}(x_i) \big) \hat f(t^{max}_i, y_i | G_i=0 ; \hat \theta)}.\]
-Then, let us denote by $\hat \cR$ the marker under study in the general case, and assume that it is measured once at $t = t^{max}$.
+We detail in this section the chosen metric to evaluate risk prediction performances. 
+Let us denote by $\hat \cR_i$ the predictive marker for a subject $i$ at $t^{max}_i$ and from a given model (for the lights, $\hat \cR_i = \hat \cR_{ik}$ in~\eqref{eq:marker-def} with $k=1$).
 A common concordance measure that does not depend on time is the C-index~\citep{harrell1996tutorial} defined by
 \begin{equation*}
   \cC =\P[\hat \cR_i > \hat \cR_j | T^\star_i < T^\star_j],
 \end{equation*}
 with $i \neq j$ two independent subjects (which does not depend on $i, j$ under the i.i.d. sample hypothesis). 
 In our case,  $T^\star$ is subject to right censoring, so one would typically consider the modified $\cC_\tau$ defined by
-\begin{equation*}
+\begin{equation}
+  \label{eq:c-index-def}
   \cC_\tau =\P[\hat \cR_i > \hat \cR_j | T_i < T_j , T_i < \tau],
-\end{equation*}
+\end{equation}
 with $\tau$ corresponding to the fixed and prespecified follow-up period duration \citep{heagerty2005survival}. A Kaplan-Meier estimator for the censoring distribution leads to a nonparametric and consistent estimator of $\cC_\tau$ \citep{uno2011c}, already implemented in the \texttt{Python} package \texttt{lifelines}.
 Hence in the following, we consider the C-index metric to assess performances.
 
-Note that other metrics have been proposed to compare individual risk predictions. In~\citet{blanche2015quantifying} for instance, authors use dynamic prediction accuracy curves (of AUC or Brier score) with the idea of moving what is called the ``landmark time'', that is the time at which predictions are made and on which the amount of available information depends, corresponding to our $t^{max}$. But comparing curves in an automatic way (in a cross-validation process for instance) is never easy, plus the comparisons proposed in the aforementioned paper require \textit{a priori} choices of time window thresholds (in particular to get back to binary predictions, being always questionable in survival analysis~-v\citep{bussy2019comparison}), which is not the case of the C-index metric.
-Nevertheless, the idea of chosing $t^{max}$ when it comes to simulate data for models performances comparisons will be discussed in Section~\ref{sec:simulation study}, and it is an interesting notion to consider since it can be sensed that the closer $t^{max}$ gets to $T^\star$, the easier it will be for a model to make good predictions.
+Note that other metrics have been proposed to compare individual risk predictions. In~\citet{blanche2015quantifying} for instance, authors use dynamic prediction accuracy curves (of AUC or Brier score) with the idea of moving what is called the ``landmark time'', that is the time at which predictions are made and on which the amount of available information depends, corresponding to our $t^{max}_i$. But comparing curves in an automatic way (in a cross-validation process for instance) is complicated, and the comparisons proposed in the aforementioned paper require \textit{a priori} choices of time window thresholds (in particular to get back to binary predictions, being always questionable in survival analysis~-v\citep{bussy2019comparison}), which is not the case of the C-index metric.
+Finally, the question of the choice of $t^{max}_i$ in a study to assess a model performances, or to compare models, is discussed in the following paragraph. It can be sensed that the closer $t^{max}_i$ gets to $T^\star_i$, the easier it will be for a model to make good predictions.
+
+\paragraph{Procedure.}
+Let us describe now in Algorithm~\ref{alg:evaluation} the procedure we follow to evaluate model performances on simulated data in Section~\ref{sec:simulation study} and on real data in Section~\ref{sec:application}. Here we do not give details on the cross-validation step, but it follows the same idea : for each fold, we sample the $t_i^{max}$ and truncate $y_i$ for $i$ in the test set of the fold.
+\begin{algorithm}[!htb]
+\DontPrintSemicolon
+\caption{Procedure followed to assess performances of a given model in our real-time prediction paradigm.}
+\label{alg:evaluation}
+\KwInput{Dataset $\cD_n$~\eqref{eq:dataset-def} \textbf{only if} \textit{\texttt{simulation = false}} ; a \texttt{model} under study}
+\KwOutput{Confidence intervals on C-index metric as well as on running time.}
+\tcc{We run $\breve{R}=100$ independant experiments}
+$seed_0 = 0$ \\
+\For{$\breve{r} = 1,\ldots,\breve{R}$}
+{
+  $\texttt{start\_time} = \texttt{time}()$ \\
+  $seed_{\breve{r}} = seed_{\breve{r}-1} + 1$ \\
+  \If{\texttt{simulation = true}}
+  {
+    {$\cD_n \leftarrow \texttt{simulate}(seed_{\breve{r}})$ \tcc{Sample a new dataset at each round $\breve{r}$}}
+  }
+  $(\cD_{n_{train}}, \cD_{n_{test}}) \leftarrow \texttt{split\_train\_test}(\cD_n, seed_{\breve{r}})$ \\
+  $\texttt{model.cross\_validate}(\cD_{n_{train}})$ \tcc{Select the best hyper parameters}
+  \texttt{model.fit}$(\cD_{n_{train}})$ \tcc{Learn $\hat \theta$}
+  \For{$i = 1,\ldots,n_{test}$}
+  {
+    $t_i^{max} \sim t_i \times \big(1 - \text{Beta}(2, 5)\big)$ \tcc{See Figure~\ref{fig:timax-pdf}}
+    $y_i \leftarrow \big(Y_i^l(t_{ij}^l) \big)_{\substack{j=1, \ldots, n_i^l-1 \\ l=1, \ldots, L \ \ \ }} \text{ with } t_{ij}^l \leq t_i^{max}$ \tcc{Truncate $y_i$, see~\eqref{eq:def-yil}}
+    $\mathcal{X}_i = (x_i, y_i)$ \\
+    \If{\normalfont \texttt{model = lights}}
+    {
+      $\big(\Psi_i(t_j^u)\big)_{j=1,\ldots,J} \leftarrow \texttt{extract\_features}(y_i)$ \tcc{$(t_j^u)_{j=1,\ldots,J}$ from $\cD_{n_{train}}$}
+      $\mathcal{X}_i = \Big(x_i, y_i, \big(\Psi_i(t_j^u)\big)_{j=1,\ldots,J}\Big)$ 
+    }
+    $\hat \cR_{i,\breve{r}} \leftarrow \texttt{model.predict}(\mathcal{X}_i)$
+  }
+  $\texttt{score}_{\breve{r}} \leftarrow \texttt{c\_index}\big((\hat \cR_{i,\breve{r}}, t_i, \delta_i)_{i=1,\ldots,n_{test}} \big)$ \\
+  $\texttt{end\_time} = \texttt{time}()$ \\
+  $\texttt{running\_time}_{\breve{r}} = \texttt{end\_time} - \texttt{start\_time}$ \\
+}
+\textbf{Return:} {$\big[\texttt{score}_{\breve{r}}\big]_{\breve{r}=1,\ldots,\breve{R}}\ , \ \big[\texttt{running\_time}_{\breve{r}}\big]_{\breve{r}=1,\ldots,\breve{R}}$}
+\end{algorithm}
+
+\begin{figure}[!htb]
+\centering
+\includegraphics[width=.3\textwidth]{./figures/beta_law.pdf}
+\caption{Density of the law used to simulate $t_i^{max}$ to mimic the fact that in practice, one has access to a reasonable amount of longitudinal data before making a prediction.}
+\label{fig:timax-pdf}
+\end{figure}
 
 \subsection{Competing models}
 \label{sec:competing models}
@@ -766,15 +842,14 @@ We use the \texttt{survival} \texttt{R} package~\citep{zhang2018time}, and we co
 \paragraph*{Multivariate joint latent class model.} 
 
 We consider a multivariate version of JLCMs implemented in the \texttt{R} package \texttt{lcmm}~\citep{2017_lcmm}.
-Contrary to the lights model, there is no shared associations between the longitudinal models and the survival model. Given the latent class membership, each submodel is assumed to be independent. In this context, the predictive marker for subject $i$ is
+There is no shared associations between the longitudinal models and the survival model. Given the latent class membership, each submodel is assumed to be independent. In this context, the predictive marker for subject $i$ is
 \[\hat \cR_i^\text{lcmm} = \dfrac{\pi_{\hat \xi}(x_i) f(t^{max}_i, y_i | G_i=1 ; \hat \theta)}{\pi_{\hat \xi}(x_i) f(t^{max}_i, y_i | G_i=1 ; \hat \theta) + \big(1 - \pi_{\hat \xi}(x_i)\big) f(t^{max}_i, y_i | G_i=0 ; \hat \theta)}.\]
 
 \paragraph*{Multivariate shared random effect model.}
 
 In this context, we consider the \texttt{JMbayes} package~\citep{2017_JMbayes}. The predictive marker associated with this model for subject $i$ is naturally given by the corresponding risk score
-\[\hat \cR_i^\text{JMbayes} = \exp \Big\{ x_i^\top \hat\gamma_0 + \sum_{l=1}^L \sum_{a=1}^\cA {\widehat{\gamma_{k,a}^l}}^\top \varphi_{k,a}(t_i^{max}, b_i^l) \Big\}.\] 
-
-\texttt{@Antoine : est-ce qu'il peut prendre des time-indep feat ? et quelles sont les assos ?}
+\[\hat \cR_i^\text{JMbayes} = \exp \Big\{ x_i^\top \hat\gamma_0 + \sum_{l=1}^L \sum_{a=1}^\cA {\widehat{\gamma_{k,a}^l}}^\top \varphi_{k,a}(t_i^{max}, b_i^l) \Big\},\] 
+where the shared associations $\varphi_{k,a}$ are the four given in Table~\ref{table:shared_associations}.
 
 
 \section{High-dimensional simulation study}
@@ -858,22 +933,15 @@ with $\kappa_1 > 0$ and $\kappa_2 \in \R$ the scale and shape parameters respect
 \end{equation}
 where $U_i \sim \cU\big([0,1]\big)$ (see Appendix~\ref{sec:event-time-simu} for the derivation of this expression).
 The distribution of the censoring variable $C_i$ is the geometric distribution $\cG(\alpha_c)$, where $\alpha_c \in (0, 1)$ is empirically tuned to maintain a desired censoring rate $r_c \in [0,1]$. 
-Finally, the prediction time for subject $i$ is draw according to 
-\begin{equation}
-  \label{eq:law-t_i^max}
-  t_i^{max} \sim T_i \times \big(1 - \text{Beta}(\nu_1, \nu_2)\big) 
-\end{equation}
-with $(\nu_1, \nu_2) \in \R_+^2$ two shape parameters. Figure~\ref{fig:timax-pdf} shows the corresponding probability density function for $t_i^{max}$ with some explanations.
-We then truncate all $Y_i$ measurements being after $t_i^{max}$, since it represents the ``present'' time, so the time up to which one has longitudinal data.
 The choice of all hyper-parameters is driven by the applications on real data presented in Section~\ref{sec:application}, and summarized in Table~\ref{table:parameters choice}. Figure~\ref{fig:example-data} gives an example of data generated according to the design we have just described.
 \begin{table}[htb]
 \caption{Hyper-parameter choices for simulation. Let us also precise that we take $n \in [200, 4000]$ and $(p, L) \in [3, 300]^2$.
 \label{table:parameters choice}}
 \centering
 \resizebox{\textwidth}{!}{
-\begin{tabular}{ccccccccccccc}
+\begin{tabular}{cccccccccccc}
 \toprule
-$\pi_1$ & $(\rho_1, \rho_2, \rho_3)$ & $\mu_0$ & $\mu_1$ & $gap$ & $\sigma_l^2$ & $\upsilon$ & $(\nu_1, \nu_2)$ & $(\kappa_1, \kappa_2)$ & $(\varsigma_1, \varsigma_2)$ & $r_c$ & $r_s$ & $\eta = \tilde{\eta}$ \\
+$\pi_1$ & $(\rho_1, \rho_2, \rho_3)$ & $\mu_0$ & $\mu_1$ & $gap$ & $\sigma_l^2$ & $\upsilon$ & $(\kappa_1, \kappa_2)$ & $(\varsigma_1, \varsigma_2)$ & $r_c$ & $r_s$ & $\eta = \tilde{\eta}$ \\
 \midrule
 0.4 & $(, 10^{-3},)$ & 
 $\begin{pmatrix}
@@ -882,15 +950,15 @@ $\begin{pmatrix}
 $\begin{pmatrix}
   1 \\ 0.5
 \end{pmatrix}$ 
-& 0.5 & 4 & 3 & (2, 5) & $(10^{-3}, 0.1)$ & (1, 0.1) & 0.3 & 0.4 & 0.1 \\
+& 0.5 & 4 & 3 & $(10^{-3}, 0.1)$ & (1, 0.1) & 0.3 & 0.4 & 0.1 \\
 \bottomrule
 \end{tabular}}
 \end{table}
 \begin{figure}[!htb]
 \centering
-\subfigure[Density of the law used to simulate $t_i^{max}$ according to~\eqref{eq:law-t_i^max} with $(\nu_1, \nu_2) = (2,5)$, to mimic the fact that in practice, one has access to a reasonable amount of longitudinal data before making a prediction.]{
-\includegraphics[width=.3\textwidth]{./figures/beta_law.pdf}
-\label{fig:timax-pdf}}
+\subfigure[blabla]{
+% \includegraphics[width=.3\textwidth]{./figures/beta_law.pdf}
+\label{fig:yoyo}}
 \hspace{.02\textwidth}
 \subfigure[exemple simu]{
 % \includegraphics[width=.38\textwidth]{./figures/time2.pdf}
@@ -898,11 +966,11 @@ $\begin{pmatrix}
 \caption{Illustrations of simulated data.}
 \end{figure}
 
-Following the real-time prediction paradigm presented in Section~\ref{sec:evaluation strategy}, we compare the predictive performances of the lights model with the competing ones introduced in Section~\ref{sec:competing models} in terms of C-index (see Section~\ref{sec:Metrics}).
+Following the real-time prediction paradigm presented in Section~\ref{sec:evaluation strategy}, we compare the predictive performances of the lights model with the competing ones introduced in Section~\ref{sec:competing models} in terms of C-index (see Section~\ref{sec:evaluation strategy}).
 We also want to assess the stability of the lights model in terms of feature selection, but we do not compare this aspect with state-of-the-art since other models are not designed to perform feature selection, and comparisons would be unfair. 
 To this end, we follow the same simulation procedure explained in the previous lines and for each simulation case, we use the following approach to evaluate the variable selection power of the model. Denoting 
 \[\tilde{\xi}_j = \dfrac{|\hat{\xi}_j|}{\max_{j=1,\ldots,p}{|\hat{\xi}_j|}} \qquad \text{and} \qquad \tilde{\gamma}_{k,a}^l = \dfrac{|\hat{\gamma}_{k,a}^l|}{\max_{a=1, \ldots, \cA}{|\hat{\gamma}_{k,a}^l|}}\] 
-for $k=0,\ldots,K-1$ and $l=1, \ldots, L$, and considering that $\tilde{\xi}_j$ and $\tilde{\gamma}_{k,a}^l$ are the predicted probability that the true $\xi_j$ equals $\varsigma_1$ and the predicted probability that the true $\gamma_{k,a}^l$ equals $\varsigma_2$ respectively, then we are in a binary prediction setting and we use the two resulting AUC scores of this problem to evaluate the selection power of the time-independent and the time-dependent features respectively.
+for $k=0,\ldots,K-1$ and $l=1, \ldots, L$, and considering that $\tilde{\xi}_j$ and $\tilde{\gamma}_{k,a}^l$ are the predicted probability that the true $\xi_j$ equals $\varsigma_1$ and the predicted probability that the true $\gamma_{k,a}^l$ equals $\varsigma_2$ respectively, then we are in a binary prediction setting and we use the two resulting AUC scores of this problem to evaluate the selection power of the time-independent features and the trajectories respectively.
 
 \subsection{Results of simulation}
 \label{sec:simulation results}
@@ -1023,7 +1091,7 @@ The KKT conditions~\citep{boyd2004convex} claim that
 \end{center}
 where $\hat \cA_k = \big\{j = 1, \dots, p : \hat \xi_{k,j} \neq 0 \big\}$ is the active set of the $\hat \xi_k $ estimator, and for all $x \in~\R\setminus~\{0\},\ \text{sgn}(x) = \mathds{1}_{\{x>0\}} - \mathds{1}_{\{x<0\}} $. Then, using~\eqref{eq:grad-xi_k}, one obtains
 \begin{equation*}
-\hat \xi_{k, j} = 0 \ \Rightarrow \ \left| n^{-1} \sum_{i=1}^n \hat \pi_{ik}^{\theta^{(w)}} \big( 1 - \pi_{\xi_k}(x_i) \big) x_{ij}  \right| < \zeta_{1,k} (1 - \eta)
+\hat \xi_{k, j} = 0 \ \Rightarrow \ \left| n^{-1} \sum_{i=1}^n \pi_{ik}^{\theta^{(w)}} \big( 1 - \pi_{\xi_k}(x_i) \big) x_{ij}  \right| < \zeta_{1,k} (1 - \eta)
 \end{equation*}
 for all $j = 1, \dots, p$.
 Hence, we choose the following upper bound for the randomly chosen candidate interval during the cross-validation procedure
